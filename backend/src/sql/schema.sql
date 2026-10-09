@@ -1,4 +1,4 @@
-CREATE TABLE IF NOT  EXISTS users {
+CREATE TABLE IF NOT  EXISTS users ( 
     id SERIAL PRIMARY KEY,
     name VARCHAR(100) NOT NULL,
     email VARCHAR(150) UNIQUE NOT NULL,
@@ -7,4 +7,4 @@ CREATE TABLE IF NOT  EXISTS users {
     CHECK (role IN ('client', 'admin')),
     displayPicture TEXT,
     createdAt TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
-}
+)
