@@ -26,3 +26,11 @@ export const createUser = async (
 
   return rows[0];
 };
+
+export const findAllUsers = async (): Promise<User[]> => {
+    const {rows} = await query(
+        "SELECT id, email, role, name FROM users ORDER BY id DESC"
+
+    );
+    return rows
+}
