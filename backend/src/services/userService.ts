@@ -18,19 +18,19 @@ export const createUser = async (
   const salt = await bcrypt.genSalt(10);
   const hashedPassword = await bcrypt.hash(password, salt);
 
-  const { rows } =
-    await query(`INSERT INTO users (name, surname, email, cellphone, password, role) 
+  const { rows } = await query(
+    `INSERT INTO users (name, surname, email, cellphone, password, role) 
      VALUES ($1, $2, $3, $4, $5, $6) 
-     RETURNING id, name, surname, email, cellphone, role, createdAt`);
-  [name, surname, cellphone, email.toLocaleLowerCase(), hashedPassword, role];
+     RETURNING id, name, surname, email, cellphone, role, "createdat"`,
+    [name, surname, email.toLocaleLowerCase(), cellphone, hashedPassword, role],
+  );
 
   return rows[0];
 };
 
 export const findAllUsers = async (): Promise<User[]> => {
-    const {rows} = await query(
-        "SELECT id, email, role, name FROM users ORDER BY id DESC"
-
-    );
-    return rows
-}
+  const { rows } = await query(
+    "SELECT id, email, role, name FROM users ORDER BY id DESC",
+  );
+  return rows;
+};

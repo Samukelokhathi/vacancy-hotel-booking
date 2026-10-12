@@ -5,7 +5,7 @@ import bcrypt from "bcryptjs";
 
 export const register = async (req: Request, res: Response) => {
   const { email, password, role, name, surname, cellphone } = req.body;
-  if (!email || !password || !role || !name || !surname || cellphone) {
+  if (!email || !password || !role || !name || !surname || !cellphone) {
     return res.status(400).json({ message: "All fields are required" });
   }
 
@@ -16,10 +16,10 @@ export const register = async (req: Request, res: Response) => {
     }
     const user = await UserService.createUser(
       email,
-      surname,
       password,
       role,
       name,
+      surname,
       Number(cellphone),
     );
     return res.status(201).json({ message: "User registered successfully" });
@@ -29,13 +29,12 @@ export const register = async (req: Request, res: Response) => {
   }
 };
 
-
 export const getAllUsers = async (req: Request, res: Response) => {
-    try{
-        const users = await UserService.findAllUsers();
-        return res.status(200).json(users);
-    }catch(error){
-        console.error("Login Error:", error);
-        return res.status(500).json({message: "Error retrieving users"});
-    }
+  try {
+    const users = await UserService.findAllUsers();
+    return res.status(200).json(users);
+  } catch (error) {
+    console.error("Login Error:", error);
+    return res.status(500).json({ message: "Error retrieving users" });
+  }
 };

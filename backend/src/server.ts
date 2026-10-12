@@ -1,7 +1,6 @@
 import express from "express";
 import dotenv from "dotenv";
 import { testDbConnection } from "./config/database.js";
-import { initDb } from "./config/initDb.js";
 import authRoutes from "./routes/authRoutes.js";
 
 const app = express();
