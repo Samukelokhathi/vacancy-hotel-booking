@@ -3,6 +3,7 @@ import dotenv from "dotenv";
 import { testDbConnection } from "./config/database.js";
 import authRoutes from "./routes/authRoutes.js";
 
+dotenv.config();
 const app = express();
 const PORT = process.env.PORT;
 

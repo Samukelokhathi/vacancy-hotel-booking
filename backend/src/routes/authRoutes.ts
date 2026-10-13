@@ -3,6 +3,7 @@ import {
   deleteUserById,
   getAllUsers,
   getUserById,
+  login,
   register,
   updateUserById,
 } from "../controllers/authControllers.js";
@@ -11,6 +12,7 @@ import { updateUser } from "../services/userService.js";
 const router = Router();
 
 router.post("/register", register);
+router.post("/login", login);
 
 router.get("/users", getAllUsers);
 router.get("/users/:id", getUserById);
