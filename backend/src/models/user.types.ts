@@ -4,9 +4,9 @@ export interface User {
   id: number;
   name: string;
   surname: string;
-  cellphone: number;
+  cellphone: number | string;
   email: string;
   password: string;
-  role?: string;
+  role?: UserRole;
   createdat: Date;
 }
