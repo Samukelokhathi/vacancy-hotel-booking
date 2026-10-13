@@ -36,18 +36,17 @@ export const findAllUsers = async (): Promise<User[]> => {
 };
 
 export const findUserById = async (id: number): Promise<User | null> => {
-    const { rows } = await query("SELECT * FROM users WHERE id = $1", [
-        id,
+  const { rows } = await query("SELECT * FROM users WHERE id = $1", [id]);
+  return rows[0] || null;
+};
 
-    ]);
-    return rows[0] || null;
-
-}
-
-export const updateUser = async (id: number, appData:User): Promise<User | null> =>{
-     const { email, role, name, surname, cellphone, password } = appData;
-       const { rows } = await query(
-        `UPDATE users 
+export const updateUser = async (
+  id: number,
+  appData: User,
+): Promise<User | null> => {
+  const { email, role, name, surname, cellphone, password } = appData;
+  const { rows } = await query(
+    `UPDATE users 
          SET email = $1, 
          role = $2,
          name = $3,
@@ -55,8 +54,15 @@ export const updateUser = async (id: number, appData:User): Promise<User | null>
          cellphone = $5,
          password = $6
          WHERE id = $7
-        RETURNING id, name, surname, cellphone, email, role, createdat`, 
-        [email, role, name, surname, cellphone, password, id]
-    );
-    return rows[0] || null;
+        RETURNING id, name, surname, cellphone, email, role, createdat`,
+    [email, role, name, surname, cellphone, password, id],
+  );
+  return rows[0] || null;
+};
+
+export const deleteUser = async (id: number): Promise<User | null> => {
+  const { rows } = await query(" DELETE FROM users WHERE id = $1 RETURNING *", [
+    id,
+  ]);
+  return rows[0] || null;
 };

@@ -1,5 +1,6 @@
 import { Router } from "express";
 import {
+  deleteUserById,
   getAllUsers,
   getUserById,
   register,
@@ -14,5 +15,6 @@ router.post("/register", register);
 router.get("/users", getAllUsers);
 router.get("/users/:id", getUserById);
 router.put("/users/:id", updateUserById);
+router.delete("/users/:id", deleteUserById);
 
 export default router;
