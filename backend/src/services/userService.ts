@@ -34,3 +34,10 @@ export const findAllUsers = async (): Promise<User[]> => {
   );
   return rows;
 };
+
+export const findUserById = async (id: number): Promise<User | null> => {
+    const { rows } = await query("SELECT * FROM users WHERE id = $1", [
+        id,
+    ]);
+    return rows[0] || null;
+}

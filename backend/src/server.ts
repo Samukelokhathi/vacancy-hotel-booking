@@ -11,7 +11,7 @@ const startServer = async () => {
   // await initDb();
 
   app.use(express.json());
-  app.use("/users", authRoutes);
+  app.use("/auth", authRoutes);
 
   app.listen(PORT, () => {
     console.log(`Server is running on http://localhost:${PORT}`);
