@@ -3,7 +3,7 @@ import bcrypt from "bcryptjs";
 import { type User } from "../models/user.types.js";
 
 export const findUserByEmail = async (email: string | null): Promise<User> => {
-  const { rows } = await query("SELECT * FROM users WHERE EMAIL = $1", [email]);
+  const { rows } = await query("SELECT * FROM users WHERE EMAIL = $1", [email?.toLocaleLowerCase()]);
   return rows[0] || null;
 };
 

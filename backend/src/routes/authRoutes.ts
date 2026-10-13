@@ -7,16 +7,17 @@ import {
   register,
   updateUserById,
 } from "../controllers/authControllers.js";
-import { updateUser } from "../services/userService.js";
+import { protect, adminOnly } from "../middleware/authMiddleware.js";
+
 
 const router = Router();
 
 router.post("/register", register);
 router.post("/login", login);
 
-router.get("/users", getAllUsers);
-router.get("/users/:id", getUserById);
-router.put("/users/:id", updateUserById);
-router.delete("/users/:id", deleteUserById);
+router.get("/users", protect, adminOnly, getAllUsers);
+router.get("/users/:id", protect, getUserById);
+router.put("/users/:id", protect, adminOnly, updateUserById);
+router.delete("/users/:id", protect, adminOnly, deleteUserById);
 
 export default router;

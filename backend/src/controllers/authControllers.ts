@@ -1,11 +1,12 @@
 import { type Request, type Response } from "express";
 import * as UserService from "../services/userService.js";
 import bcrypt from "bcryptjs";
-import jwt from 'jsonwebtoken'
+import jwt from "jsonwebtoken";
+import { type AuthRequest } from "../middleware/authMiddleware.js";
 
 export const register = async (req: Request, res: Response) => {
-  const { email, password, role, name, surname, cellphone } = req.body;
-  if (!email || !password || !role || !name || !surname || !cellphone) {
+  const { email, password, name, surname, cellphone } = req.body;
+  if (!email || !password || !name || !surname || !cellphone) {
     return res.status(400).json({ message: "All fields are required" });
   }
 
@@ -17,7 +18,7 @@ export const register = async (req: Request, res: Response) => {
     const user = await UserService.createUser(
       email,
       password,
-      role,
+      "client",
       name,
       surname,
       Number(cellphone),
@@ -30,36 +31,33 @@ export const register = async (req: Request, res: Response) => {
 };
 
 export const login = async (req: Request, res: Response) => {
-    const {email, password} = req.body
-    if(!email || !password){
-        return res.status(400).json({message: "Email and password are required"});
+  const { email, password } = req.body;
+  if (!email || !password) {
+    return res.status(400).json({ message: "Email and password are required" });
+  }
+
+  try {
+    const user = await UserService.findUserByEmail(email);
+    if (!user) {
+      return res.status(401).json({ message: "Invalid credentials" });
+    }
+    const isMatch = await bcrypt.compare(password, user.password);
+    if (!isMatch) {
+      return res.status(401).json({ message: "Invalid email or password" });
     }
 
-    try{
-        const user = await UserService.findUserByEmail(email);
-        if(!user){
-            return res.status(401).json({message: "Invalid credentials"});
-        }
-        const isMatch = await bcrypt.compare(password, user.password);
-        if(!isMatch){
-            return res.status(401).json({message: "Invalid email or password"});
-        }
-        const payload = { email: user.email}
-        const token = jwt.sign(payload, process.env.JWT_SECRET!, {
-            expiresIn: "1h",
-        });
+    const payload = { id: user.id, email: user.email, role: user.role };
+    const token = jwt.sign(payload, process.env.JWT_SECRET!, {
+      expiresIn: "1h",
+    });
 
-         console.log(`User ${email} logged in successfully`);
-        return res.status(200).json({message: "Login Successful", token})
-
-    }catch(error){
-        console.error("Login Error:", error);
-        return res.status(500).json({message: 'Error logging in'});
-
-    }
+    console.log(`User ${email} logged in successfully`);
+    return res.status(200).json({ message: "Login Successful", token });
+  } catch (error) {
+    console.error("Login Error:", error);
+    return res.status(500).json({ message: "Error logging in" });
+  }
 };
-
-
 
 export const getAllUsers = async (req: Request, res: Response) => {
   try {
@@ -71,9 +69,13 @@ export const getAllUsers = async (req: Request, res: Response) => {
   }
 };
 
-export const getUserById = async (req: Request, res: Response) => {
+export const getUserById = async (req: AuthRequest, res: Response) => {
   try {
     const id = parseInt(String(req.params.id));
+    if (req.user!.role !== "admin" && req.user!.id !== id) {
+      return res.status(403).json({ message: "Access denied" });
+    }
+
     const user = await UserService.findUserById(id);
     if (!user) {
       return res.status(404).json({ message: "User not found" });
@@ -84,9 +86,15 @@ export const getUserById = async (req: Request, res: Response) => {
   }
 };
 
-export const updateUserById = async (req: Request, res: Response) => {
+export const updateUserById = async (req: AuthRequest, res: Response) => {
   try {
     const id = parseInt(String(req.params.id));
+    if (req.user!.role !== "admin" && req.user!.id !== id) {
+      return res.status(403).json({ message: "Access denied" });
+    }
+    if (req.user!.role !== "admin") {
+      req.body.role = req.user!.role;
+    }
     const updatedUser = await UserService.updateUser(id, req.body);
 
     if (!updatedUser) {
