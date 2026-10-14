@@ -53,3 +53,12 @@ export const updateRoom = async (
   );
   return rows[0] || null;
 };
+
+
+export const deleteRoom = async (id: number): Promise<Room | null> => {
+  const { rows } = await query(
+    `DELETE FROM rooms WHERE id = $1 RETURNING ${roomColumns}`,
+    [id],
+  );
+  return rows[0] || null;
+}
