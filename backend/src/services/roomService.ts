@@ -19,3 +19,19 @@ export const createRoom = async (room: RoomInput): Promise<Room> => {
   );
   return rows[0];
 };
+
+export const findRoomById = async (id: number): Promise<Room | null> => {
+  const { rows } = await query(
+    `SELECT ${roomColumns} FROM rooms WHERE id = $1`,
+    [id],
+  );
+  return rows[0] || null;
+};
+
+export const findRoomsByHotel = async (hotelId: number): Promise<Room[]> => {
+  const { rows } = await query(
+    `SELECT ${roomColumns} FROM rooms WHERE hotel_id = $1 ORDER BY price_per_night`,
+    [hotelId],
+  );
+  return rows;
+};

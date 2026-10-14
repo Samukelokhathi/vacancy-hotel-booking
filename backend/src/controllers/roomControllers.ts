@@ -20,3 +20,18 @@ export const addRoom = async (req: Request, res: Response) => {
     return res.status(500).json({ message: "Error creating the room" });
   }
 };
+
+
+export const getRoomById = async (req: Request, res: Response) => {
+  try {
+    const id = parseInt(String(req.params.id));
+    const room = await roomService.findRoomById(id);
+    if (!room) {
+      return res.status(404).json({ message: "Room not found" });
+    }
+    return res.status(200).json(room);
+  } catch (error) {
+    return res.status(500).json({ message: "Error retrieving room" });
+  }
+};
+
