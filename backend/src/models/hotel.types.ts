@@ -28,10 +28,9 @@ export interface Hotel {
 }
 export type HotelInput = Omit<Hotel, "id" | "createdBy" | "createdAt">;
 
-
 export interface Room {
-  id: number,
-  hotelid: number;
+  id: number;
+  hotelId: number;
   roomType: string;
   capacity: number;
   pricePerNight: number;
