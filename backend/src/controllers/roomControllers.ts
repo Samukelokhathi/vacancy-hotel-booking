@@ -21,6 +21,16 @@ export const addRoom = async (req: Request, res: Response) => {
   }
 };
 
+export const getAllRooms = async (req: Request, res: Response) => {
+  try {
+    const rooms = await roomService.findAllRooms();
+    return res.status(200).json(rooms);
+  } catch (error) {
+    console.error("Login Error:", error);
+    return res.status(500).json({ message: "Error retrieving rooms" });
+  }
+};
+
 export const getRoomById = async (req: Request, res: Response) => {
   try {
     const id = parseInt(String(req.params.id));

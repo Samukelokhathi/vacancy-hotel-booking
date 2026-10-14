@@ -20,6 +20,16 @@ export const createRoom = async (room: RoomInput): Promise<Room> => {
   return rows[0];
 };
 
+export const findAllRooms = async (): Promise<Room[]> => {
+  const results = await query(`
+    SELECT ${roomColumns}
+    FROM rooms 
+    ORDER BY id DESC
+  `);
+
+  return results.rows;
+};
+
 export const findRoomById = async (id: number): Promise<Room | null> => {
   const { rows } = await query(
     `SELECT ${roomColumns} FROM rooms WHERE id = $1`,
@@ -54,11 +64,10 @@ export const updateRoom = async (
   return rows[0] || null;
 };
 
-
 export const deleteRoom = async (id: number): Promise<Room | null> => {
   const { rows } = await query(
     `DELETE FROM rooms WHERE id = $1 RETURNING ${roomColumns}`,
     [id],
   );
   return rows[0] || null;
-}
+};
