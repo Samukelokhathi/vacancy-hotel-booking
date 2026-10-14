@@ -56,3 +56,18 @@ export const getHotelById = async (req: Request, res: Response) => {
     return res.status(500).json({ message: "Error retrieving hotel" });
   }
 };
+
+export const deleteHotelById = async (req: Request, res: Response) => {
+  try {
+    const id = parseInt(String(req.params.id));
+    const deletedHotel = await HotelService.deleteHotel(id);
+
+    if (!deletedHotel) {
+      return res.status(404).json({ message: "Hotel not found" });
+    }
+
+    return res.status(200).json({ message: "Hotel deleted successfully" });
+  } catch (error) {
+    return res.status(500).json({ message: "Error deleting hotel" });
+  }
+};

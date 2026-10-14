@@ -60,3 +60,12 @@ export const findHotelById = async (id: number): Promise<Hotel | null> => {
   );
   return rows[0] || null;
 };
+
+export const deleteHotel = async (id: number): Promise<Hotel | null> => {
+  const { rows } = await query(
+    `DELETE FROM hotels WHERE id = $1 RETURNING ${hotelColumns}`,
+    [id],
+  );
+
+  return rows[0] || null;
+};
