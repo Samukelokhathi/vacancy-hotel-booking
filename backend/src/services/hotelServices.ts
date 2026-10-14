@@ -45,3 +45,10 @@ export const createHotel = async (
   );
   return rows[0];
 };
+
+export const findAllHotels = async (): Promise<Hotel[]> => {
+  const { rows } = await query(
+    `SELECT ${hotelColumns} FROM hotels ORDER BY id DESC`,
+  );
+  return rows;
+};

@@ -1,9 +1,11 @@
 import { Router } from "express";
 
-import { addHotel } from "../controllers/hotelControllers.js";
+import { addHotel, getAllHotels } from "../controllers/hotelControllers.js";
 import { protect, adminOnly } from "../middleware/authMiddleware.js";
 
 const router = Router();
+
+router.get("/", getAllHotels);
 
 router.post("/", protect, adminOnly, addHotel);
 
