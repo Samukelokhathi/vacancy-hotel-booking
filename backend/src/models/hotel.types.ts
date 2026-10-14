@@ -26,3 +26,5 @@ export interface Hotel {
   createdBy: number | null;
   createdAt: Date;
 }
+
+export type HotelInput = Omit<Hotel, "id" | "createdBy" | "createdAt">;
