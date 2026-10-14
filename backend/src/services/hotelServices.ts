@@ -26,7 +26,7 @@ export const createHotel = async (
   } = hotelData;
 
   const { rows } = await query(
-    `INSERT INTO hotels (name, description, address, city, latitude, longitude, "starRating", "pricePerNight", facilities, policies, "createdBy")
+    `INSERT INTO hotels (name, description, address, city, latitude, longitude, "starrating", "pricepernight", facilities, policies, "createdby")
      VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)
      RETURNING ${hotelColumns}`,
     [

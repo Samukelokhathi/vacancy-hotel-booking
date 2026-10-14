@@ -1,7 +1,6 @@
 import { type Request, type Response } from "express";
 import * as HotelService from "../services/hotelServices.js";
 import { type AuthRequest } from "../middleware/authMiddleware.js";
-import { startHeapProfile } from "node:v8";
 
 export const addHotel = async (req: AuthRequest, res: Response) => {
   const { name, description, address, city, starRating, pricePerNight } =
