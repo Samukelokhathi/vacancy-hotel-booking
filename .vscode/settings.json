@@ -18,6 +18,21 @@
       "database": "Vacancy-Hotel-Booking",
       "password": "sam@mlab",
       "connectionTimeout": 30
+    },
+    {
+      "mysqlOptions": {
+        "authProtocol": "default",
+        "enableSsl": "Disabled"
+      },
+      "ssh": "Disabled",
+      "previewLimit": 50,
+      "server": "localhost",
+      "port": 5432,
+      "driver": "MySQL",
+      "name": "Local Postgres",
+      "database": "Vacancy-Hotel-Booking",
+      "username": "postgres",
+      "askForPassword": true
     }
   ]
 }

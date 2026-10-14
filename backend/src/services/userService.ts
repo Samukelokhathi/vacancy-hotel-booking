@@ -1,9 +1,11 @@
 import { query } from "../config/database.js";
 import bcrypt from "bcryptjs";
-import { type User } from "../models/user.types.js";
+import { type User } from "../models/hotel.types.js";
 
 export const findUserByEmail = async (email: string | null): Promise<User> => {
-  const { rows } = await query("SELECT * FROM users WHERE EMAIL = $1", [email?.toLocaleLowerCase()]);
+  const { rows } = await query("SELECT * FROM users WHERE EMAIL = $1", [
+    email?.toLocaleLowerCase(),
+  ]);
   return rows[0] || null;
 };
 

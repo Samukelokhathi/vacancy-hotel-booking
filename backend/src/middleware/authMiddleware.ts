@@ -1,7 +1,7 @@
 import { type Request, type Response, type NextFunction } from "express";
 import jwt from "jsonwebtoken";
 import { findUserByEmail } from "../services/userService.js";
-import { type User } from "../models/user.types.js";
+import { type User } from "../models/hotel.types.js";
 
 export interface AuthRequest extends Request {
   user?: User | undefined;
