@@ -57,6 +57,21 @@ export const getHotelById = async (req: Request, res: Response) => {
   }
 };
 
+export const updateHotelById = async (req: Request, res: Response) => {
+  try {
+    const id = parseInt(String(req.params.id));
+    const updatedHotel = await HotelService.updateHotelById(id, req.body);
+
+    if (!updatedHotel) {
+      return res.status(404).json({ message: "Hotel not found" });
+    }
+
+    return res.status(200).json(updatedHotel);
+  } catch (error) {
+    return res.status(500).json({ message: "Error updating hotel" });
+  }
+};
+
 export const deleteHotelById = async (req: Request, res: Response) => {
   try {
     const id = parseInt(String(req.params.id));

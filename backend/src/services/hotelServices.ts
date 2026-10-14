@@ -61,6 +61,54 @@ export const findHotelById = async (id: number): Promise<Hotel | null> => {
   return rows[0] || null;
 };
 
+export const updateHotelById = async (
+  id: number,
+  hotel: HotelInput,
+): Promise<Hotel | null> => {
+  const {
+    name,
+    description,
+    address,
+    city,
+    latitude,
+    longitude,
+    starRating,
+    pricePerNight,
+    facilities,
+    policies,
+  } = hotel;
+
+  const { rows } = await query(
+    `UPDATE hotels
+     SET name = $1,
+     description = $2,
+     address = $3,
+     city = $4,
+     latitude = $5,
+     longitude = $6,
+     starrating = $7,
+     pricepernight = $8,
+     facilities = $9,
+     policies = $10
+     WHERE id = $11
+     RETURNING ${hotelColumns}`,
+    [
+      name,
+      description,
+      address,
+      city,
+      latitude ?? null,
+      longitude ?? null,
+      starRating,
+      pricePerNight,
+      facilities ?? [],
+      policies ?? "",
+      id,
+    ],
+  );
+  return rows[0] || null;
+};
+
 export const deleteHotel = async (id: number): Promise<Hotel | null> => {
   const { rows } = await query(
     `DELETE FROM hotels WHERE id = $1 RETURNING ${hotelColumns}`,
