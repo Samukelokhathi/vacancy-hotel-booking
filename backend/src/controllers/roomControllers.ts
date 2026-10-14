@@ -34,4 +34,17 @@ export const getRoomById = async (req: Request, res: Response) => {
     return res.status(500).json({ message: "Error retrieving room" });
   }
 };
+export const updateRoomById = async(req: Request, res: Response) => {
+  try {
+    const id = parseInt(String(req.params.id));
+    const updatedRoom = await roomService.updateRoom(id, req.body);
+    
+    if (!updatedRoom) {
+      return res.status(404).json({ message: "Room not found" });
 
+    }
+    return res.status(200).json(updatedRoom)
+  }catch (error) {
+    return res.status(500).json({ message: "Error updating room" });
+  }
+}

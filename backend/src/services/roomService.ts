@@ -35,3 +35,21 @@ export const findRoomsByHotel = async (hotelId: number): Promise<Room[]> => {
   );
   return rows;
 };
+
+export const updateRoom = async (
+  id: number,
+  room: Omit<RoomInput, "hotelId">,
+): Promise<Room | null> => {
+  const { roomType, capacity, pricePerNight, quantity } = room;
+  const { rows } = await query(
+    `UPDATE rooms
+     SET room_type = $1,
+     capacity = $2,
+     price_per_night = $3,
+     quantity = $4
+     WHERE id = $5
+     RETURNING ${roomColumns}`,
+    [roomType, capacity, pricePerNight, quantity, id],
+  );
+  return rows[0] || null;
+};
