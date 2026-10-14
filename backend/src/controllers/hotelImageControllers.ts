@@ -20,3 +20,18 @@ export const addHotelImage = async (req: Request, res: Response) => {
     return res.status(500).json({ message: "Error adding the image" });
   }
 };
+
+export const getHotelImages = async (req: Request, res: Response) => {
+  const hotelId = parseInt(String(req.query.hotelId));
+  if (isNaN(hotelId)) {
+    return res.status(400).json({ message: "hotelId is required" });
+  }
+
+  try {
+    const images = await hotelImageService.findImagesByHotel(hotelId);
+    return res.status(200).json(images);
+  } catch (error) {
+    console.error("Get Images Error:", error);
+    return res.status(500).json({ message: "Error retrieving images" });
+  }
+};

@@ -20,3 +20,13 @@ export const createHotelImage = async (
   );
   return rows[0];
 };
+
+export const findImagesByHotel = async (
+  hotelId: number,
+): Promise<HotelImage[]> => {
+  const { rows } = await query(
+    `SELECT ${imageColumns} FROM hotel_images WHERE hotel_id = $1 ORDER BY id`,
+    [hotelId],
+  );
+  return rows;
+};
