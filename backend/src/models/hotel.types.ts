@@ -39,3 +39,12 @@ export interface Room {
 }
 
 export type RoomInput = Omit<Room, "id" | "createdAt">;
+
+
+export interface HotelImage {
+  id: number;
+  hotelId: number;
+  url: string;
+}
+
+export type HotelImageInput = Omit<HotelImage, "id">;
