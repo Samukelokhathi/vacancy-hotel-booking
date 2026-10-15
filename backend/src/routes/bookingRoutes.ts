@@ -1,6 +1,9 @@
 import { Router } from "express";
-import { addBooking } from "../controllers/bookingControllers.js";
-import { protect } from "../middleware/authMiddleware.js";
+import {
+  addBooking,
+  getAllBookings,
+} from "../controllers/bookingControllers.js";
+import { protect, adminOnly } from "../middleware/authMiddleware.js";
 
 const router = Router();
 
@@ -8,3 +11,6 @@ const router = Router();
 router.post("/", protect, addBooking);
 
 export default router;
+
+// admin only
+router.get("/", protect, adminOnly, getAllBookings);

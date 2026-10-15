@@ -62,3 +62,10 @@ export const countBookedRooms = async (
   );
   return rows[0].booked;
 };
+
+
+export const findAllBookings = async (): Promise<BookingDetails[]> => {
+  const { rows } = await query(`${detailsSelect} ORDER BY b.id DESC`);
+  return rows;
+};
+

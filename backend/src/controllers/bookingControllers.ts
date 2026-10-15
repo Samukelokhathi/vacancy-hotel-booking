@@ -60,3 +60,13 @@ export const addBooking = async (req: AuthRequest, res: Response) => {
     return res.status(500).json({ message: "Error creating the booking" });
   }
 };
+
+export const getAllBookings = async (req: Request, res: Response) => {
+  try {
+    const bookings = await bookingService.findAllBookings();
+    return res.status(200).json(bookings);
+  } catch (error) {
+    console.error("Get Bookings Error:", error);
+    return res.status(500).json({ message: "Error retrieving bookings" });
+  }
+};

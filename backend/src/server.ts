@@ -19,7 +19,7 @@ const startServer = async () => {
   app.use("/hotels", hotelRoutes);
   app.use("/rooms", roomRoutes);
   app.use("/hotel-images", hotelImageRoutes);
-  app.use("/booking", bookingRoutes);
+  app.use("/bookings", bookingRoutes);
 
   app.listen(PORT, () => {
     console.log(`Server is running on http://localhost:${PORT}`);
