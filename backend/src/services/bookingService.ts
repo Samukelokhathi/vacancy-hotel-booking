@@ -46,4 +46,19 @@ export const createBooking = async (
   return rows[0];
 };
 
-const countBookedRooms = undefined;
+export const countBookedRooms = async (
+  roomId: number,
+  checkIn: string,
+  checkOut: string,
+): Promise<number> => {
+  const { rows } = await query(
+    `SELECT COALESCE(SUM(number_of_rooms), 0)::int AS booked
+     FROM bookings
+     WHERE room_id = $1
+     AND status <> 'cancelled'
+     AND check_in < $3
+     AND check_out > $2`,
+    [roomId, checkIn, checkOut],
+  );
+  return rows[0].booked;
+};

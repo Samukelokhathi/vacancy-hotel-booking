@@ -46,7 +46,7 @@ export const addBooking = async (req: AuthRequest, res: Response) => {
 
     const booking = await bookingService.createBooking(
       {
-        roomId: room.id,
+        roomId,
         checkIn,
         checkOut,
         numberOfRooms: Number(numberOfRooms),
