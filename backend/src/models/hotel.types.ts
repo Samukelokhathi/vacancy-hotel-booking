@@ -40,7 +40,6 @@ export interface Room {
 
 export type RoomInput = Omit<Room, "id" | "createdAt">;
 
-
 export interface HotelImage {
   id: number;
   hotelId: number;
@@ -48,3 +47,24 @@ export interface HotelImage {
 }
 
 export type HotelImageInput = Omit<HotelImage, "id">;
+
+export type BookingStatus = "pending" | "approved" | "cancelled";
+export interface Booking {
+  id: number;
+  userId: number;
+  roomId: string;
+  checkIn: string;
+  checkOut: string;
+  numberOfRooms: number;
+  guests: number;
+  status: BookingStatus;
+}
+
+export type BookingInput = Omit<Booking, "id" | "userId" | "status">;
+
+export interface BookingDetails extends Booking {
+  guestName: string;
+  guestEmail: string;
+  hotelName: string;
+  roomType: string;
+}
