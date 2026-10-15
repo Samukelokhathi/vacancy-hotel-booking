@@ -80,3 +80,26 @@ export const getMyBookings = async (req: AuthRequest, res: Response) => {
     return res.status(500).json({ message: "Error retrieving bookings" });
   }
 };
+
+export const updateBookingStatusById = async (req: Request, res: Response) => {
+  try {
+    const id = parseInt(String(req.params.id));
+    const { status } = req.body;
+    if (!["pending", "approved", "cancelled"].includes(status)) {
+      return res.status(400).json({
+        message: "Status must be pending, approved or cancelled",
+      });
+    }
+
+    const updatedBooking = await bookingService.updateBookingStatus(
+      id,
+      status as BookingStatus,
+    );
+    if (!updatedBooking) {
+      return res.status(404).json({ message: "Booking not found" });
+    }
+    return res.status(200).json(updatedBooking);
+  } catch (error) {
+    return res.status(500).json({ message: "Error updating booking" });
+  }
+};

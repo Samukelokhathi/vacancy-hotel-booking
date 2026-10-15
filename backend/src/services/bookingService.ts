@@ -85,3 +85,15 @@ export const findBookingById = async (id: number): Promise<Booking | null> => {
   );
   return rows[0] || null;
 };
+
+export const updateBookingStatus = async (
+  id: number,
+  status: BookingStatus,
+): Promise<Booking | null> => {
+  const { rows } = await query(
+    `UPDATE bookings SET status = $1 WHERE id = $2 RETURNING ${bookingColumns}`,
+    [status, id],
+  );
+  return rows[0] || null;
+};
+
