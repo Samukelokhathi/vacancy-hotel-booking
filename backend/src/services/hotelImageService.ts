@@ -30,3 +30,13 @@ export const findImagesByHotel = async (
   );
   return rows;
 };
+
+export const deleteHotelImage = async (
+  id: number,
+): Promise<HotelImage | null> => {
+  const { rows } = await query(
+    `DELETE FROM hotel_images WHERE id = $1 RETURNING ${imageColumns}`,
+    [id],
+  );
+  return rows[0] || null;
+};

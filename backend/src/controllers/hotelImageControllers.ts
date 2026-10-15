@@ -35,3 +35,18 @@ export const getHotelImages = async (req: Request, res: Response) => {
     return res.status(500).json({ message: "Error retrieving images" });
   }
 };
+
+
+export const deleteHotelImageById = async (req: Request, res: Response) => {
+  try {
+    const id = parseInt(String(req.params.id));
+    const deletedImage = await hotelImageService.deleteHotelImage(id);
+    if (!deletedImage) {
+      return res.status(404).json({ message: "Image not found" });
+    }
+    return res.status(200).json({ message: "Image deleted successfully" });
+  } catch (error) {
+    return res.status(500).json({ message: "Error deleting image" });
+  }
+};
+
