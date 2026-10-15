@@ -63,9 +63,25 @@ export const countBookedRooms = async (
   return rows[0].booked;
 };
 
-
 export const findAllBookings = async (): Promise<BookingDetails[]> => {
   const { rows } = await query(`${detailsSelect} ORDER BY b.id DESC`);
   return rows;
 };
 
+export const findBookingsByUser = async (
+  userId: number,
+): Promise<BookingDetails[]> => {
+  const { rows } = await query(
+    `${detailsSelect} WHERE b.user_id = $1 ORDER BY b.id DESC`,
+    [userId],
+  );
+  return rows;
+};
+
+export const findBookingById = async (id: number): Promise<Booking | null> => {
+  const { rows } = await query(
+    `SELECT ${bookingColumns} FROM bookings WHERE id = $1`,
+    [id],
+  );
+  return rows[0] || null;
+};

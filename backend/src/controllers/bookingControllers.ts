@@ -70,3 +70,13 @@ export const getAllBookings = async (req: Request, res: Response) => {
     return res.status(500).json({ message: "Error retrieving bookings" });
   }
 };
+
+export const getMyBookings = async (req: AuthRequest, res: Response) => {
+  try {
+    const bookings = await bookingService.findBookingsByUser(req.user!.id);
+    return res.status(200).json(bookings);
+  } catch (error) {
+    console.error("Get My Bookings Error:", error);
+    return res.status(500).json({ message: "Error retrieving bookings" });
+  }
+};
