@@ -2,11 +2,11 @@ import { query } from "../config/database.js";
 import { type Hotel, type HotelInput } from "../models/hotel.types.js";
 
 const hotelColumns = `id, name, description, address, city, latitude, longitude,
-  starRating,
-  pricePerNight,
+  star_rating AS "starRating",
+  price_per_night AS "pricePerNight",
   facilities, policies,
-  createdBy AS "createdby",
-  createdAt AS "createdat"`;
+  created_by AS "createdby",
+  created_at AS "createdat"`;
 
 export const createHotel = async (
   hotelData: HotelInput,
@@ -26,7 +26,7 @@ export const createHotel = async (
   } = hotelData;
 
   const { rows } = await query(
-    `INSERT INTO hotels (name, description, address, city, latitude, longitude, "starrating", "pricepernight", facilities, policies, "createdby")
+    `INSERT INTO hotels (name, description, address, city, latitude, longitude, "star_rating", "price_per_night", facilities, policies, "created_by")
      VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)
      RETURNING ${hotelColumns}`,
     [
@@ -86,8 +86,8 @@ export const updateHotelById = async (
      city = $4,
      latitude = $5,
      longitude = $6,
-     starrating = $7,
-     pricepernight = $8,
+     "star_rating" = $7,
+     "price_per_night"   = $8,
      facilities = $9,
      policies = $10
      WHERE id = $11
