@@ -2,9 +2,10 @@
   "name": "backend",
   "version": "1.0.0",
   "main": "index.js",
+  "types": "modules.d.ts",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "dev": "nodemon --exec npx tsx src/server.ts"
+    "dev": "nodemon --exec npx tsx src/server.ts",
+    "build": "tsc && node -e \"require('fs').cpSync('src/sql','dist/sql',{recursive:true})\""
   },
   "keywords": [],
   "author": "",
