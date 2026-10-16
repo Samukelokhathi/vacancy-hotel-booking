@@ -1,9 +1,14 @@
 import { Pool } from "pg";
+import dns from "dns";
+import net from "net";
 import "dotenv/config";
+
+dns.setDefaultResultOrder("ipv4first");
+net.setDefaultAutoSelectFamilyAttemptTimeout(5000);
 
 const pool = new Pool({
   connectionString: process.env.DATABASE_URL,
-  connectionTimeoutMillis: 300000,
+  connectionTimeoutMillis: 30000,
 });
 
 export const query = (text: string, params?: any[]) => pool.query(text, params);
