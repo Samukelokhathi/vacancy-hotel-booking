@@ -1,24 +1,24 @@
 import { Pool } from "pg";
 import "dotenv/config";
-import { text } from "node:stream/consumers";
 
 const pool = new Pool({
-  user: process.env.DB_USER,
-  host: process.env.DB_HOST,
-  database: process.env.DB_DATABASE,
-  password: process.env.DB_PASSWORD,
-  port: parseInt(process.env.DB_PORT || "5432"),
+  connectionString: process.env.DATABASE_URL,
+  connectionTimeoutMillis: 2000,
 });
 
 export const query = (text: string, params?: any[]) => pool.query(text, params);
 
 export const testDbConnection = async () => {
   try {
-    const client = await pool.connect();
-    console.log("Database connection successful");
-    client.release();
+    const { rows } = await pool.query(
+      "SELECT current_database() AS db, NOW() AS now",
+    );
+
+    console.log(
+      `Database connection successful: ${rows[0].db} at ${rows[0].now}`,
+    );
   } catch (error) {
-    console.error("Error connecting to the database:", error);
+    console.error("Database connection failed:", error);
     process.exit(1);
   }
 };
