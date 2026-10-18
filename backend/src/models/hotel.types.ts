@@ -7,7 +7,7 @@ export interface User {
   cellphone: number;
   email: string;
   password: string;
-  role?: UserRole;
+  role: UserRole;
   createdat: Date;
 }
 
