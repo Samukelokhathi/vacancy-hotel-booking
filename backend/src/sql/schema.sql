@@ -64,7 +64,8 @@ CREATE TABLE IF NOT EXISTS payments (
   booking_id INTEGER NOT NULL REFERENCES bookings(id) ON DELETE CASCADE,
   stripe_session_id VARCHAR(255) NOT NULL UNIQUE,
   amount INTEGER NOT NULL CHECK (amount > 0),
-  status VARCHAR(20) NOT NULL DEFAULT 'pending' CHECK (status IN ('pending', 'paid'))
+  status VARCHAR(20) NOT NULL DEFAULT 'pending' CHECK (status IN ('pending', 'paid', 'failed')),
+  created_at TIMESTAMP NOT NULL DEFAULT NOW()
 );
 
 CREATE INDEX IF NOT EXISTS idx_payments_booking_id ON payments(booking_id);

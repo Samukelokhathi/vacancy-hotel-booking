@@ -68,3 +68,14 @@ export interface BookingDetails extends Booking {
   hotelName: string;
   roomType: string;
 }
+
+export type PaymentStatus = "pending" | "paid" | "failed";
+
+export interface Payment {
+  id: number;
+  bookingId: number;
+  stripeSessionId: string;
+  amount: number;
+  status: PaymentStatus;
+  createdAt: Date;
+}
