@@ -1,0 +1,205 @@
+installed extension
+
+SQL tools
+
+*installed
+    - bcryptjs : Hashing for password 
+
+query = exports a helper function named query that sends SQL commands to a database 
+
+never run multiple sql commands without semicollon at the end
+
+
+
+***To DO ***
+
+- When editing the user need to add bcryptjs in password
+
+******************
+
+
+*** Packages used **
+1.npm i --save-dev @types/jsonwebtoken
+
+
+
+****End points****
+
+=> Register
+    1. POST: http://localhost:3000/auth/register
+
+=> Login 
+    1. POST: http://localhost:3000/auth/login
+
+=> Users 
+    1. POST: createUser: http://localhost:3000/auth/users
+    2. GET: getAllUsers: http://localhost:3000/auth/users
+    3. GET: getUserById: http://localhost:3000/auth/users/(id=num)
+    4. PUT: updateUserById: http://localhost:3000/auth/users/(id=num)
+    5. DEL: deleteUserById: http://localhost:3000/auth/users/(id=num)
+
+=> Hotels
+    1. POST: createHotel: http://localhost:3000/hotels
+    2. GET: getAllHotels: http://localhost:3000/hotels
+    3. GET: getAllHotelsById: http://localhost:3000/hotels/(id=num)
+    4. PUT: editHotelById: http://localhost:3000/hotels/(id=num)
+    5. DEL: deleteHotelById: http://localhost:3000/hotels/(id=num)
+
+=> rooms
+    1. POST: createRoom: http://localhost:3000/rooms
+    2. GET: getAllRooms: http://localhost:3000/rooms
+    3. GET: getRoomById: http://localhost:3000/rooms/(id=num)
+    4. PUT: editRoomById: http://localhost:3000/rooms/(id=num)
+    5. DEL: deleteRoomById: http://localhost:3000/rooms/(id=num)
+
+=> Bookings
+    1. POST:addBooking: http://localhost:3000/bookings
+    2. GET: getAllRooms: http://localhost:3000/rooms
+    3. GET: getMyBookings: http://localhost:3000/bookings/my-bookings
+    4. PUT: editRoomById: http://localhost:3000/rooms/(id=num)
+    5. DEL: deleteRoomById: http://localhost:3000/rooms/(id=num)
+   
+
+********Lesson Learned*********
+1. On end points the spacing does counts  the url wont work
+2. Adding comma at the end of the last object key  in postman, it's bug
+3. Pgadmin changes named camelcase to be one word unless you use snakecase
+4. Cannot POST /rooms is Express saying no route matches. The request never reached your controller. The cause is almost always server.ts
+5. const { hotelId, url } = req.body; :: this line uses object destructuring to unpack properties from the incoming request body
+6. The Date.prototype.toISOString() JavaScript method converts a Date object into a standardized string format based on ISO 8601
+7. The HTTP PATCH method applies partial modifications to an existing resource. Unlike the PUT method, which requires you to send
+    a complete, modified version to replace the entire resource
+8.Hosted server using neon
+
+***** Free points ***** 
+Branch Naming Best Practices
+
+• Use a Category Prefix: Start every branch with a clear type to show what kind of work is happening:
+	• feature/ or feat/ – For new features or user stories
+	• bugfix/ or fix/ – For fixing existing bugs
+	• hotfix/ – For urgent fixes pushed directly to production
+	• refactor/ – For code restructuring without changing functionality
+	• docs/ or chore/ – For documentation or maintenance tasks
+
+
+.*********************Commit keywords**********************
+    • Add: Introduce a new file, function, or resource.
+    • Fix: Resolve a broken feature or error.
+    • Update: Modify existing functionality or dependencies.
+    • Remove: Delete obsolete code, files, or assets.
+    • Refactor: Clean up or reorganize code structure.
+    • Implement: Build out a specific logic or ticket requirement.
+    • Optimize: Improve speed, memory, or execution.
+
+
+**********Concept***************
+1. destructuring
+
+
+
+**********************************************************************************************************************************
+Errors: When running server connected with neon  "(node:8404) Warning: SECURITY WARNING: The SSL modes 'prefer', 'require', and 'verify-ca' are treated as aliases for 'verify-full'.
+In the next major version (pg-connection-string v3.0.0 and pg v9.0.0), these modes will adopt standard libpq semantics, which have weaker security guarantees.
+
+To prepare for this change:
+- If you want the current behavior, explicitly use 'sslmode=verify-full'
+- If you want libpq compatibility now, use 'uselibpqcompat=true&sslmode=require'
+
+See https://www.postgresql.org/docs/current/libpq-ssl.html for libpq SSL mode definitions.
+(Use `node --trace-warnings ...` to show where the warning was created)
+Database connection failed: Error: Connection terminated due to connection timeout
+    at C:\Users\sbkha\Desktop\Mlab\full-stack\vacancy-hotel-booking\backend\node_modules\pg-pool\index.js:45:11
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+    at async testDbConnection (C:\Users\sbkha\Desktop\Mlab\full-stack\vacancy-hotel-booking\backend\src\config\database.ts:13:22)
+    at async startServer (C:\Users\sbkha\Desktop\Mlab\full-stack\vacancy-hotel-booking\backend\src\server.ts:17:3) {
+  [cause]: Error: Connection terminated unexpectedly
+      at Connection.<anonymous> (C:\Users\sbkha\Desktop\Mlab\full-stack\vacancy-hotel-booking\backend\node_modules\pg\lib\client.js:204:73)
+      at Connection.wrapper (node:events:639:12)
+      at Connection.emit (node:events:514:28)
+      at Socket.<anonymous> (C:\Users\sbkha\Desktop\Mlab\full-stack\vacancy-hotel-booking\backend\node_modules\pg\lib\connection.js:64:12)
+      at Socket.emit (node:events:526:24)
+      at TCP.<anonymous> (node:net:362:12)
+}"
+
+
+The server error: noEmit: true
+
+Cannot find module '...\dist\server.js' means the dist folder doesn’t exist. Your tsconfig.json has this line:
+
+json
+"noEmit": true
+
+noEmit tells tsc to check your code for errors but write no files. So npm run build passes, produces no dist, and npm start has nothing to run. Remove that line:
+
+______________________________________________________________________________________________________________________________________
+
+2026/10/16
+
+******Errors*********
+
+1. ◇ injected env (0) from .env
+(node:17736) Warning: SECURITY WARNING: The SSL modes 'prefer', 'require', and 'verify-ca' are treated as aliases for 'verify-full'.
+In the next major version (pg-connection-string v3.0.0 and pg v9.0.0), these modes will adopt standard libpq semantics, which have weaker security guarantees.
+
+
+solution:
+
+    1.net.setDefaultAutoSelectFamilyAttemptTimeout(5000);
+      Each attempt now gets 5 seconds instead of 250 ms, which is plenty for a connection from South Africa to the US. This is the line that fixes the problem.
+
+    2.dns.setDefaultResultOrder("ipv4first");
+T     his tells Node to try the IPv4 addresses before the IPv6 ones. Your log had ENETUNREACH on an IPv6 address, which means your network has no route for IPv6.
+
+
+
+import "dotenv/config";
+import dns from "dns";
+import net from "net";
+import { Pool } from "pg";
+
+// Johannesburg -> Neon (US) is slow: give each connection attempt 5s instead of 250ms
+net.setDefaultAutoSelectFamilyAttemptTimeout(5000);
+// try IPv4 first, because your network has no IPv6 route
+dns.setDefaultResultOrder("ipv4first");
+
+const pool = new Pool({
+  connectionString: process.env.DATABASE_URL,
+  connectionTimeoutMillis: 30000,
+});
+
+export const query = (text: string, params?: any[]) => pool.query(text, params);
+
+export const testDbConnection = async () => {
+  try {
+    const { rows } = await pool.query(
+      "SELECT current_database() AS db, NOW() AS now",
+    );
+    console.log(`Database connected: ${rows[0].db} at ${rows[0].now}`);
+  } catch (error) {
+    console.error("Database connection failed:", error);
+    process.exit(1);
+  }
+};
+
+
+2. in SQL this is an error
+    UPDATE users
+    SET role = "admin" // it's suppose to be 'admin'
+    WHERE role = 'client' AND id = 7
+
+
+
+______________________________________________________________________________________________________________________________________
+
+2026/10/19
+
+
+* Neon data i can use on my local machine and get same data with the hosted link
+* When doing functions, i must use the localhost: to check if there is no bug before pushing to main
+
+
+=> installed stripe api for fake data
+
+
+
+
