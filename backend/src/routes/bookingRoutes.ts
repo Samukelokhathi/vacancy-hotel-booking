@@ -1,6 +1,7 @@
 import { Router } from "express";
 import {
   addBooking,
+  cancelMyBooking,
   getAllBookings,
   getMyBookings,
   updateBookingStatusById,
@@ -12,6 +13,7 @@ const router = Router();
 //any logged-in user
 router.post("/", protect, addBooking);
 router.get("/my-bookings", protect, getMyBookings);
+router.patch("/:id/cancel", protect, cancelMyBooking);
 
 export default router;
 

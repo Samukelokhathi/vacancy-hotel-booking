@@ -103,3 +103,25 @@ export const updateBookingStatusById = async (req: Request, res: Response) => {
     return res.status(500).json({ message: "Error updating booking" });
   }
 };
+
+
+export const cancelMyBooking = async (req: AuthRequest, res: Response) => {
+  try {
+    const id = parseInt(String(req.params.id));
+    const booking = await bookingService.findBookingById(id);
+    if (!booking) {
+      return res.status(404).json({ message: "Booking not found" });
+    }
+    if (booking.userId !== req.user!.id) {
+      return res.status(403).json({ message: "Access denied" });
+    }
+
+    const cancelled = await bookingService.updateBookingStatus(
+      id,
+      "cancelled",
+    );
+    return res.status(200).json(cancelled);
+  } catch (error) {
+    return res.status(500).json({ message: "Error cancelling booking" });
+  }
+};
