@@ -94,7 +94,6 @@ export const getLoggedInUser = createAsyncThunk<
     } catch (error) {
       console.error(error);
 
-
       return rejectWithValue("Unable to restore user");
     }
   },
@@ -198,7 +197,6 @@ const Login = createSlice({
         // Authentication check is complete.
         state.authChecked = true;
 
-       
         state.error = action.payload || "Unable to restore user";
       });
 
