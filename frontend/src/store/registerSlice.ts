@@ -5,7 +5,7 @@ import {
 } from "@reduxjs/toolkit";
 import axios from "axios";
 
-import type { RegisterUser } from "../models/hotel.types";
+import type { User } from "../models/hotel.types";
 
 export interface SignUpData {
   name: string;
@@ -33,7 +33,7 @@ const initialState: SignUpData = {
 // thunk
 
 export const registerUser = createAsyncThunk<
-  RegisterUser,
+  User,
   SignUpData,
   { rejectValue: string }
 >(
@@ -49,7 +49,7 @@ export const registerUser = createAsyncThunk<
 
       // 2. Check if email already exists
 
-      const existingUsers = await axios.get<RegisterUser[]>(
+      const existingUsers = await axios.get<User[]>(
         "http://localhost:3000/users",
         {
           params: {
@@ -64,7 +64,7 @@ export const registerUser = createAsyncThunk<
 
       // 3. Create user
 
-      const response = await axios.post<RegisterUser>(
+      const response = await axios.post<User>(
         "http://localhost:3000/users",
         {
           name: userData.name,
