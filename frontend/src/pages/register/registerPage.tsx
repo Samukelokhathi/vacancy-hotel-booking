@@ -1,16 +1,15 @@
 import { Input } from "../../components/inputs/input";
-import styles from "./Register.module.css";
+import styles from "./registerPage.module.css";
 import Button from "../../components/button/button";
-import { Text } from "../../components/Text/Text";
+import { Text } from "../../components/text/text";
 
 import { NavLink, useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
-import type { RootState, AppDispatch } from "../../store/Store";
+import type { RootState, AppDispatch } from "../../store/store";
 
 import {
   setName,
   setSurname,
-  setCellNumber,
   setNumber,
   setEmail,
   setPassword,
@@ -18,13 +17,13 @@ import {
   resetForm,
 } from "../../store/registerSlice";
 
-import { signup } from "../../store/Signup/SignUp";
+import { registerUser } from "../../store/registerSlice";
 
 function Register() {
   const dispatch = useDispatch<AppDispatch>();
   const navigate = useNavigate();
 
-  const signUpData = useSelector((state: RootState) => state.signUp);
+  const signUpData = useSelector((state: RootState) => state.register);
   const isLoading = signUpData.isLoading;
   const error = signUpData.error;
 
@@ -32,7 +31,7 @@ function Register() {
     e.preventDefault();
 
     try {
-      await dispatch(signup(signUpData)).unwrap();
+      await dispatch(registerUser(signUpData)).unwrap();
 
       dispatch(resetForm());
       navigate("/");
@@ -43,14 +42,6 @@ function Register() {
 
   return (
     <div className={styles.page}>
-      <div className={styles.welcomeText}>
-        <Text variant="h2" children={"Create your basket"} />
-        <Text
-          variant="p"
-          children={"Your password is encrypted before it is ever stored."}
-        />
-      </div>
-
       <form className={styles.card} onSubmit={handleSubmit}>
         <div className={styles.nameSurnameContainer}>
           <Input
