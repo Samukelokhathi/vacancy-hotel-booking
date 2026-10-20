@@ -1,4 +1,4 @@
-import { Input } from "../../components/Input/Input";
+import { Input } from "../../components/inputs/input";
 import styles from "./Register.module.css";
 import Button from "../../components/Button/Button";
 import { Text } from "../../components/Text/Text";
