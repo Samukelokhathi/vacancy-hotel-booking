@@ -1,5 +1,5 @@
 import { Navigate, Routes, Route } from "react-router-dom";
-import RegisterPage from "./pages/registerPage";
+import RegisterPage from "./pages/register/registerPage";
 
 export default function App() {
   return (
