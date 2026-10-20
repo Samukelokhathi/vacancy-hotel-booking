@@ -3,3 +3,7 @@
 
 1. i just installed redux + axios toolkit: npm install @reduxjs/toolkit react-redux react-router-dom axios
 
+2.Added register types
+3.Added registerSlice 
+4.Added browserRouter in app.ts 
+
