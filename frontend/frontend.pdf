@@ -6,4 +6,5 @@
 2.Added register types
 3.Added registerSlice 
 4.Added browserRouter in app.ts 
-
+5.Added form to register user
+6. 
