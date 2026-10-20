@@ -1,6 +1,6 @@
 import { Input } from "../../components/inputs/input";
 import styles from "./Register.module.css";
-import Button from "../../components/Button/Button";
+import Button from "../../components/button/button";
 import { Text } from "../../components/Text/Text";
 
 import { NavLink, useNavigate } from "react-router-dom";
