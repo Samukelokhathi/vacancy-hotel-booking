@@ -3,17 +3,20 @@ import {
   type PayloadAction,
   createAsyncThunk,
 } from "@reduxjs/toolkit";
-import axios from "axios";
+import { api, getErrorMessage } from "../api/axios";
 
-import type { RegisterUser } from "../models/hotel.types";
-
-export interface SignUpData {
+export interface RegisterFormData {
   name: string;
   surname: string;
   email: string;
-  number: string;
+  cellphone: string;
   password: string;
   confirmPassword: string;
+  isLoading: boolean;
+  error: string | null;
+}
+
+export interface SignUpData extends RegisterFormData {
   isLoading: boolean;
   error: string | null;
 }
@@ -22,7 +25,7 @@ const initialState: SignUpData = {
   name: "",
   surname: "",
   email: "",
-  number: "",
+  cellphone: "",
   password: "",
   confirmPassword: "",
 
@@ -33,61 +36,37 @@ const initialState: SignUpData = {
 // thunk
 
 export const registerUser = createAsyncThunk<
-  RegisterUser,
-  SignUpData,
+  string,
+  RegisterFormData,
   { rejectValue: string }
 >(
   "signup/create",
 
   async (userData, { rejectWithValue }) => {
-    try {
-      // 1. Check if passwords match
-
-      if (userData.password !== userData.confirmPassword) {
-        return rejectWithValue("Passwords do not match");
-      }
-
-      // 2. Check if email already exists
-
-      const existingUsers = await axios.get<RegisterUser[]>(
-        "http://localhost:3000/users",
-        {
-          params: {
-            email: userData.email,
-          },
-        },
-      );
-
-      if (existingUsers.data.length > 0) {
-        return rejectWithValue("Email is already registered");
-      }
-
-      // 3. Create user
-
-      const response = await axios.post<RegisterUser>(
-        "http://localhost:3000/users",
-        {
-          name: userData.name,
-          surname: userData.surname,
-          number: userData.number,
-          email: userData.email,
-          password: userData.password,
-          lists: [],
-        },
-      );
-
-      console.log("User created:", response.data);
-
-      // 4. Return created user
-
-      return response.data;
-    } catch (error) {
-      console.error("Signup error:", error);
-
-      return rejectWithValue("Unable to create account");
+    if (userData.password !== userData.confirmPassword) {
+      return rejectWithValue("Passwords do not match");
     }
-  },
-);
+
+    if (!/^\d{10}$/.test(userData.cellphone)) {
+      return rejectWithValue("Cellphone number must be 10 digits, e.g. 0712345678");
+    }
+    try {
+    const response = await api.post<{ message: string }>("/auth/register", {
+      name: userData.name.trim(),
+      surname: userData.surname.trim(),
+      email: userData.email.trim(),
+      cellphone: userData.cellphone.trim()  ,
+      password: userData.password,
+    });
+
+    return response.data.message;
+  } catch (error) {
+    // CHANGED: shows the backend's message (e.g. "Email is already in use")
+    return rejectWithValue(getErrorMessage(error, "Unable to create account"));
+  }
+});
+
+
 
 const SignUpSlice = createSlice({
   name: "signup",
@@ -95,23 +74,13 @@ const SignUpSlice = createSlice({
   initialState,
 
   reducers: {
-    setName(state, action: PayloadAction<string>) {
-      state.name = action.payload;
-    },
-    setSurname(state, action: PayloadAction<string>) {
-      state.surname = action.payload;
-    },
-    setNumber(state, action: PayloadAction<string>) {
-      state.number = action.payload;
-    },
-    setEmail(state, action: PayloadAction<string>) {
-      state.email = action.payload;
-    },
-    setPassword(state, action: PayloadAction<string>) {
-      state.password = action.payload;
-    },
-    setConfirmPassword(state, action: PayloadAction<string>) {
-      state.confirmPassword = action.payload;
+    // CHANGED: one reducer replaces setName, setSurname, setNumber,
+    // setEmail, setPassword and setConfirmPassword
+    setField(
+      state,
+      action: PayloadAction<{ field: keyof RegisterFormData; value: string }>,
+    ) {
+      state[action.payload.field] = action.payload.value;
     },
 
     resetForm(state) {
@@ -128,26 +97,18 @@ const SignUpSlice = createSlice({
       })
 
       .addCase(registerUser.fulfilled, (state) => {
-        state.isLoading = true;
+        state.isLoading = false; // CHANGED: was true, so the button stayed disabled
         state.error = null;
       })
 
       .addCase(registerUser.rejected, (state, action) => {
         state.isLoading = false;
-
-        state.error = (action.payload as string) || "Signup failed";
+        state.error = action.payload ?? "Signup failed";
       });
   },
 });
 
-export const {
-  setName,
-  setSurname,
-  setNumber,
-  setEmail,
-  setPassword,
-  setConfirmPassword,
-  resetForm,
-} = SignUpSlice.actions;
+
+export const { setField, resetForm } = SignUpSlice.actions;
 
 export default SignUpSlice.reducer;
