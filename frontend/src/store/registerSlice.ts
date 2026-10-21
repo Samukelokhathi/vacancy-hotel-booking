@@ -64,6 +64,7 @@ export const registerUser = createAsyncThunk<
     // CHANGED: shows the backend's message (e.g. "Email is already in use")
     return rejectWithValue(getErrorMessage(error, "Unable to create account"));
   }
+  
 });
 
 

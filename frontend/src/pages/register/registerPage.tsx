@@ -1,20 +1,16 @@
 import { Input } from "../../components/inputs/input";
 import styles from "./registerPage.module.css";
 import Button from "../../components/button/button";
-import { Text } from "../../components/text/text";
 
 import { NavLink, useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import type { RootState, AppDispatch } from "../../store/store";
 
 import {
-  setName,
-  setSurname,
-  setNumber,
-  setEmail,
-  setPassword,
-  setConfirmPassword,
+  setField,
   resetForm,
+  registerUser,
+  type RegisterFormData,
 } from "../../store/registerSlice";
 
 import { registerUser } from "../../store/registerSlice";
@@ -50,7 +46,7 @@ function Register() {
             label="Name"
             type="text"
             value={signUpData.name}
-            onChange={(e) => dispatch(setName(e.target.value))}
+            onChange={(e) => dispatch(setField({ field: "name", value: e.target.value }))}
             style={{ width: 240 }}
             required
           />
