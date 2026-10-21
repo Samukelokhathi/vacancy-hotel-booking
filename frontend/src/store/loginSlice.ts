@@ -1,121 +1,207 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
-import { jwtDecode } from "jwt-decode";
-import { api, getErrorMessage } from "../api/axios";
 
-export type UserRole = "client" | "admin";
+import axios from "axios";
+import type { User } from "../models/hotel.types";
 
-export interface AuthUser {
-  id: number;
-  email: string;
-  role: UserRole;
-}
-
-interface TokenPayload extends AuthUser {
-  exp: number; // expiry time in seconds, added by jwt.sign
-}
-
-interface Session {
-  token: string;
-  user: AuthUser;
-}
-
-interface LoginCredentials {
+// LOGIN DATA
+export interface LoginData {
   email: string;
   password: string;
 }
 
-interface LoginState {
-  token: string | null;
-  user: AuthUser | null;
+// AUTH STATE
+interface LogInState {
+  user: User | null;
+  isAuthenticated: boolean;
   isLoading: boolean;
   error: string | null;
+
+  // Tracks whether the initial authentication check is complete.
+  authChecked: boolean;
 }
 
-// turns a token into a session, or null if it is broken or expired
-const readToken = (token: string | null): Session | null => {
-  if (!token) return null;
-  try {
-    const { id, email, role, exp } = jwtDecode<TokenPayload>(token);
-    if (exp * 1000 < Date.now()) return null;
-    return { token, user: { id, email, role } };
-  } catch {
-    return null;
-  }
-};
-
-// on page load: restore the saved login, and drop a stale token
-const saved = readToken(localStorage.getItem("token"));
-if (!saved) localStorage.removeItem("token");
-
-const initialState: LoginState = {
-  token: saved?.token ?? null,
-  user: saved?.user ?? null,
+const initialState: LogInState = {
+  user: null,
+  isAuthenticated: false,
   isLoading: false,
   error: null,
+
+  // Start as false so protected routes wait.
+  authChecked: false,
 };
 
-// thunk: sends the credentials to POST /auth/login
-export const loginUser = createAsyncThunk<
-  Session,
-  LoginCredentials,
+// LOGIN THUNK
+
+export const login = createAsyncThunk<User, LoginData, { rejectValue: string }>(
+  "auth/login",
+
+  async (loginData, { rejectWithValue }) => {
+    try {
+      const response = await axios.get<User[]>("http://localhost:3000/users");
+
+      const loggedUser = response.data.find(
+        (user) =>
+          user.email === loginData.email &&
+          user.password === loginData.password,
+      );
+
+      if (!loggedUser) {
+        return rejectWithValue("Invalid email or password");
+      }
+
+      // Save logged-in user's ID
+      // so we can find this user again
+      // after refreshing the page.
+
+      localStorage.setItem("userId", loggedUser.id.toString());
+
+      return loggedUser;
+    } catch (error) {
+      console.error(error);
+
+      return rejectWithValue("Unable to connect to server");
+    }
+  },
+);
+
+// GET LOGGED-IN USER
+// This runs when the page is refreshed.
+
+export const getLoggedInUser = createAsyncThunk<
+  User,
+  void,
   { rejectValue: string }
->("login/create", async (credentials, { rejectWithValue }) => {
-  try {
-    const response = await api.post<{ message: string; token: string }>(
-      "/auth/login",
-      {
-        email: credentials.email.trim(),
-        password: credentials.password,
-      },
-    );
+>(
+  "auth/getLoggedInUser",
 
-    const session = readToken(response.data.token);
-    if (!session) return rejectWithValue("Received an invalid token");
+  async (_, { rejectWithValue }) => {
+    try {
+      // Get the saved user ID from localStorage.
+      // Redux is empty after a page refresh.
+      const userId = localStorage.getItem("userId");
 
-    localStorage.setItem("token", session.token);
-    return session;
-  } catch (error) {
-    // shows the backend's message, e.g. "Invalid email or password"
-    return rejectWithValue(getErrorMessage(error, "Unable to log in"));
-  }
-});
+      if (!userId) {
+        return rejectWithValue("No logged-in user");
+      }
 
-const loginSlice = createSlice({
+      // Get the same user from json-server.
+      const response = await axios.get<User>(
+        `http://localhost:3000/users/${userId}`,
+      );
+
+      // Return the restored user to Redux.
+      return response.data;
+    } catch (error) {
+      console.error(error);
+
+      return rejectWithValue("Unable to restore user");
+    }
+  },
+);
+
+// AUTH SLICE
+
+const Login = createSlice({
   name: "login",
 
   initialState,
 
   reducers: {
-    // clears the session (localStorage is cleared here to keep things simple)
+    // Mark authentication check as complete.
+    authChecked(state) {
+      state.authChecked = true;
+    },
+
     logout(state) {
-      localStorage.removeItem("token");
-      state.token = null;
       state.user = null;
+      state.isAuthenticated = false;
       state.error = null;
+
+      // Remove saved user
+      localStorage.removeItem("userId");
+
+      // Also remove the saved user object.
+      localStorage.removeItem("user");
     },
   },
 
   extraReducers: (builder) => {
     builder
 
-      .addCase(loginUser.pending, (state) => {
+      // LOGIN
+      .addCase(login.pending, (state) => {
         state.isLoading = true;
         state.error = null;
       })
 
-      .addCase(loginUser.fulfilled, (state, action) => {
+      .addCase(login.fulfilled, (state, action) => {
         state.isLoading = false;
-        state.token = action.payload.token;
-        state.user = action.payload.user;
+
+        state.user = action.payload;
+        console.log(state.user);
+
+        state.isAuthenticated = true;
+
+        state.error = null;
+
+        // Login has completed.
+        state.authChecked = true;
+
+        localStorage.setItem("user", JSON.stringify(action.payload));
       })
 
-      .addCase(loginUser.rejected, (state, action) => {
+      .addCase(login.rejected, (state, action) => {
         state.isLoading = false;
-        state.error = action.payload ?? "Login failed";
+
+        state.user = null;
+
+        state.isAuthenticated = false;
+
+        state.error = action.payload || "Login failed";
+
+        // Login attempt has completed.
+        state.authChecked = true;
+      });
+
+    // RESTORE USER
+
+    builder
+
+      .addCase(getLoggedInUser.pending, (state) => {
+        //Show loading while restoring the user.
+        state.isLoading = true;
+        state.error = null;
+
+        state.authChecked = false;
+      })
+
+      .addCase(getLoggedInUser.fulfilled, (state, action) => {
+        state.isLoading = false;
+
+        state.user = action.payload;
+
+        state.isAuthenticated = true;
+
+        state.error = null;
+
+        //  Authentication check is complete.
+        state.authChecked = true;
+
+        // Keep the restored user saved.
+        localStorage.setItem("user", JSON.stringify(action.payload));
+      })
+
+      .addCase(getLoggedInUser.rejected, (state, action) => {
+        state.isLoading = false;
+
+        // Authentication check is complete.
+        state.authChecked = true;
+
+        state.error = action.payload || "Unable to restore user";
       });
   },
 });
 
-export const { logout } = loginSlice.actions;
+export const { logout, authChecked } = Login.actions;
 
-export default loginSlice.reducer;
+export default Login.reducer;
