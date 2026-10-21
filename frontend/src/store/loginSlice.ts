@@ -53,7 +53,7 @@ export const login = createAsyncThunk<User, LoginData, { rejectValue: string }>(
       // so we can find this user again
       // after refreshing the page.
 
-      localStorage.setItem("userId", loggedUser.id);
+      localStorage.setItem("userId", loggedUser.id.toString());
 
       return loggedUser;
     } catch (error) {
@@ -199,44 +199,6 @@ const Login = createSlice({
 
         state.error = action.payload || "Unable to restore user";
       });
-
-    // ADD SHOPPING LIST
-
-    builder
-
-      .addCase(addShoppingList.pending, (state) => {
-        state.isLoading = true;
-        state.error = null;
-      })
-
-      .addCase(addShoppingList.fulfilled, (state, action) => {
-        state.isLoading = false;
-
-        // Updated user contains new list
-        state.user = action.payload;
-
-        state.error = null;
-
-        // Keep the updated user saved.
-        localStorage.setItem("user", JSON.stringify(action.payload));
-      })
-
-      .addCase(addShoppingList.rejected, (state, action) => {
-        state.isLoading = false;
-
-        state.error = action.payload || "Failed to create shopping list";
-      });
-
-    // DELETE SHOPPING LIST
-
-    builder.addCase(deleteShoppingList.fulfilled, (state, action) => {
-      if (state.user) {
-        state.user = action.payload;
-
-        // Keep the updated user saved.
-        localStorage.setItem("user", JSON.stringify(action.payload));
-      }
-    });
   },
 });
 
