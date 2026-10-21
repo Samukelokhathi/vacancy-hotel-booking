@@ -1,6 +1,10 @@
-import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
-
-import axios from "axios";
+import {
+  createAsyncThunk,
+  createSlice,
+  type PayloadAction, // NEW
+} from "@reduxjs/toolkit";
+import { jwtDecode } from "jwt-decode"; // NEW
+import { api, getErrorMessage } from "../api/axios"; // CHANGED: replaces axios
 import type { User } from "../models/hotel.types";
 
 // LOGIN DATA
@@ -30,43 +34,43 @@ const initialState: LogInState = {
   authChecked: false,
 };
 
-// LOGIN THUNK
+// NEW: reads the user id from the token, then loads that user from the server.
+// Login and page refresh both use it, so the code is written once.
+const fetchUser = async (token: string): Promise<User> => {
+  const { id } = jwtDecode<{ id: number }>(token);
+  const response = await api.get<User>(`/auth/users/${id}`);
+  return response.data;
+};
 
+// LOGIN THUNK
 export const login = createAsyncThunk<User, LoginData, { rejectValue: string }>(
   "auth/login",
 
   async (loginData, { rejectWithValue }) => {
     try {
-      const response = await axios.get<User[]>("http://localhost:3000/users");
-
-      const loggedUser = response.data.find(
-        (user) =>
-          user.email === loginData.email &&
-          user.password === loginData.password,
+      // CHANGED: the server checks the password and returns a token
+      const response = await api.post<{ message: string; token: string }>(
+        "/auth/login",
+        {
+          email: loginData.email.trim(),
+          password: loginData.password,
+        },
       );
 
-      if (!loggedUser) {
-        return rejectWithValue("Invalid email or password");
-      }
+      // saved first, so the interceptor can attach it to the next request
+      localStorage.setItem("token", response.data.token);
 
-      // Save logged-in user's ID
-      // so we can find this user again
-      // after refreshing the page.
-
-      localStorage.setItem("userId", loggedUser.id.toString());
-
-      return loggedUser;
+      return await fetchUser(response.data.token);
     } catch (error) {
-      console.error(error);
-
-      return rejectWithValue("Unable to connect to server");
+      localStorage.removeItem("token");
+      // shows the backend's message, e.g. "Invalid email or password"
+      return rejectWithValue(getErrorMessage(error, "Login failed"));
     }
   },
 );
 
 // GET LOGGED-IN USER
 // This runs when the page is refreshed.
-
 export const getLoggedInUser = createAsyncThunk<
   User,
   void,
@@ -75,32 +79,38 @@ export const getLoggedInUser = createAsyncThunk<
   "auth/getLoggedInUser",
 
   async (_, { rejectWithValue }) => {
+    // CHANGED: the saved token is the source of truth (no more userId / user)
+    const token = localStorage.getItem("token");
+
+    if (!token) {
+      return rejectWithValue("No logged-in user");
+    }
+
     try {
-      // Get the saved user ID from localStorage.
-      // Redux is empty after a page refresh.
-      const userId = localStorage.getItem("userId");
-
-      if (!userId) {
-        return rejectWithValue("No logged-in user");
-      }
-
-      // Get the same user from json-server.
-      const response = await axios.get<User>(
-        `http://localhost:3000/users/${userId}`,
-      );
-
-      // Return the restored user to Redux.
-      return response.data;
+      return await fetchUser(token);
     } catch (error) {
-      console.error(error);
-
-      return rejectWithValue("Unable to restore user");
+      // expired or invalid token
+      localStorage.removeItem("token");
+      return rejectWithValue(getErrorMessage(error, "Unable to restore user"));
     }
   },
 );
 
-// AUTH SLICE
+// NEW: shared reducers, so login and restore don't repeat the same lines
+const startLoading = (state: LogInState) => {
+  state.isLoading = true;
+  state.error = null;
+};
 
+const setUser = (state: LogInState, action: PayloadAction<User>) => {
+  state.isLoading = false;
+  state.user = action.payload;
+  state.isAuthenticated = true;
+  state.error = null;
+  state.authChecked = true;
+};
+
+// AUTH SLICE
 const Login = createSlice({
   name: "login",
 
@@ -117,11 +127,8 @@ const Login = createSlice({
       state.isAuthenticated = false;
       state.error = null;
 
-      // Remove saved user
-      localStorage.removeItem("userId");
-
-      // Also remove the saved user object.
-      localStorage.removeItem("user");
+      // CHANGED: only the token is stored now
+      localStorage.removeItem("token");
     },
   },
 
@@ -129,75 +136,31 @@ const Login = createSlice({
     builder
 
       // LOGIN
-      .addCase(login.pending, (state) => {
-        state.isLoading = true;
-        state.error = null;
-      })
-
-      .addCase(login.fulfilled, (state, action) => {
-        state.isLoading = false;
-
-        state.user = action.payload;
-        console.log(state.user);
-
-        state.isAuthenticated = true;
-
-        state.error = null;
-
-        // Login has completed.
-        state.authChecked = true;
-
-        localStorage.setItem("user", JSON.stringify(action.payload));
-      })
+      .addCase(login.pending, startLoading) // CHANGED
+      .addCase(login.fulfilled, setUser) // CHANGED
 
       .addCase(login.rejected, (state, action) => {
         state.isLoading = false;
-
         state.user = null;
-
         state.isAuthenticated = false;
+        state.error = action.payload ?? "Login failed";
+        state.authChecked = true; // Login attempt has completed.
+      })
 
-        state.error = action.payload || "Login failed";
-
-        // Login attempt has completed.
-        state.authChecked = true;
-      });
-
-    // RESTORE USER
-
-    builder
-
+      // RESTORE USER
       .addCase(getLoggedInUser.pending, (state) => {
-        //Show loading while restoring the user.
-        state.isLoading = true;
-        state.error = null;
-
+        startLoading(state); // CHANGED
         state.authChecked = false;
       })
+      .addCase(getLoggedInUser.fulfilled, setUser) // CHANGED
 
-      .addCase(getLoggedInUser.fulfilled, (state, action) => {
+      .addCase(getLoggedInUser.rejected, (state) => {
         state.isLoading = false;
-
-        state.user = action.payload;
-
-        state.isAuthenticated = true;
-
-        state.error = null;
-
-        //  Authentication check is complete.
+        state.user = null;
+        state.isAuthenticated = false;
+        // CHANGED: no error message here, or "No logged-in user" would show
+        // on the login page for every visitor who simply isn't logged in
         state.authChecked = true;
-
-        // Keep the restored user saved.
-        localStorage.setItem("user", JSON.stringify(action.payload));
-      })
-
-      .addCase(getLoggedInUser.rejected, (state, action) => {
-        state.isLoading = false;
-
-        // Authentication check is complete.
-        state.authChecked = true;
-
-        state.error = action.payload || "Unable to restore user";
       });
   },
 });
