@@ -2,7 +2,6 @@ import { Input } from "../../components/inputs/input";
 import styles from "./Login.module.css";
 import Button from "../../components/button/button";
 import { Text } from "../../components/text/text";
-import loginImg from "./images/istockphoto-1660821332-612x612.jpg";
 
 import { NavLink } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
@@ -38,7 +37,7 @@ function Login() {
 
   return (
     <div className={styles.page}>
-      <img src={loginImg} alt="" />
+      {/* <img src={loginImg} alt="" /> */}
       <div className={styles.loginContainer}>
         <div className={styles.welcomeText}>
           <Text variant="h2" children={"Welcome back"} />
