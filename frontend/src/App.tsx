@@ -1,14 +1,14 @@
-import { useEffect } from "react"; 
+import { useEffect } from "react";
 import { Navigate, Routes, Route } from "react-router-dom";
-import { useDispatch } from "react-redux"; 
-import type { AppDispatch } from "./store/store"; 
-import { getLoggedInUser } from "./store/loginSlice"; 
+import { useDispatch } from "react-redux";
+import type { AppDispatch } from "./store/store";
+import { getLoggedInUser } from "./store/loginSlice";
 import RegisterPage from "./pages/register/registerPage";
 import Login from "./pages/login/login";
-import HomePage from "./pages/home/homePage"; 
-import ProtectedRoute from "./components/protectedRoute/protectedRoute"; 
-import Layout from "./components/layout/layout"; 
-
+import HomePage from "./pages/home/homePage";
+import HotelDetailsPage from "./pages/hotelDetails/hotelDetailsPage";
+// import ProtectedRoute from "./components/protectedRoute/protectedRoute";
+import Layout from "./components/layout/layout";
 
 export default function App() {
   const dispatch = useDispatch<AppDispatch>();
