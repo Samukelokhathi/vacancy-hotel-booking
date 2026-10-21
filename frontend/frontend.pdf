@@ -8,3 +8,22 @@
 4.Added browserRouter in app.ts 
 5.Added form to register user
 6. 
+
+
+installed packages:
+--------------------
+=>  A CORS : (Cross-Origin Resource Sharing) dependency or middleware allows a backend server
+    to explicitly tell web browsers which external domains, methods, and headers are permitted 
+    to access its resources, safely relaxing the browser's default Same-Origin Policy
+
+=>  npm install jwt-decode : jwt-decode dependency splits a JSON Web Token (JWT) string, 
+    Base64Url-decodes its header or payload, and parses the result into a JavaScript object
+
+=>  npm install leaflet react-leaflet : create interactive, mobile-friendly maps inside a React application.
+    npm install -D @types/leaflet
+
+
+*login slice,thunk and page are working
+*register slice,thunk and page are working
+
+
