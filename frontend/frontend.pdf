@@ -27,3 +27,93 @@ installed packages:
 *register slice,thunk and page are working
 
 
+added this slice 
+import {
+  createAsyncThunk,
+  createSlice,
+  isPending,
+  isRejected,
+} from "@reduxjs/toolkit";
+import { api, getErrorMessage } from "../api/axios";
+import type { Hotel, HotelImage, Room } from "../models/hotel.types";
+
+export interface HotelDetails {
+  hotel: Hotel;
+  images: HotelImage[];
+  rooms: Room[];
+}
+
+interface HotelState {
+  hotels: Hotel[];
+  selected: HotelDetails | null;
+  isLoading: boolean;
+  error: string | null;
+}
+
+const initialState: HotelState = {
+  hotels: [],
+  selected: null,
+  isLoading: false,
+  error: null,
+};
+
+// LIST
+export const fetchHotels = createAsyncThunk<
+  Hotel[],
+  void,
+  { rejectValue: string }
+>("hotels/fetchAll", async (_, { rejectWithValue }) => {
+  try {
+    const response = await api.get<Hotel[]>("/hotels");
+    return response.data;
+  } catch (error) {
+    return rejectWithValue(getErrorMessage(error, "Unable to load hotels"));
+  }
+});
+
+// DETAILS: hotel + photos + rooms, loaded together
+export const fetchHotelDetails = createAsyncThunk<
+  HotelDetails,
+  number,
+  { rejectValue: string }
+>("hotels/fetchDetails", async (id, { rejectWithValue }) => {
+  try {
+    const [hotel, images, rooms] = await Promise.all([
+      api.get<Hotel>(`/hotels/${id}`),
+      api.get<HotelImage[]>("/hotel-images", { params: { hotelId: id } }),
+      api.get<Room[]>("/rooms", { params: { hotelId: id } }),
+    ]);
+    return { hotel: hotel.data, images: images.data, rooms: rooms.data };
+  } catch (error) {
+    return rejectWithValue(getErrorMessage(error, "Unable to load the hotel"));
+  }
+});
+
+const hotelSlice = createSlice({
+  name: "hotels",
+  initialState,
+  reducers: {},
+  extraReducers: (builder) => {
+    builder
+      .addCase(fetchHotels.fulfilled, (state, action) => {
+        state.isLoading = false;
+        state.hotels = action.payload;
+      })
+      .addCase(fetchHotelDetails.fulfilled, (state, action) => {
+        state.isLoading = false;
+        state.selected = action.payload;
+      })
+      // pending and rejected are the same for both thunks, so they're written once
+      .addMatcher(isPending(fetchHotels, fetchHotelDetails), (state) => {
+        state.isLoading = true;
+        state.error = null;
+      })
+      .addMatcher(isRejected(fetchHotels, fetchHotelDetails), (state, action) => {
+        state.isLoading = false;
+        state.error =
+          (action.payload as string | undefined) ?? "Something went wrong";
+      });
+  },
+});
+
+export default hotelSlice.reducer;
