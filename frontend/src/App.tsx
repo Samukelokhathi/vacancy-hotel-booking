@@ -7,6 +7,8 @@ import RegisterPage from "./pages/register/registerPage";
 import Login from "./pages/login/login";
 import HomePage from "./pages/home/homePage"; 
 import ProtectedRoute from "./components/protectedRoute/protectedRoute"; 
+import Layout from "./components/layout/layout"; 
+
 
 export default function App() {
   const dispatch = useDispatch<AppDispatch>();
@@ -21,12 +23,13 @@ export default function App() {
         <Route path="/register" element={<RegisterPage />} />
         <Route path="/login" element={<Login />} />
 
-        {/* only logged-in users can open these */}
-        <Route element={<ProtectedRoute />}>
+        {/* CHANGED: public pages share the Navbar. Hotels need no login */}
+        <Route element={<Layout />}>
           <Route path="/home" element={<HomePage />} />
+          <Route path="/hotels/:id" element={<HotelDetailsPage />} />
         </Route>
 
-        <Route path="*" element={<Navigate to="/register" />} />
+        <Route path="*" element={<Navigate to="/home" replace />} />
       </Routes>
     </>
   );
