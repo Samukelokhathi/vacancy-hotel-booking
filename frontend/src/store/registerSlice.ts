@@ -12,8 +12,6 @@ export interface RegisterFormData {
   cellphone: string;
   password: string;
   confirmPassword: string;
-  isLoading: boolean;
-  error: string | null;
 }
 
 export interface SignUpData extends RegisterFormData {
@@ -33,6 +31,11 @@ const initialState: SignUpData = {
   error: null,
 };
 
+export interface SignUpData extends RegisterFormData {
+  isLoading: boolean;
+  error: string | null;
+}
+
 // thunk
 
 export const registerUser = createAsyncThunk<
@@ -48,26 +51,28 @@ export const registerUser = createAsyncThunk<
     }
 
     if (!/^\d{10}$/.test(userData.cellphone)) {
-      return rejectWithValue("Cellphone number must be 10 digits, e.g. 0712345678");
+      return rejectWithValue(
+        "Cellphone number must be 10 digits, e.g. 0712345678",
+      );
     }
     try {
-    const response = await api.post<{ message: string }>("/auth/register", {
-      name: userData.name.trim(),
-      surname: userData.surname.trim(),
-      email: userData.email.trim(),
-      cellphone: userData.cellphone.trim()  ,
-      password: userData.password,
-    });
+      const response = await api.post<{ message: string }>("/auth/register", {
+        name: userData.name.trim(),
+        surname: userData.surname.trim(),
+        email: userData.email.trim(),
+        cellphone: userData.cellphone.trim(),
+        password: userData.password,
+      });
 
-    return response.data.message;
-  } catch (error) {
-    // CHANGED: shows the backend's message (e.g. "Email is already in use")
-    return rejectWithValue(getErrorMessage(error, "Unable to create account"));
-  }
-  
-});
-
-
+      return response.data.message;
+    } catch (error) {
+      // CHANGED: shows the backend's message (e.g. "Email is already in use")
+      return rejectWithValue(
+        getErrorMessage(error, "Unable to create account"),
+      );
+    }
+  },
+);
 
 const SignUpSlice = createSlice({
   name: "signup",
@@ -108,7 +113,6 @@ const SignUpSlice = createSlice({
       });
   },
 });
-
 
 export const { setField, resetForm } = SignUpSlice.actions;
 

@@ -7,6 +7,7 @@ import hotelRoutes from "./routes/hotelRoutes.js";
 import roomRoutes from "./routes/roomRoutes.js";
 import hotelImageRoutes from "./routes/hotelImageRoutes.js";
 import bookingRoutes from "./routes/bookingRoutes.js";
+import cors from "cors";
 
 dotenv.config();
 const app = express();
@@ -15,6 +16,8 @@ const PORT = process.env.PORT;
 const startServer = async () => {
   await testDbConnection();
   await initDb();
+
+  app.use(cors({ origin: process.env.FRONTEND_URL }));
 
   app.use(express.json());
   app.use("/auth", authRoutes);

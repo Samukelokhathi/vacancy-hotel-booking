@@ -3,7 +3,7 @@ import inputStyle from "./Input.module.css";
 
 type InputProps = {
   id?: string;
-  value?: string | number;
+  value?: string | number | boolean | null;
   onChange?: React.ChangeEventHandler<HTMLInputElement>;
   style?: React.CSSProperties;
   label?: string;
@@ -29,6 +29,9 @@ export const Input: React.FC<InputProps> = ({
   className = "",
   required,
 }) => {
+  const normalizedValue =
+    value === null || typeof value === "boolean" ? "" : value;
+
   return (
     <div className={inputStyle["input-label-container"]}>
       <label className={inputStyle["input-label"]}>{label}</label>
@@ -37,7 +40,7 @@ export const Input: React.FC<InputProps> = ({
         id={id}
         style={style}
         type={type}
-        value={value}
+        value={normalizedValue}
         onChange={onChange}
         className={`${inputStyle.input} ${className}`.trim()}
         required={required}

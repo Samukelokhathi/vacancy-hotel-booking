@@ -13,8 +13,6 @@ import {
   type RegisterFormData,
 } from "../../store/registerSlice";
 
-import { registerUser } from "../../store/registerSlice";
-
 function Register() {
   const dispatch = useDispatch<AppDispatch>();
   const navigate = useNavigate();
@@ -23,6 +21,12 @@ function Register() {
   const isLoading = signUpData.isLoading;
   const error = signUpData.error;
 
+  const field = (name: keyof RegisterFormData) => ({
+    value: signUpData[name],
+    onChange: (e: React.ChangeEvent<HTMLInputElement>) =>
+      dispatch(setField({ field: name, value: e.target.value })),
+  });
+
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
@@ -30,7 +34,7 @@ function Register() {
       await dispatch(registerUser(signUpData)).unwrap();
 
       dispatch(resetForm());
-      navigate("/");
+      navigate("/login");
     } catch (error) {
       console.error("Signup failed:", error);
     }
@@ -45,8 +49,10 @@ function Register() {
             name="Name"
             label="Name"
             type="text"
-            value={signUpData.name}
-            onChange={(e) => dispatch(setField({ field: "name", value: e.target.value }))}
+            {...field("name")}
+            onChange={(e) =>
+              dispatch(setField({ field: "name", value: e.target.value }))
+            }
             style={{ width: 240 }}
             required
           />
@@ -55,8 +61,7 @@ function Register() {
             name="Surname"
             label="Surname"
             type="text"
-            value={signUpData.surname}
-            onChange={(e) => dispatch(setSurname(e.target.value))}
+            {...field("surname")}
             style={{ width: 240 }}
             required
           />
@@ -66,8 +71,7 @@ function Register() {
           name="Email"
           label="Email"
           type="email"
-          value={signUpData.email}
-          onChange={(e) => dispatch(setEmail(e.target.value))}
+          {...field("email")}
           required
         />
         <Input
@@ -75,8 +79,7 @@ function Register() {
           name="Cell number"
           label="Cell number"
           type="text"
-          value={signUpData.number}
-          onChange={(e) => dispatch(setNumber(e.target.value))}
+          {...field("cellphone")}
           required
         />
         <div className={styles.passwordContainer}>
@@ -85,8 +88,10 @@ function Register() {
             name="Password"
             label="Password"
             type="password"
-            value={signUpData.password}
-            onChange={(e) => dispatch(setPassword(e.target.value))}
+            {...field("password")}
+            onChange={(e) =>
+              dispatch(setField({ field: "password", value: e.target.value }))
+            }
             style={{ width: 240 }}
             required
           />
@@ -95,9 +100,13 @@ function Register() {
             id="Confirm password"
             name="Confirm password"
             label="Confirm password"
-            value={signUpData.confirmPassword}
+            {...field("confirmPassword")}
             type="password"
-            onChange={(e) => dispatch(setConfirmPassword(e.target.value))}
+            onChange={(e) =>
+              dispatch(
+                setField({ field: "confirmPassword", value: e.target.value }),
+              )
+            }
             style={{ width: 240 }}
             required
           />
@@ -110,7 +119,7 @@ function Register() {
 
         <p className={styles.registerText}>
           Already registered?{" "}
-          <NavLink to={"/"} className={styles.registerLink}>
+          <NavLink to={"/login"} className={styles.registerLink}>
             Sign in
           </NavLink>
         </p>
