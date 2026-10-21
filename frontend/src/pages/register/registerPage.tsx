@@ -35,6 +35,7 @@ function Register() {
 
       dispatch(resetForm());
       navigate("/login");
+      console.log("Directing to login page");
     } catch (error) {
       console.error("Signup failed:", error);
     }
