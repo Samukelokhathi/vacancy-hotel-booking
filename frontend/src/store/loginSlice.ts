@@ -1,10 +1,10 @@
 import {
   createAsyncThunk,
   createSlice,
-  type PayloadAction, // NEW
+  type PayloadAction,
 } from "@reduxjs/toolkit";
-import { jwtDecode } from "jwt-decode"; // NEW
-import { api, getErrorMessage } from "../api/axios"; // CHANGED: replaces axios
+import { jwtDecode } from "jwt-decode";
+import { api, getErrorMessage } from "../api/axios";
 import type { User } from "../models/hotel.types";
 
 // LOGIN DATA
@@ -20,7 +20,6 @@ interface LogInState {
   isLoading: boolean;
   error: string | null;
 
-  // Tracks whether the initial authentication check is complete.
   authChecked: boolean;
 }
 
@@ -30,12 +29,9 @@ const initialState: LogInState = {
   isLoading: false,
   error: null,
 
-  // Start as false so protected routes wait.
   authChecked: false,
 };
 
-// NEW: reads the user id from the token, then loads that user from the server.
-// Login and page refresh both use it, so the code is written once.
 const fetchUser = async (token: string): Promise<User> => {
   const { id } = jwtDecode<{ id: number }>(token);
   const response = await api.get<User>(`/auth/users/${id}`);

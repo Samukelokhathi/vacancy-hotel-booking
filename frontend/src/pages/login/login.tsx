@@ -3,8 +3,7 @@ import styles from "./Login.module.css";
 import Button from "../../components/button/button";
 import { Text } from "../../components/text/text";
 
-import { NavLink } from "react-router-dom";
-import { useNavigate } from "react-router-dom";
+import { NavLink, useNavigate } from "react-router-dom"; // CHANGED: one import
 import type { RootState, AppDispatch } from "../../store/store";
 import { login } from "../../store/loginSlice";
 import { useDispatch, useSelector } from "react-redux";
@@ -12,24 +11,24 @@ import { useState } from "react";
 
 function Login() {
   const dispatch = useDispatch<AppDispatch>();
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-
   const navigate = useNavigate();
-  const auth = useSelector((state: RootState) => state.login);
+  const { error, isLoading } = useSelector((state: RootState) => state.login); // CHANGED
+
+  // CHANGED: one state object replaces the two useState calls
+  const [form, setForm] = useState({ email: "", password: "" });
+
+  // NEW: one handler for both inputs, it uses the input's `name`
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setForm({ ...form, [e.target.name]: e.target.value });
+  };
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
     try {
-      await dispatch(
-        login({
-          email,
-          password,
-        }),
-      ).unwrap();
+      await dispatch(login(form)).unwrap();
 
-      navigate("/home");
+      navigate("/home", { replace: true });
     } catch (error) {
       console.error("Login failed:", error);
     }
@@ -37,14 +36,11 @@ function Login() {
 
   return (
     <div className={styles.page}>
-      {/* <img src={loginImg} alt="" /> */}
       <div className={styles.loginContainer}>
         <div className={styles.welcomeText}>
           <Text variant="h2" children={"Welcome back"} />
-          <Text
-            variant="p"
-            children={"Sign in to pick up your shopping where you left off."}
-          />
+          {/* CHANGED: the old text was about shopping */}
+          <Text variant="p" children={"Sign in to book your next stay."} />
         </div>
         <form className={styles.card} onSubmit={handleSubmit}>
           <Input
@@ -52,9 +48,8 @@ function Login() {
             name="email"
             label="Email Address"
             type="email"
-            onChange={(e) => {
-              setEmail(e.target.value);
-            }}
+            value={form.email} // NEW
+            onChange={handleChange} // CHANGED
             required
           />
           <Input
@@ -62,17 +57,19 @@ function Login() {
             name="password"
             label="Password"
             type="password"
-            onChange={(e) => {
-              setPassword(e.target.value);
-            }}
+            value={form.password} // NEW
+            onChange={handleChange} // CHANGED
             required
           />
-          {auth.error && <p className={styles.error}>{auth.error}</p>}
-          <Button type="submit">Sign in</Button>
+          {error && <p className={styles.error}>{error}</p>}
+          {/* CHANGED: disabled and a loading label while the request runs */}
+          <Button type="submit" disabled={isLoading}>
+            {isLoading ? "Signing in..." : "Sign in"}
+          </Button>
           <p className={styles.registerText}>
             New here?{" "}
             <NavLink to={"/register"} className={styles.registerLink}>
-              Create an account+
+              Create an account {/* CHANGED: removed the stray "+" */}
             </NavLink>
           </p>
         </form>
