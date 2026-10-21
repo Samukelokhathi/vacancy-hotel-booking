@@ -5,13 +5,7 @@ import {
 } from "@reduxjs/toolkit";
 import { api, getErrorMessage } from "../api/axios";
 
-<<<<<<< HEAD
-import type { User } from "../models/hotel.types";
-
-export interface SignUpData {
-=======
 export interface RegisterFormData {
->>>>>>> feat/frontend/register
   name: string;
   surname: string;
   email: string;
@@ -45,13 +39,8 @@ export interface SignUpData extends RegisterFormData {
 // thunk
 
 export const registerUser = createAsyncThunk<
-<<<<<<< HEAD
-  User,
-  SignUpData,
-=======
   string,
   RegisterFormData,
->>>>>>> feat/frontend/register
   { rejectValue: string }
 >(
   "signup/create",
@@ -75,48 +64,7 @@ export const registerUser = createAsyncThunk<
         password: userData.password,
       });
 
-<<<<<<< HEAD
-      if (userData.password !== userData.confirmPassword) {
-        return rejectWithValue("Passwords do not match");
-      }
-
-      // 2. Check if email already exists
-
-      const existingUsers = await axios.get<User[]>(
-        "http://localhost:3000/users",
-        {
-          params: {
-            email: userData.email,
-          },
-        },
-      );
-
-      if (existingUsers.data.length > 0) {
-        return rejectWithValue("Email is already registered");
-      }
-
-      // 3. Create user
-
-      const response = await axios.post<User>(
-        "http://localhost:3000/users",
-        {
-          name: userData.name,
-          surname: userData.surname,
-          number: userData.number,
-          email: userData.email,
-          password: userData.password,
-          lists: [],
-        },
-      );
-
-      console.log("User created:", response.data);
-
-      // 4. Return created user
-
-      return response.data;
-=======
       return response.data.message;
->>>>>>> feat/frontend/register
     } catch (error) {
       // CHANGED: shows the backend's message (e.g. "Email is already in use")
       return rejectWithValue(
