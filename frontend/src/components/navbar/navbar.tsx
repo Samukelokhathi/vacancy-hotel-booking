@@ -25,6 +25,7 @@ export default function Navbar() {
       <nav className={styles.links}>
         {isAuthenticated ? (
           <>
+            <Link to="/bookings">My bookings</Link>
             <span className={styles.greeting}>Hi, {user?.name}</span>
             <button onClick={handleLogout} className={styles.linkButton}>
               Log out
