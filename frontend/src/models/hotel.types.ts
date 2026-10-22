@@ -45,8 +45,20 @@ export interface Room {
 }
 
 export type BookingStatus = "pending" | "approved" | "cancelled";
+export interface Booking {
+  id: number;
+  userId: number;
+  roomId: number;
+  checkIn: string;
+  checkOut: string;
+  numberOfRooms: number;
+  guests: number;
+  status: BookingStatus;
+  paid: boolean;
+}
 
-export interface BookingInput {
+// what the form sends
+export interface BookingFormData {
   roomId: number;
   checkIn: string;
   checkOut: string;
@@ -54,17 +66,21 @@ export interface BookingInput {
   guests: number;
 }
 
-export interface Booking extends BookingInput {
-  id: number;
-  userId: number;
-  status: BookingStatus;
-  paid: boolean;
-}
-
-// what GET /bookings/my returns: booking + hotel and room names
+// Booking plus hotel and room info, from GET /bookings/my
 export interface BookingDetails extends Booking {
   guestName: string;
   guestEmail: string;
   hotelName: string;
   roomType: string;
+}
+
+export interface Payment {
+  id: number;
+  bookingId: number;
+  userId: number;
+  reference: string;
+  amount: number;
+  currency: string;
+  status: "pending" | "success" | "failed";
+  paidAt: string | null;
 }
