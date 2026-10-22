@@ -1,131 +1,104 @@
 import { useState } from "react";
+import { Link } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
-import { useLocation, useNavigate } from "react-router-dom";
 import type { AppDispatch, RootState } from "../../store/store";
 import { createBooking } from "../../store/bookingSlice";
-import { useCheckout } from "../../hooks/useCheckout";
+import { startPayment } from "../../store/paymentSlice";
 import type { Room } from "../../models/hotel.types";
-import { countNights, formatPrice, todayString } from "../../utils/format";
+import type { BookingFormData } from "../../models/hotel.types";
+import { formatPrice, countNights } from "../../utils/format";
 import Button from "../button/button";
 import styles from "./bookingForm.module.css";
 
 export default function BookingForm({ rooms }: { rooms: Room[] }) {
   const dispatch = useDispatch<AppDispatch>();
-  const navigate = useNavigate();
-  const location = useLocation();
-  const payForBooking = useCheckout();
-
   const isAuthenticated = useSelector(
     (state: RootState) => state.login.isAuthenticated,
   );
-  const isLoading = useSelector((state: RootState) => state.bookings.isLoading);
+  const isBooking = useSelector((state: RootState) => state.bookings.isLoading);
+  const isPaying = useSelector((state: RootState) => state.payments.isLoading);
 
-  const [form, setForm] = useState({
-    roomId: String(rooms[0]?.id ?? ""),
+  const [form, setForm] = useState<BookingFormData>({
+    roomId: rooms[0]?.id ?? 0,
     checkIn: "",
     checkOut: "",
-    numberOfRooms: "1",
-    guests: "1",
+    numberOfRooms: 1,
+    guests: 1,
   });
   const [formError, setFormError] = useState("");
-
-  // one handler for every input (it uses each input's `name`)
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setForm({ ...form, [e.target.name]: e.target.value });
-  };
 
   if (rooms.length === 0) {
     return <p className="muted">No rooms available to book yet.</p>;
   }
+  if (!isAuthenticated) {
+    return (
+      <p>
+        <Link to="/login">Log in</Link> to book a room.
+      </p>
+    );
+  }
 
-  const room = rooms.find((r) => r.id === Number(form.roomId));
-  const numberOfRooms = Number(form.numberOfRooms);
-  const guests = Number(form.guests);
+  const room = rooms.find((r) => r.id === form.roomId) ?? rooms[0]!;
   const nights = countNights(form.checkIn, form.checkOut);
-  const total =
-    room && nights > 0 ? nights * room.pricePerNight * numberOfRooms : 0;
+  const total = nights * room.pricePerNight * form.numberOfRooms;
+  const today = new Date().toISOString().split("T")[0]!;
+  const isBusy = isBooking || isPaying;
 
-  // same rules as the backend, so mistakes show instantly
-  const validate = (): string => {
-    if (!room) return "Choose a room";
-    if (!form.checkIn || !form.checkOut)
-      return "Select check-in and check-out dates";
-    if (form.checkIn < todayString()) return "Check-in cannot be in the past";
-    if (nights < 1) return "Check-out must be after check-in";
-    if (numberOfRooms < 1 || numberOfRooms > room.quantity) {
-      return `Choose between 1 and ${room.quantity} rooms`;
-    }
-    if (guests < 1 || guests > room.capacity * numberOfRooms) {
-      return `${numberOfRooms} room(s) fit up to ${room.capacity * numberOfRooms} guests`;
-    }
-    return "";
+  // one handler for every field: dates stay text, the rest become numbers
+  const handleChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>,
+  ) => {
+    const { name, value, type } = e.target;
+    setForm({ ...form, [name]: type === "date" ? value : Number(value) });
   };
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setFormError("");
 
-    // guests can browse, but must log in to book (they come back here after)
-    if (!isAuthenticated) {
-      navigate("/login", { state: { from: location.pathname } });
-      return;
+    if (!form.checkIn || !form.checkOut) {
+      return setFormError("Select check-in and check-out dates");
+    }
+    if (form.checkIn < today) {
+      return setFormError("Check-in cannot be in the past");
+    }
+    if (nights === 0) {
+      return setFormError("Check-out must be after check-in");
+    }
+    if (form.numberOfRooms < 1 || form.numberOfRooms > room.quantity) {
+      return setFormError(`Only ${room.quantity} room(s) of this type exist`);
+    }
+    if (form.guests < 1 || form.guests > room.capacity * form.numberOfRooms) {
+      return setFormError(
+        `This selection sleeps at most ${room.capacity * form.numberOfRooms} guests`,
+      );
     }
 
-    const problem = validate();
-    if (problem || !room) {
-      setFormError(problem);
-      return;
-    }
-
-    let bookingId: number;
     try {
       const booking = await dispatch(
-        createBooking({
-          roomId: room.id,
-          checkIn: form.checkIn,
-          checkOut: form.checkOut,
-          numberOfRooms,
-          guests,
-        }),
+        createBooking({ ...form, roomId: room.id }),
       ).unwrap();
-      bookingId = booking.id;
-    } catch (err) {
-      setFormError(String(err)); // e.g. "Not enough rooms available for these dates"
-      return;
-    }
-
-    try {
-      await payForBooking(bookingId); // leaves the site for Stripe
-    } catch {
-      navigate("/profile"); // booking exists: pay from "My bookings"
+      // sends the browser to Paystack
+      await dispatch(startPayment(booking.id)).unwrap();
+    } catch (error) {
+      setFormError(typeof error === "string" ? error : "Something went wrong");
     }
   };
 
   return (
-    <form onSubmit={handleSubmit} className={styles.form}>
+    <form className={styles.form} onSubmit={handleSubmit}>
       <h3>Book your stay</h3>
 
-      <fieldset className={styles.rooms}>
-        <legend>Room type</legend>
-        {rooms.map((r) => (
-          <label key={r.id} className={styles.room}>
-            <input
-              type="radio"
-              name="roomId"
-              value={r.id}
-              checked={form.roomId === String(r.id)}
-              onChange={handleChange}
-            />
-            <span>
-              <strong>{r.roomType}</strong>
-              <small>
-                Up to {r.capacity} guests · {formatPrice(r.pricePerNight)} /
-                night
-              </small>
-            </span>
-          </label>
-        ))}
-      </fieldset>
+      <label>
+        Room type
+        <select name="roomId" value={room.id} onChange={handleChange}>
+          {rooms.map((r) => (
+            <option key={r.id} value={r.id}>
+              {r.roomType} - {formatPrice(r.pricePerNight)}
+            </option>
+          ))}
+        </select>
+      </label>
 
       <div className={styles.row}>
         <label>
@@ -133,7 +106,7 @@ export default function BookingForm({ rooms }: { rooms: Room[] }) {
           <input
             type="date"
             name="checkIn"
-            min={todayString()}
+            min={today}
             value={form.checkIn}
             onChange={handleChange}
             required
@@ -144,7 +117,7 @@ export default function BookingForm({ rooms }: { rooms: Room[] }) {
           <input
             type="date"
             name="checkOut"
-            min={form.checkIn || todayString()}
+            min={form.checkIn || today}
             value={form.checkOut}
             onChange={handleChange}
             required
@@ -159,7 +132,7 @@ export default function BookingForm({ rooms }: { rooms: Room[] }) {
             type="number"
             name="numberOfRooms"
             min={1}
-            max={room?.quantity}
+            max={room.quantity}
             value={form.numberOfRooms}
             onChange={handleChange}
             required
@@ -178,21 +151,17 @@ export default function BookingForm({ rooms }: { rooms: Room[] }) {
         </label>
       </div>
 
-      {total > 0 && (
-        <p className={styles.total}>
-          {nights} night(s) × {numberOfRooms} room(s) ={" "}
+      {nights > 0 && (
+        <p className={styles.summary}>
+          {nights} night(s) × {form.numberOfRooms} room(s) ={" "}
           <strong>{formatPrice(total)}</strong>
         </p>
       )}
 
       {formError && <p className="error-text">{formError}</p>}
 
-      <Button type="submit" disabled={isLoading}>
-        {!isAuthenticated
-          ? "Log in to book"
-          : isLoading
-            ? "Please wait..."
-            : "Book & pay"}
+      <Button type="submit" disabled={isBusy}>
+        {isBusy ? "Please wait..." : "Book and pay"}
       </Button>
     </form>
   );

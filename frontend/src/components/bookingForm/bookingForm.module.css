@@ -1,62 +1,26 @@
 .form {
   display: flex;
   flex-direction: column;
-  gap: 14px;
+  gap: 12px;
+  margin-top: 16px;
+  padding-top: 16px;
+  border-top: 1px solid #e5e7eb;
 }
 
 .form h3 {
-  margin: 12px 0 0;
-}
-
-.rooms {
-  border: none;
-  padding: 0;
   margin: 0;
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-}
-
-.rooms legend {
-  font-weight: 600;
-  margin-bottom: 6px;
-}
-
-.room {
-  display: flex;
-  gap: 10px;
-  align-items: flex-start;
-  padding: 10px 12px;
-  border: 1px solid #d1d5db;
-  border-radius: 8px;
-  cursor: pointer;
-}
-
-.room span {
-  display: flex;
-  flex-direction: column;
-}
-
-.room small {
-  color: #6b7280;
-}
-
-.row {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 12px;
 }
 
 .form label {
   display: flex;
   flex-direction: column;
   gap: 4px;
-  font-size: 0.9rem;
+  font-size: 0.85rem;
   font-weight: 600;
 }
 
-.form input[type="date"],
-.form input[type="number"] {
+.form input,
+.form select {
   padding: 9px 10px;
   border: 1px solid #d1d5db;
   border-radius: 8px;
@@ -64,7 +28,13 @@
   font-weight: 400;
 }
 
-.total {
+.row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+
+.summary {
   margin: 0;
   padding: 10px 12px;
   background: #eff6ff;
