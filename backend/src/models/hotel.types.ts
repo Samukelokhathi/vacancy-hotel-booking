@@ -60,7 +60,7 @@ export interface Booking {
   status: BookingStatus;
 }
 
-export type BookingInput = Omit<Booking, "id" | "userId" | "status">;
+export type BookingInput = Omit<Booking, "id" | "userId" | "status" | "paid">;
 
 export interface BookingDetails extends Booking {
   guestName: string;
@@ -69,13 +69,25 @@ export interface BookingDetails extends Booking {
   roomType: string;
 }
 
-export type PaymentStatus = "pending" | "paid" | "failed";
+export type PaymentStatus = "pending" | "success" | "failed";
 
 export interface Payment {
   id: number;
   bookingId: number;
-  stripeSessionId: string;
+  userId: number;
+  reference: string;
   amount: number;
+  currency: string;
   status: PaymentStatus;
-  createdAt: Date;
+  paidAt: string | null;
+}
+
+export type PaymentInput = Omit<Payment, "id" | "status" | "paidAt">;
+
+// Payment plus guest, hotel and room info, for the admin list
+export interface PaymentDetails extends Payment {
+  guestName: string;
+  guestEmail: string;
+  hotelName: string;
+  roomType: string;
 }
