@@ -1,5 +1,5 @@
 import { Input } from "../../components/inputs/input";
-import styles from "./Login.module.css";
+import styles from "./login.module.css";
 import Button from "../../components/button/button";
 import { Text } from "../../components/text/text";
 
