@@ -1,0 +1,90 @@
+.card {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  background: #fff;
+  border-radius: 14px;
+  padding: 18px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.07);
+}
+
+.card h3,
+.card p {
+  margin: 0 0 4px;
+}
+
+.side {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 8px;
+}
+
+.badges {
+  display: flex;
+  gap: 6px;
+}
+
+.badge {
+  padding: 3px 10px;
+  border-radius: 999px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  text-transform: capitalize;
+}
+
+.pending {
+  background: #fef3c7;
+  color: #92400e;
+}
+
+.approved {
+  background: #dcfce7;
+  color: #166534;
+}
+
+.cancelled {
+  background: #fee2e2;
+  color: #991b1b;
+}
+
+.paid {
+  background: #dbeafe;
+  color: #1e40af;
+}
+
+.pay,
+.cancel {
+  padding: 8px 14px;
+  border-radius: 8px;
+  font: inherit;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.pay {
+  background: #2563eb;
+  color: #fff;
+  border: none;
+}
+
+.cancel {
+  background: #fff;
+  color: #991b1b;
+  border: 1px solid #fca5a5;
+}
+
+.pay:disabled,
+.cancel:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+@media (max-width: 520px) {
+  .card {
+    flex-direction: column;
+  }
+  .side {
+    align-items: flex-start;
+  }
+}
