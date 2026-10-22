@@ -9,7 +9,7 @@ import type {
   Booking,
   BookingDetails,
   BookingFormData,
-} from "../models/booking.types";
+} from "../models/hotel.types";
 
 interface BookingState {
   myBookings: BookingDetails[];
@@ -77,7 +77,9 @@ const bookingSlice = createSlice({
       })
       .addCase(cancelBooking.fulfilled, (state, action) => {
         state.isLoading = false;
-        const booking = state.myBookings.find((b) => b.id === action.payload.id);
+        const booking = state.myBookings.find(
+          (b) => b.id === action.payload.id,
+        );
         if (booking) booking.status = action.payload.status;
       })
       // pending and rejected are the same for all three thunks
