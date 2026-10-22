@@ -1,5 +1,4 @@
-export type UserRole = "client" | "admin"; // NEW
-
+export type UserRole = "client" | "admin";
 
 export interface User {
   id: number;
@@ -9,9 +8,8 @@ export interface User {
   cellphone: string | number;
   password: string;
   role: UserRole;
-  createdat: string; 
+  createdat: string;
 }
-
 
 export interface Hotel {
   id: number;
@@ -27,7 +25,7 @@ export interface Hotel {
   policies: string;
   createdBy: number | null;
   createdAt: string;
-  coverImage?: string | null; // only on the list response
+  coverImage?: string | null;
 }
 
 export interface HotelImage {
@@ -44,4 +42,29 @@ export interface Room {
   pricePerNight: number;
   quantity: number;
   createdAt: string;
+}
+
+export type BookingStatus = "pending" | "approved" | "cancelled";
+
+export interface BookingInput {
+  roomId: number;
+  checkIn: string;
+  checkOut: string;
+  numberOfRooms: number;
+  guests: number;
+}
+
+export interface Booking extends BookingInput {
+  id: number;
+  userId: number;
+  status: BookingStatus;
+  paid: boolean;
+}
+
+// what GET /bookings/my returns: booking + hotel and room names
+export interface BookingDetails extends Booking {
+  guestName: string;
+  guestEmail: string;
+  hotelName: string;
+  roomType: string;
 }
