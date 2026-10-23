@@ -62,10 +62,15 @@ CREATE INDEX IF NOT EXISTS idx_hotel_images_hotel_id ON hotel_images(hotel_id);
 CREATE TABLE IF NOT EXISTS payments (
   id SERIAL PRIMARY KEY,
   booking_id INTEGER NOT NULL REFERENCES bookings(id) ON DELETE CASCADE,
-  stripe_session_id VARCHAR(255) NOT NULL UNIQUE,
+  user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+  reference VARCHAR(100) NOT NULL UNIQUE,
   amount INTEGER NOT NULL CHECK (amount > 0),
-  status VARCHAR(20) NOT NULL DEFAULT 'pending' CHECK (status IN ('pending', 'paid', 'failed')),
-  created_at TIMESTAMP NOT NULL DEFAULT NOW()
+  currency VARCHAR(3) NOT NULL,
+  status VARCHAR(20) NOT NULL DEFAULT 'pending'
+    CHECK (status IN ('pending', 'success', 'failed')),
+  paid_at TIMESTAMP
 );
 
 CREATE INDEX IF NOT EXISTS idx_payments_booking_id ON payments(booking_id);
+
+ALTER TABLE bookings DROP COLUMN IF EXISTS paid;

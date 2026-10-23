@@ -9,6 +9,7 @@ import HotelMap from "../../components/hotelMap/hotelMap";
 import ShareButton from "../../components/shareButton/shareButton";
 import StarRating from "../../components/starRating/starRating";
 import styles from "./hotelDetailsPage.module.css";
+import BookingForm from "../../components/bookingForm/bookingForm";
 
 export default function HotelDetailsPage() {
   const { id } = useParams();
@@ -86,6 +87,7 @@ export default function HotelDetailsPage() {
               </div>
             ))
           )}
+          <BookingForm rooms={rooms} />
         </aside>
       </div>
     </>

@@ -54,6 +54,11 @@ export const addBooking = async (req: AuthRequest, res: Response) => {
       },
       req.user!.id,
     );
+    if (booking.paid) {
+      return res
+        .status(400)
+        .json({ message: "Paid bookings can only be cancelled by an admin" });
+    }
     return res.status(201).json(booking);
   } catch (error) {
     console.error("Add Booking Error:", error);
@@ -104,7 +109,6 @@ export const updateBookingStatusById = async (req: Request, res: Response) => {
   }
 };
 
-
 export const cancelMyBooking = async (req: AuthRequest, res: Response) => {
   try {
     const id = parseInt(String(req.params.id));
@@ -116,10 +120,7 @@ export const cancelMyBooking = async (req: AuthRequest, res: Response) => {
       return res.status(403).json({ message: "Access denied" });
     }
 
-    const cancelled = await bookingService.updateBookingStatus(
-      id,
-      "cancelled",
-    );
+    const cancelled = await bookingService.updateBookingStatus(id, "cancelled");
     return res.status(200).json(cancelled);
   } catch (error) {
     return res.status(500).json({ message: "Error cancelling booking" });

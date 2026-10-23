@@ -200,6 +200,7 @@ ________________________________________________________________________________
 
 => installed stripe api for fake data
 
+<<<<<<< HEAD
 -------------------------------------------
 Added cors:
  app.use(cors({
@@ -208,3 +209,78 @@ Added cors:
   allowedHeaders: ['Content-Type', 'Authorization'],
   credentials: true // Allow cookies or auth headers if needed
 }));
+=======
+
+
+
+______________________________________________________________________________________________________________________________________
+payment gateway
+config/paystack.ts.
+
+import "dotenv/config";
+
+const PAYSTACK_URL = "https://api.paystack.co";
+
+// the currency every payment is charged in
+export const CURRENCY = "ZAR";
+
+interface PaystackResponse<T> {
+  status: boolean;
+  message: string;
+  data: T;
+}
+
+const paystackRequest = async <T>(path: string, body?: object): Promise<T> => {
+  const response = await fetch(`${PAYSTACK_URL}${path}`, {
+    method: body ? "POST" : "GET",
+    headers: {
+      Authorization: `Bearer ${process.env.PAYSTACK_SECRET_KEY}`,
+      "Content-Type": "application/json",
+    },
+    body: body ? JSON.stringify(body) : undefined,
+  });
+
+  const result = (await response.json()) as PaystackResponse<T>;
+  if (!response.ok || !result.status) {
+    throw new Error(result.message || "Paystack request failed");
+  }
+  return result.data;
+};
+
+export const initializeTransaction = (params: {
+  email: string;
+  amount: number;
+  currency: string;
+  reference: string;
+  callback_url: string;
+}) =>
+  paystackRequest<{ authorization_url: string; reference: string }>(
+    "/transaction/initialize",
+    params,
+  );
+
+export const verifyTransaction = (reference: string) =>
+  paystackRequest<{ status: string; amount: number; currency: string }>(
+    `/transaction/verify/${encodeURIComponent(reference)}`,
+  );
+
+
+  {
+  "status": true,
+  "message": "You probably shouldn't be here, but...",
+  "data": {
+    "service": "paystack-api",
+    "version": "1.0"
+  }
+}
+
+
+_______________________________________
+Bearer: 
+
+• The Analogy: Think of a bearer token like a physical ticket or a movie stub. If you hold the ticket, 
+  the theater lets you inside; they do not ask for your ID to verify if you bought it or found it on the floor.
+  
+• The HTTP Header: When a client (like a web browser or mobile app) makes a request to a backend server,
+  it attaches the token in the Authorization HTTP header using the
+>>>>>>> dev

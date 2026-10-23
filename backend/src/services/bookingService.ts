@@ -6,6 +6,9 @@ import {
   type BookingStatus,
 } from "../models/hotel.types.js";
 
+const isPaid = (bookingId: string) =>
+  `EXISTS (SELECT 1 FROM payments WHERE booking_id = ${bookingId} AND status = 'success') AS paid`;
+
 const bookingColumns = `id,
   user_id AS "userId",
   room_id AS "roomId",
@@ -13,7 +16,8 @@ const bookingColumns = `id,
   TO_CHAR(check_out, 'YYYY-MM-DD') AS "checkOut",
   number_of_rooms AS "numberOfRooms",
   guests,
-  status`;
+  status,
+  ${isPaid("bookings.id")}`;
 
 const detailsSelect = `SELECT b.id,
   b.user_id AS "userId",
@@ -22,6 +26,7 @@ const detailsSelect = `SELECT b.id,
   TO_CHAR(b.check_out, 'YYYY-MM-DD') AS "checkOut",
   b.number_of_rooms AS "numberOfRooms",
   b.guests,
+  ${isPaid("b.id")},
   b.status,
   u.name || ' ' || u.surname AS "guestName",
   u.email AS "guestEmail",
@@ -96,4 +101,3 @@ export const updateBookingStatus = async (
   );
   return rows[0] || null;
 };
-
