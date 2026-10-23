@@ -25,6 +25,7 @@ export interface Hotel {
   policies: string;
   createdBy: number | null;
   createdAt: Date;
+  coverImage?: string | null;
 }
 export type HotelInput = Omit<Hotel, "id" | "createdBy" | "createdAt">;
 
@@ -52,7 +53,7 @@ export type BookingStatus = "pending" | "approved" | "cancelled";
 export interface Booking {
   id: number;
   userId: number;
-  roomId: string;
+  roomId: number;
   checkIn: string;
   checkOut: string;
   numberOfRooms: number;

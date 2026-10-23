@@ -30,10 +30,11 @@ export const initializePayment = async (req: AuthRequest, res: Response) => {
       return res.status(400).json({ message: "Booking is already paid" });
     }
 
-    // const room = await roomService.findRoomById(bookingId);
-    // if (!room) {
-    //   return res.status(404).json({ message: "Room not found" });
-    // }
+    // CHANGED: uncommented, and it looks up the booking's room (was the bookingId)
+    const room = await roomService.findRoomById(booking.roomId);
+    if (!room) {
+      return res.status(404).json({ message: "Room not found" });
+    }
 
     // the price is calculated here, so the client can't change it
     const nights =
