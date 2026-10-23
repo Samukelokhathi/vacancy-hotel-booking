@@ -21,11 +21,9 @@ const startServer = async () => {
 
   app.use(
     cors({
-      origin:
-        "https://vacancy-hotel-booking-git-main-samukelos-projects-14847251.vercel.app/", // Allows your Vite frontend
+      origin:[process.env.FRONTEND_URL!],
       methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
       allowedHeaders: ["Content-Type", "Authorization"],
-      credentials: true, // Allow cookies or auth headers if needed
     }),
   );
 
