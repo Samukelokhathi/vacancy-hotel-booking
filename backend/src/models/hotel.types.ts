@@ -58,6 +58,7 @@ export interface Booking {
   numberOfRooms: number;
   guests: number;
   status: BookingStatus;
+  paid: boolean;
 }
 
 export type BookingInput = Omit<Booking, "id" | "userId" | "status" | "paid">;
