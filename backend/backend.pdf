@@ -263,3 +263,13 @@ export const verifyTransaction = (reference: string) =>
     "version": "1.0"
   }
 }
+
+
+_______________________________________
+Bearer: 
+
+• The Analogy: Think of a bearer token like a physical ticket or a movie stub. If you hold the ticket, 
+  the theater lets you inside; they do not ask for your ID to verify if you bought it or found it on the floor.
+  
+• The HTTP Header: When a client (like a web browser or mobile app) makes a request to a backend server,
+  it attaches the token in the Authorization HTTP header using the
