@@ -253,3 +253,13 @@ export const verifyTransaction = (reference: string) =>
   paystackRequest<{ status: string; amount: number; currency: string }>(
     `/transaction/verify/${encodeURIComponent(reference)}`,
   );
+
+
+  {
+  "status": true,
+  "message": "You probably shouldn't be here, but...",
+  "data": {
+    "service": "paystack-api",
+    "version": "1.0"
+  }
+}
