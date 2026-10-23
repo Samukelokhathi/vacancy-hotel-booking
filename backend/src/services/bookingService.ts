@@ -60,7 +60,7 @@ export const countBookedRooms = async (
     `SELECT COALESCE(SUM(number_of_rooms), 0)::int AS booked
      FROM bookings
      WHERE room_id = $1
-     AND status <> 'approved'
+     AND status = 'approved'
      AND check_in < $3
      AND check_out > $2`,
     [roomId, checkIn, checkOut],

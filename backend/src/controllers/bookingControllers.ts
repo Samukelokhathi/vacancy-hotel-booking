@@ -46,7 +46,7 @@ export const addBooking = async (req: AuthRequest, res: Response) => {
 
     const booking = await bookingService.createBooking(
       {
-        roomId,
+        roomId: room.id, // CHANGED: the verified number, not the raw request value
         checkIn,
         checkOut,
         numberOfRooms: Number(numberOfRooms),
@@ -54,11 +54,7 @@ export const addBooking = async (req: AuthRequest, res: Response) => {
       },
       req.user!.id,
     );
-    if (booking.paid) {
-      return res
-        .status(400)
-        .json({ message: "Paid bookings can only be cancelled by an admin" });
-    }
+    // CHANGED: the "paid bookings" check was here, but a new booking is never paid
     return res.status(201).json(booking);
   } catch (error) {
     console.error("Add Booking Error:", error);
@@ -118,6 +114,12 @@ export const cancelMyBooking = async (req: AuthRequest, res: Response) => {
     }
     if (booking.userId !== req.user!.id) {
       return res.status(403).json({ message: "Access denied" });
+    }
+    // CHANGED: moved here from addBooking
+    if (booking.paid) {
+      return res
+        .status(400)
+        .json({ message: "Paid bookings can only be cancelled by an admin" });
     }
 
     const cancelled = await bookingService.updateBookingStatus(id, "cancelled");

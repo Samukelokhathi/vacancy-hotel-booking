@@ -23,10 +23,13 @@ export const addRoom = async (req: Request, res: Response) => {
 
 export const getAllRooms = async (req: Request, res: Response) => {
   try {
-    const rooms = await roomService.findAllRooms();
+    const hotelId = parseInt(String(req.query.hotelId));
+    const rooms = isNaN(hotelId)
+      ? await roomService.findAllRooms()
+      : await roomService.findRoomsByHotel(hotelId);
     return res.status(200).json(rooms);
   } catch (error) {
-    console.error("Login Error:", error);
+    console.error("Get Rooms Error:", error);
     return res.status(500).json({ message: "Error retrieving rooms" });
   }
 };
