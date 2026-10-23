@@ -74,3 +74,10 @@ CREATE TABLE IF NOT EXISTS payments (
 CREATE INDEX IF NOT EXISTS idx_payments_booking_id ON payments(booking_id);
 
 ALTER TABLE bookings DROP COLUMN IF EXISTS paid;
+
+UPDATE rooms SET quantity = 100;
+
+-- free the rooms held by old unpaid test bookings (paid ones are kept)
+UPDATE bookings SET status = 'cancelled'
+WHERE status = 'pending'
+AND id NOT IN (SELECT booking_id FROM payments WHERE status = 'success');

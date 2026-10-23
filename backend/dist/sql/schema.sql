@@ -57,3 +57,9 @@ CREATE TABLE IF NOT EXISTS bookings (
 
 CREATE INDEX IF NOT EXISTS idx_rooms_hotel_id ON rooms(hotel_id);
 CREATE INDEX IF NOT EXISTS idx_hotel_images_hotel_id ON hotel_images(hotel_id);
+
+UPDATE rooms SET quantity = 100;
+
+UPDATE bookings SET status = 'cancelled'
+WHERE status = 'pending'
+AND id NOT IN (SELECT booking_id FROM payments WHERE status = 'success');
