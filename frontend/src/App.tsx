@@ -32,7 +32,7 @@ export default function App() {
         <Route element={<ProtectedRoute />}>
           <Route path="/bookings" element={<MyBookingsPage />} />
           <Route path="/payment/verify" element={<PaymentVerifyPage />} />
-        </Route>{" "}
+        </Route>
       </Routes>
     </>
   );

@@ -15,7 +15,10 @@ api.interceptors.request.use((config) => {
 export const getErrorMessage = (error: unknown, fallback: string): string => {
   if (axios.isAxiosError(error)) {
     if (!error.response) return "Could not reach the server";
-    return error.response.data?.message ?? fallback;
+    return (
+      error.response.data?.message ??
+      `${fallback} (error ${error.response.status})`
+    );
   }
   return fallback;
 };

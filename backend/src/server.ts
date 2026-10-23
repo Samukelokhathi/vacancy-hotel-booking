@@ -7,6 +7,8 @@ import hotelRoutes from "./routes/hotelRoutes.js";
 import roomRoutes from "./routes/roomRoutes.js";
 import hotelImageRoutes from "./routes/hotelImageRoutes.js";
 import bookingRoutes from "./routes/bookingRoutes.js";
+import paymentRoutes from "./routes/paymentRoutes.js";
+
 import cors from "cors";
 
 dotenv.config();
@@ -17,12 +19,14 @@ const startServer = async () => {
   await testDbConnection();
   await initDb();
 
-  app.use(cors({
-  origin: 'http://localhost:5173', // Allows your Vite frontend
-  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization'],
-  credentials: true // Allow cookies or auth headers if needed
-}));
+  app.use(
+    cors({
+      origin: "http://localhost:5173", // Allows your Vite frontend
+      methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+      allowedHeaders: ["Content-Type", "Authorization"],
+      credentials: true, // Allow cookies or auth headers if needed
+    }),
+  );
 
   app.use(express.json());
   app.use("/auth", authRoutes);
@@ -30,6 +34,7 @@ const startServer = async () => {
   app.use("/rooms", roomRoutes);
   app.use("/hotel-images", hotelImageRoutes);
   app.use("/bookings", bookingRoutes);
+  app.use("/payments", paymentRoutes);
 
   app.listen(PORT, () => {
     console.log(`Server is running on http://localhost:${PORT}`);
