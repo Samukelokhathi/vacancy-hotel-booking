@@ -136,3 +136,11 @@ export default defineConfig({
     },
   },
 });
+
+
+_______________________________________
+vercel.JSON
+
+{
+  "rewrites": [{ "source": "/(.*)", "destination": "/index.html" }]
+}
