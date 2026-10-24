@@ -1,5 +1,5 @@
 import { useEffect } from "react";
-import { Routes, Route } from "react-router-dom";
+import { Navigate, Routes, Route } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import type { AppDispatch } from "./store/store";
 import { getLoggedInUser } from "./store/loginSlice";
@@ -22,6 +22,7 @@ export default function App() {
   return (
     <>
       <Routes>
+        <Route path="/" element={<Navigate to="/home" replace />} />
         <Route path="/register" element={<RegisterPage />} />
         <Route path="/login" element={<Login />} />
         {/* CHANGED: public pages share the Navbar. Hotels need no login */}
@@ -33,6 +34,8 @@ export default function App() {
           <Route path="/bookings" element={<MyBookingsPage />} />
           <Route path="/payment/verify" element={<PaymentVerifyPage />} />
         </Route>
+
+        <Route path="*" element={<Navigate to="/home" replace />} />
       </Routes>
     </>
   );
