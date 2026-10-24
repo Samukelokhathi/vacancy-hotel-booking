@@ -284,3 +284,8 @@ Bearer:
 • The HTTP Header: When a client (like a web browser or mobile app) makes a request to a backend server,
   it attaches the token in the Authorization HTTP header using the
 >>>>>>> dev
+
+
+-------------------------------------------
+origin: process.env.HOSTED_FRONTEND_URL || "http://localhost:5173"
+HOSTED_FRONTEND_URL=https://vacancy-hotel-booking.vercel.app/

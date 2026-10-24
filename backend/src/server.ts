@@ -19,14 +19,17 @@ const startServer = async () => {
   await testDbConnection();
   await initDb();
 
+  console.log("Starting corse operation");
+
   app.use(
     cors({
-      origin: process.env.HOSTED_FRONTEND_URL || "http://localhost:5173", // Allows your Vite frontend
-      methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+      origin: process.env.FRONTEND_URL, // Allows your Vite frontend
+      methods: ["GET", "POST", "PATCH", "PUT", "DELETE", "OPTIONS"],
       allowedHeaders: ["Content-Type", "Authorization"],
-      credentials: true, // Allow cookies or auth headers if needed
     }),
   );
+
+  console.log("Done with  corse");
 
   app.use(express.json());
   app.use("/auth", authRoutes);
