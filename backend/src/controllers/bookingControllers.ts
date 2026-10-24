@@ -54,7 +54,6 @@ export const addBooking = async (req: AuthRequest, res: Response) => {
       },
       req.user!.id,
     );
-    // CHANGED: the "paid bookings" check was here, but a new booking is never paid
     return res.status(201).json(booking);
   } catch (error) {
     console.error("Add Booking Error:", error);

@@ -16,7 +16,7 @@ const initialState: PaymentState = {
 
 // asks the server for a Paystack link, then sends the browser to it
 export const startPayment = createAsyncThunk<
-  void,
+  string, 
   number,
   { rejectValue: string }
 >("payments/start", async (bookingId, { rejectWithValue }) => {
@@ -25,7 +25,7 @@ export const startPayment = createAsyncThunk<
       "/payments/initialize",
       { bookingId },
     );
-    window.location.href = response.data.authorizationUrl;
+    return response.data.authorizationUrl; // CHANGED: no redirect here
   } catch (error) {
     return rejectWithValue(getErrorMessage(error, "Unable to start the payment"));
   }

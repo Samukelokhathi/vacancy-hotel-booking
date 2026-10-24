@@ -10,7 +10,7 @@ import { protect, adminOnly } from "../middleware/authMiddleware.js";
 
 const router = Router();
 
-router.get("/", protect, getAllRooms);
+router.get("/", getAllRooms);
 router.get("/:id", getRoomById);
 
 router.post("/", protect, adminOnly, addRoom);
