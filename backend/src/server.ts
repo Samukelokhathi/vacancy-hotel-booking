@@ -21,10 +21,15 @@ const startServer = async () => {
 
   console.log("Starting corse operation");
 
+  const allowedOrigins = [
+    process.env.FRONTEND_URL?.replace(/\/$/, ""), // the hosted site
+    "http://localhost:5173", // local development
+  ].filter(Boolean) as string[];
+
   app.use(
     cors({
-      origin: process.env.FRONTEND_URL, // Allows your Vite frontend
-      methods: ["GET", "POST", "PATCH", "PUT", "DELETE", "OPTIONS"],
+      origin: allowedOrigins,
+      methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
       allowedHeaders: ["Content-Type", "Authorization"],
     }),
   );
