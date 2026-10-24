@@ -21,7 +21,7 @@ const startServer = async () => {
 
   app.use(
     cors({
-      origin: "http://localhost:5173", // Allows your Vite frontend
+      origin: process.env.HOSTED_FRONTEND_URL || "http://localhost:5173", // Allows your Vite frontend
       methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
       allowedHeaders: ["Content-Type", "Authorization"],
       credentials: true, // Allow cookies or auth headers if needed
