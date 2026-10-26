@@ -11,6 +11,7 @@ import Layout from "./components/layout/layout";
 import ProtectedRoute from "./components/protectedRoute/protectedRoute";
 import MyBookingsPage from "./pages/myBookings/myBookingsPage";
 import PaymentVerifyPage from "./pages/paymentVerify/paymentVerifyPage";
+import AdminDashboard from "./pages/admin/adminDashboard";
 
 export default function App() {
   const dispatch = useDispatch<AppDispatch>();
@@ -25,6 +26,7 @@ export default function App() {
         <Route path="/" element={<Navigate to="/home" replace />} />
         <Route path="/register" element={<RegisterPage />} />
         <Route path="/login" element={<Login />} />
+        <Route path="/admin" element={<AdminDashboard />} />
         {/* CHANGED: public pages share the Navbar. Hotels need no login */}
         <Route element={<Layout />}>
           <Route path="/home" element={<HomePage />} />
