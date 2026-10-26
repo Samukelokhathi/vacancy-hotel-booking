@@ -3,11 +3,10 @@ import Button from "../../components/button/button";
 import styles from "../register/registerPage.module.css";
 import VideoBackground from "../../components/videoBackround/videoBackground";
 
-
 import { NavLink, useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import type { RootState, AppDispatch } from "../../store/store";
-import videoSrc from "../../../public/videos/A hotel entrance video showing the exterior entrance of a hotel, with the entrance and surrounding facade as the main focus..mp4";
+import videoSrc from "../../../public/videos/hotel_promo.mp4";
 
 import {
   setField,
