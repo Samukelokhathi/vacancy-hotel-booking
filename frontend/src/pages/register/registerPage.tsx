@@ -1,6 +1,6 @@
 import { Input } from "../../components/inputs/input";
-import styles from "./registerPage.module.css";
 import Button from "../../components/button/button";
+import styles from "../register/registerPage.module.css"
 
 import { NavLink, useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
@@ -18,9 +18,9 @@ function Register() {
   const navigate = useNavigate();
 
   const signUpData = useSelector((state: RootState) => state.register);
-  const isLoading = signUpData.isLoading;
-  const error = signUpData.error;
+  const { isLoading, error } = signUpData;
 
+  // gives an Input its value and onChange
   const field = (name: keyof RegisterFormData) => ({
     value: signUpData[name],
     onChange: (e: React.ChangeEvent<HTMLInputElement>) =>
@@ -35,7 +35,6 @@ function Register() {
 
       dispatch(resetForm());
       navigate("/login");
-      console.log("Directing to login page");
     } catch (error) {
       console.error("Signup failed:", error);
     }
@@ -43,88 +42,89 @@ function Register() {
 
   return (
     <div className={styles.page}>
-      <form className={styles.card} onSubmit={handleSubmit}>
-        <div className={styles.nameSurnameContainer}>
-          <Input
-            id="Name"
-            name="Name"
-            label="Name"
-            type="text"
-            {...field("name")}
-            onChange={(e) =>
-              dispatch(setField({ field: "name", value: e.target.value }))
-            }
-            style={{ width: 240 }}
-            required
-          />
-          <Input
-            id="Surname"
-            name="Surname"
-            label="Surname"
-            type="text"
-            {...field("surname")}
-            style={{ width: 240 }}
-            required
-          />
+      <div className={styles.container}>
+        <NavLink to="/home" className={styles.logo}>
+          Vacancy Hotels
+        </NavLink>
+
+        <div className={styles.welcomeText}>
+          <h2 className={styles.title}>Create your account</h2>
+          <p className={styles.subtitle}>
+            Register to book hotels and manage your stays.
+          </p>
         </div>
-        <Input
-          id="email"
-          name="Email"
-          label="Email"
-          type="email"
-          {...field("email")}
-          required
-        />
-        <Input
-          id="Cell number"
-          name="Cell number"
-          label="Cell number"
-          type="text"
-          {...field("cellphone")}
-          required
-        />
-        <div className={styles.passwordContainer}>
+
+        <form className={styles.card} onSubmit={handleSubmit}>
+          <div className={styles.row}>
+            <Input
+              id="name"
+              name="name"
+              label="Name"
+              type="text"
+              {...field("name")}
+              required
+            />
+            <Input
+              id="surname"
+              name="surname"
+              label="Surname"
+              type="text"
+              {...field("surname")}
+              required
+            />
+          </div>
+
           <Input
-            id="Password"
-            name="Password"
-            label="Password"
-            type="password"
-            {...field("password")}
-            onChange={(e) =>
-              dispatch(setField({ field: "password", value: e.target.value }))
-            }
-            style={{ width: 240 }}
+            id="email"
+            name="email"
+            label="Email"
+            type="email"
+            {...field("email")}
             required
           />
 
           <Input
-            id="Confirm password"
-            name="Confirm password"
-            label="Confirm password"
-            {...field("confirmPassword")}
-            type="password"
-            onChange={(e) =>
-              dispatch(
-                setField({ field: "confirmPassword", value: e.target.value }),
-              )
-            }
-            style={{ width: 240 }}
+            id="cellphone"
+            name="cellphone"
+            label="Cell number"
+            type="tel"
+            {...field("cellphone")}
             required
           />
-        </div>
-        {error && <p>{error}</p>}
 
-        <Button type="submit" disabled={isLoading}>
-          Sign up
-        </Button>
+          <div className={styles.row}>
+            <Input
+              id="password"
+              name="password"
+              label="Password"
+              type="password"
+              {...field("password")}
+              required
+            />
+            <Input
+              id="confirmPassword"
+              name="confirmPassword"
+              label="Confirm password"
+              type="password"
+              {...field("confirmPassword")}
+              required
+            />
+          </div>
 
-        <p className={styles.registerText}>
-          Already registered?{" "}
-          <NavLink to={"/login"} className={styles.registerLink}>
-            Sign in
-          </NavLink>
-        </p>
-      </form>
+          {error && <p className={styles.error}>{error}</p>}
+
+          <Button type="submit" disabled={isLoading}>
+            {isLoading ? "Creating account..." : "Sign up"}
+          </Button>
+
+          <p className={styles.registerText}>
+            Already registered?{" "}
+            <NavLink to="/login" className={styles.registerLink}>
+              Sign in
+            </NavLink>
+          </p>
+        </form>
+      </div>
     </div>
   );
 }

@@ -3,6 +3,7 @@ import { useDispatch, useSelector } from "react-redux";
 import type { AppDispatch, RootState } from "../../store/store";
 import { fetchHotels } from "../../store/hotelSlice";
 import HotelCard from "../../components/hotelCard/hotelCard";
+
 import styles from "./homePage.module.css";
 
 export default function HomePage() {

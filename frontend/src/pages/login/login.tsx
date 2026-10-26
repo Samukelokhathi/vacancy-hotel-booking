@@ -1,9 +1,8 @@
 import { Input } from "../../components/inputs/input";
-import styles from "./login.module.css";
 import Button from "../../components/button/button";
-import { Text } from "../../components/text/text";
+import styles from "../login/login.module.css";
 
-import { NavLink, useNavigate } from "react-router-dom"; // CHANGED: one import
+import { NavLink, useNavigate } from "react-router-dom";
 import type { RootState, AppDispatch } from "../../store/store";
 import { login } from "../../store/loginSlice";
 import { useDispatch, useSelector } from "react-redux";
@@ -12,12 +11,11 @@ import { useState } from "react";
 function Login() {
   const dispatch = useDispatch<AppDispatch>();
   const navigate = useNavigate();
-  const { error, isLoading } = useSelector((state: RootState) => state.login); // CHANGED
+  const { error, isLoading } = useSelector((state: RootState) => state.login);
 
-  // CHANGED: one state object replaces the two useState calls
   const [form, setForm] = useState({ email: "", password: "" });
 
-  // NEW: one handler for both inputs, it uses the input's `name`
+  // one handler for both inputs, it uses the input's `name`
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
@@ -27,7 +25,6 @@ function Login() {
 
     try {
       await dispatch(login(form)).unwrap();
-
       navigate("/home", { replace: true });
     } catch (error) {
       console.error("Login failed:", error);
@@ -36,20 +33,24 @@ function Login() {
 
   return (
     <div className={styles.page}>
-      <div className={styles.loginContainer}>
+      <div className={styles.container}>
+        <NavLink to="/home" className={styles.logo}>
+          Vacancy Hotels
+        </NavLink>
+
         <div className={styles.welcomeText}>
-          <Text variant="h2" children={"Welcome back"} />
-          {/* CHANGED: the old text was about shopping */}
-          <Text variant="p" children={"Sign in to book your next stay."} />
+          <h2 className={styles.title}>Welcome back</h2>
+          <p className={styles.subtitle}>Sign in to book your next stay.</p>
         </div>
+
         <form className={styles.card} onSubmit={handleSubmit}>
           <Input
             id="email"
             name="email"
             label="Email Address"
             type="email"
-            value={form.email} // NEW
-            onChange={handleChange} // CHANGED
+            value={form.email}
+            onChange={handleChange}
             required
           />
           <Input
@@ -57,19 +58,21 @@ function Login() {
             name="password"
             label="Password"
             type="password"
-            value={form.password} // NEW
-            onChange={handleChange} // CHANGED
+            value={form.password}
+            onChange={handleChange}
             required
           />
+
           {error && <p className={styles.error}>{error}</p>}
-          {/* CHANGED: disabled and a loading label while the request runs */}
+
           <Button type="submit" disabled={isLoading}>
             {isLoading ? "Signing in..." : "Sign in"}
           </Button>
+
           <p className={styles.registerText}>
             New here?{" "}
-            <NavLink to={"/register"} className={styles.registerLink}>
-              Create an account {/* CHANGED: removed the stray "+" */}
+            <NavLink to="/register" className={styles.registerLink}>
+              Create an account
             </NavLink>
           </p>
         </form>
