@@ -1,6 +1,95 @@
-@media (max-width: 600px) {
-  .image,
-  .noImage {
-    height: 220px;
-  }
+/* the whole card */
+.card {
+  background-color: #1a1b1e;
+  border: 1px solid #2c2d31;
+  border-radius: 18px;
+  overflow: hidden;
+  transition: transform 0.2s;
+}
+
+/* the card lifts a little when the mouse is over it */
+.card:hover {
+  transform: translateY(-4px);
+}
+
+/* the hotel photo: always a 4 by 3 shape, cropped to fit */
+.image {
+  display: block;
+  width: 100%;
+  aspect-ratio: 4 / 3;
+  object-fit: cover;
+}
+
+/* shown when the hotel has no photo */
+.noImage {
+  width: 100%;
+  aspect-ratio: 4 / 3;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #232428;
+  color: #9b9ca3;
+}
+
+/* the text area under the photo */
+.body {
+  padding: 24px;
+}
+
+.name {
+  margin: 0 0 8px 0;
+  font-family: "Space Grotesk", "DM Sans", sans-serif;
+  font-size: 20px;
+  font-weight: 700;
+  color: #ffffff;
+}
+
+/* city, dot and stars on one line */
+.cityRow {
+  margin: 0;
+  font-size: 17px;
+  color: #9b9ca3;
+}
+
+.dot {
+  margin: 0 8px;
+}
+
+/* the bottom line with the price and the button */
+.footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 24px;
+  padding-top: 22px;
+  border-top: 1px solid #2c2d31;
+}
+
+.price {
+  margin: 0;
+  font-family: "Space Grotesk", "DM Sans", sans-serif;
+  font-size: 24px;
+  font-weight: 700;
+  color: #ffffff;
+}
+
+.perNight {
+  font-family: "DM Sans", sans-serif;
+  font-size: 14px;
+  font-weight: 400;
+  color: #9b9ca3;
+}
+
+.button {
+  background-color: #f5a93b;
+  color: #1b1305;
+  padding: 11px 18px;
+  border-radius: 10px;
+  text-decoration: none;
+  font-weight: 500;
+  font-size: 15px;
+}
+
+.button:hover {
+  background-color: #fbbf4a;
 }
