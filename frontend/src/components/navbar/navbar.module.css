@@ -2,50 +2,57 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 14px 24px;
-  background: #fff;
-  border-bottom: 1px solid #e5e7eb;
+  padding: 16px 32px;
+  background-color: #0c0c0f;
+  border-bottom: 1px solid #26262b;
   position: sticky;
   top: 0;
   z-index: 10;
 }
 
 .logo {
-  font-size: 1.25rem;
-  font-weight: 700;
-  color: #2563eb;
+  font-size: 22px;
+  font-weight: bold;
+  color: #ffffff;
   text-decoration: none;
 }
 
 .links {
   display: flex;
   align-items: center;
-  gap: 16px;
+  gap: 20px;
 }
 
 .links a {
-  color: #374151;
+  color: #a1a1aa;
   text-decoration: none;
   font-weight: 500;
 }
 
+.links a:hover {
+  color: #ffffff;
+}
+
 .cta {
-  background: #2563eb;
-  color: #fff !important;
+  background-color: #f6ad37;
+  color: #1a1204 !important;
   padding: 8px 16px;
   border-radius: 8px;
+  font-weight: bold;
 }
 
 .greeting {
-  color: #6b7280;
+  color: #a1a1aa;
 }
 
 .linkButton {
-  background: none;
+  background-color: #1f1f24;
   border: none;
-  color: #374151;
+  color: #ffffff;
   font: inherit;
   font-weight: 500;
+  padding: 8px 14px;
+  border-radius: 8px;
   cursor: pointer;
 }
 
@@ -53,6 +60,7 @@
   .navbar {
     padding: 12px 16px;
   }
+
   .greeting {
     display: none;
   }

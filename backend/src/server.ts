@@ -23,7 +23,7 @@ const startServer = async () => {
 
   const allowedOrigins = [
     process.env.FRONTEND_URL?.replace(/\/$/, ""), // the hosted site
-    "http://localhost:5173", // local development
+    "http://localhost:5173",
   ].filter(Boolean) as string[];
 
   app.use(

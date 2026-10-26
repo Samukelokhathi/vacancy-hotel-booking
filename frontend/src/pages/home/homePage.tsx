@@ -15,18 +15,31 @@ export default function HomePage() {
     dispatch(fetchHotels());
   }, [dispatch]);
 
+  const showSkeletons = isLoading && hotels.length === 0;
+
   return (
     <>
-      <h1>Find your next stay</h1>
-      <p className="muted">Browse available hotels.</p>
+      <section className={styles.hero}>
+        <h1 className={styles.title}>Find your next stay</h1>
+        <p className={styles.subtitle}>
+          Browse hand-picked hotels and book in minutes.
+        </p>
+      </section>
 
-      {isLoading && <p>Loading hotels...</p>}
       {error && <p className="error-text">{error}</p>}
-      {!isLoading && !error && hotels.length === 0 && (
-        <p className="muted">No hotels available yet.</p>
+
+      {!isLoading && !error && (
+        <p className={styles.count}>
+          {hotels.length} hotel{hotels.length === 1 ? "" : "s"} found
+        </p>
       )}
 
       <div className={styles.grid}>
+        {showSkeletons &&
+          Array.from({ length: 6 }, (_, i) => (
+            <div key={i} className={styles.skeleton} />
+          ))}
+
         {hotels.map((hotel) => (
           <HotelCard key={hotel.id} hotel={hotel} />
         ))}
