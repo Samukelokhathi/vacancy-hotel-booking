@@ -10,7 +10,7 @@ import styles from "../login/login.module.css";
 
 import type { RootState, AppDispatch } from "../../store/store";
 import { login, googleLogin, logout } from "../../store/loginSlice";
-import videoSrc from "../../../public/videos/Cinematic ultra-realistic luxury hotel promotional video in landscape 16_9 HD for a premium hotel booking application background. Show a smooth, immersive sequence with no people and no written content_ begin with .mp4";
+import videoSrc from "../../../public/videos/A hotel entrance video showing the exterior entrance of a hotel, with the entrance and surrounding facade as the main focus..mp4";
 
 type Mode = "client" | "admin";
 
