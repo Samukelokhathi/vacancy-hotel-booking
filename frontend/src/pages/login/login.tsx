@@ -10,6 +10,7 @@ import styles from "../login/login.module.css";
 
 import type { RootState, AppDispatch } from "../../store/store";
 import { login, googleLogin, logout } from "../../store/loginSlice";
+import videoSrc from "../../../public/videos/Cinematic ultra-realistic luxury hotel promotional video in landscape 16_9 HD for a premium hotel booking application background. Show a smooth, immersive sequence with no people and no written content_ begin with .mp4";
 
 type Mode = "client" | "admin";
 
@@ -78,7 +79,7 @@ function Login() {
   return (
     <div className={styles.page}>
       {/* the file lives in public/videos, so the address starts with /videos */}
-      <VideoBackground src="/videos/login-bg.mp4" />
+      <VideoBackground src={videoSrc} />
 
       <div className={styles.container}>
         <NavLink to="/home" className={styles.logo}>
