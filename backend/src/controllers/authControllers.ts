@@ -3,6 +3,19 @@ import * as UserService from "../services/userService.js";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import { type AuthRequest } from "../middleware/authMiddleware.js";
+import { OAuth2Client, type TokenPayload } from "google-auth-library";
+import { type User } from "../models/hotel.types.js";
+
+
+
+const googleClient = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
+
+const createToken = (user: User) =>
+  jwt.sign(
+    { id: user.id, email: user.email, role: user.role },
+    process.env.JWT_SECRET!,
+    { expiresIn: "1h" },
+  );
 
 export const register = async (req: Request, res: Response) => {
   const { email, password, name, surname, cellphone } = req.body;
@@ -56,6 +69,48 @@ export const login = async (req: Request, res: Response) => {
   } catch (error) {
     console.error("Login Error:", error);
     return res.status(500).json({ message: "Error logging in" });
+  }
+};
+
+export const googleLogin = async (req: Request, res: Response) => {
+  const { credential } = req.body;
+  if (!credential) {
+    return res.status(400).json({ message: "Google credential is required" });
+  }
+
+  // 1. check the token really came from Google, for our app
+  let payload: TokenPayload | undefined;
+  try {
+    const ticket = await googleClient.verifyIdToken({
+      idToken: credential,
+      audience: process.env.GOOGLE_CLIENT_ID!,
+    });
+    payload = ticket.getPayload();
+  } catch (error) {
+    return res.status(401).json({ message: "Invalid Google sign-in" });
+  }
+
+  if (!payload?.email || !payload.email_verified) {
+    return res.status(401).json({ message: "Google email is not verified" });
+  }
+
+  // 2. find the user, or create a new client account
+  try {
+    let user = await UserService.findUserByEmail(payload.email);
+    if (!user) {
+      user = await UserService.createGoogleUser(
+        payload.email,
+        payload.given_name ?? payload.name ?? "Google",
+        payload.family_name ?? "",
+      );
+    }
+
+    return res
+      .status(200)
+      .json({ message: "Login Successful", token: createToken(user) });
+  } catch (error) {
+    console.error("Google Login Error:", error);
+    return res.status(500).json({ message: "Error logging in with Google" });
   }
 };
 

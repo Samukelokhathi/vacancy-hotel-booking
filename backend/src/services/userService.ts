@@ -1,6 +1,25 @@
 import { query } from "../config/database.js";
 import bcrypt from "bcryptjs";
 import { type User } from "../models/hotel.types.js";
+import crypto from "crypto";
+
+export const createGoogleUser = async (
+  email: string,
+  name: string,
+  surname: string,
+): Promise<User> => {
+  const randomPassword = crypto.randomBytes(32).toString("hex");
+  const hashedPassword = await bcrypt.hash(randomPassword, 10);
+
+  const { rows } = await query(
+    `INSERT INTO users (name, surname, email, password, role)
+     VALUES ($1, $2, $3, $4, 'client')
+     RETURNING id, name, surname, email, cellphone, role, "createdat"`,
+    [name, surname, email.toLowerCase(), hashedPassword],
+  );
+
+  return rows[0];
+};
 
 export const findUserByEmail = async (email: string | null): Promise<User> => {
   const { rows } = await query("SELECT * FROM users WHERE EMAIL = $1", [
