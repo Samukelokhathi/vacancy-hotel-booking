@@ -1,5 +1,10 @@
-/* the whole page: centres the form on screen */
+/* ---------- the page ---------- */
+
+/* the whole page: centres the form on screen.
+   position: relative lets the video fill the page behind the form */
 .page {
+  position: relative;
+  overflow: hidden;
   min-height: 100vh;
   display: flex;
   align-items: center;
@@ -9,8 +14,11 @@
   background-color: #0b0c0e;
 }
 
-/* keeps the form from getting too wide */
+/* keeps the form from getting too wide.
+   z-index: 1 keeps it above the video */
 .container {
+  position: relative;
+  z-index: 1;
   width: 100%;
   max-width: 460px;
 }
@@ -19,17 +27,18 @@
 .logo {
   display: block;
   text-align: center;
-  margin-bottom: 28px;
+  margin-bottom: 24px;
   font-size: 24px;
   font-weight: bold;
   color: #ffffff;
   text-decoration: none;
 }
 
-/* the heading and the small text under it */
+/* ---------- heading ---------- */
+
 .welcomeText {
   text-align: center;
-  margin-bottom: 24px;
+  margin-bottom: 20px;
 }
 
 .title {
@@ -44,30 +53,58 @@
   color: #9b9ca3;
 }
 
-/* the form box */
+/* ---------- Guest / Admin switch (sits above the card) ---------- */
+
+.toggle {
+  display: flex;
+  gap: 4px;
+  padding: 4px;
+  margin-bottom: 16px;
+  background-color: rgba(26, 27, 30, 0.88);
+  border: 1px solid #2c2d31;
+  border-radius: 12px;
+}
+
+.toggleButton {
+  flex: 1;
+  padding: 10px;
+  font-size: 15px;
+  font-weight: bold;
+  color: #9b9ca3;
+  background-color: transparent;
+  border: none;
+  border-radius: 9px;
+  cursor: pointer;
+}
+
+.toggleButton:hover {
+  color: #ffffff;
+}
+
+/* must stay below .toggleButton, so it wins */
+.toggleActive {
+  color: #1b1305;
+  background-color: #f5a93b;
+}
+
+.toggleActive:hover {
+  color: #1b1305;
+}
+
+/* ---------- the form box ---------- */
+
+/* slightly see-through, so the video shows around the edges */
 .card {
   display: flex;
   flex-direction: column;
   gap: 18px;
   padding: 32px;
-  background-color: #1a1b1e;
+  background-color: rgba(26, 27, 30, 0.88);
   border: 1px solid #2c2d31;
   border-radius: 18px;
 }
 
-/* two inputs side by side (name + surname, password + confirm) */
-.row {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 16px;
-}
-
-/* stops a long input from pushing the grid wider than the card */
-.row > * {
-  min-width: 0;
-}
-
-/* the labels above the inputs */
+/* labels above the inputs */
 .card label {
   display: block;
   margin-bottom: 6px;
@@ -75,7 +112,7 @@
   color: #9b9ca3;
 }
 
-/* the input boxes */
+/* input boxes */
 .card input {
   width: 100%;
   box-sizing: border-box;
@@ -103,7 +140,7 @@
   -webkit-text-fill-color: #ffffff;
 }
 
-/* the Sign in / Sign up button */
+/* the Sign in button */
 .card button {
   width: 100%;
   padding: 13px;
@@ -135,7 +172,33 @@
   border-radius: 8px;
 }
 
-/* "New here? Create an account" */
+/* ---------- Google part ---------- */
+
+/* the line with "or" in the middle */
+.divider {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 14px;
+  color: #6b6c73;
+}
+
+.divider::before,
+.divider::after {
+  content: "";
+  flex: 1;
+  height: 1px;
+  background-color: #2c2d31;
+}
+
+/* centres the Google button */
+.googleWrap {
+  display: flex;
+  justify-content: center;
+}
+
+/* ---------- bottom text ---------- */
+
 .registerText {
   margin: 0;
   text-align: center;
@@ -152,14 +215,11 @@
   text-decoration: underline;
 }
 
-/* phone: stack the pairs and shrink the padding */
+/* ---------- phone ---------- */
+
 @media (max-width: 520px) {
   .card {
-    padding: 24px 18px;
-  }
-
-  .row {
-    grid-template-columns: 1fr;
+    padding: 24px 16px;
   }
 
   .title {
