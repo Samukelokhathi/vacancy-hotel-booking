@@ -5,12 +5,12 @@ import { useDispatch, useSelector } from "react-redux";
 
 import { Input } from "../../components/inputs/input";
 import Button from "../../components/button/button";
-import VideoBackground from "../../components/videoBackround/videoBackground";
+// import VideoBackground from "../../components/videoBackround/videoBackground";
 import styles from "../login/login.module.css";
 
 import type { RootState, AppDispatch } from "../../store/store";
 import { login, logout } from "../../store/loginSlice";
-import videoSrc from "../../../public/videos/A hotel entrance video showing the exterior entrance of a hotel, with the entrance and surrounding facade as the main focus..mp4";
+// import videoSrc from "../../../public/videos/A hotel entrance video showing the exterior entrance of a hotel, with the entrance and surrounding facade as the main focus..mp4";
 
 type Mode = "client" | "admin";
 
@@ -79,7 +79,7 @@ function Login() {
   return (
     <div className={styles.page}>
       {/* the file lives in public/videos, so the address starts with /videos */}
-      <VideoBackground src={videoSrc} />
+      {/* <VideoBackground src={videoSrc} /> */}
 
       <div className={styles.container}>
         <NavLink to="/home" className={styles.logo}>

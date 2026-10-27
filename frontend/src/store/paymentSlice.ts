@@ -20,12 +20,12 @@ export const startPayment = createAsyncThunk<
   number,
   { rejectValue: string }
 >("payments/start", async (bookingId, { rejectWithValue }) => {
-  console.log("Starting payment for booking", bookingId); // runs only when the thunk is dispatched
   try {
     const response = await api.post<{ authorizationUrl: string }>(
       "/payments/initialize",
       { bookingId },
     );
+    console.log("Starting payment for booking", bookingId); // runs only when the thunk is dispatched
     return response.data.authorizationUrl;
   } catch (error) {
     return rejectWithValue(
@@ -61,6 +61,11 @@ const paymentSlice = createSlice({
         state.isLoading = true;
         state.error = null;
       })
+      .addCase(startPayment.fulfilled, (state, action) => {
+        state.isLoading = false;
+        state.error = action.payload;
+      })
+
       .addCase(startPayment.rejected, (state, action) => {
         state.isLoading = false;
         state.error = action.payload ?? "Unable to start the payment";

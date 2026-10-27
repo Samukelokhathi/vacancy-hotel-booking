@@ -11,17 +11,25 @@ export default function PhotoGallery({ images }: { images: HotelImage[] }) {
 
   return (
     <div>
-      <img src={images[active]?.url} alt="Hotel" className={styles.main} />
+      <img
+        className={styles.main}
+        src={images[active]?.url}
+        alt={`Hotel photo ${active + 1}`}
+      />
 
       <div className={styles.thumbs}>
         {images.map((image, index) => (
-          <img
+          <button
             key={image.id}
-            src={image.url}
-            alt={`Hotel photo ${index + 1}`}
+            type="button"
+            className={`${styles.thumbButton} ${
+              index === active ? styles.activeThumb : ""
+            }`}
             onClick={() => setActive(index)}
-            className={index === active ? styles.activeThumb : styles.thumb}
-          />
+            aria-label={`Show photo ${index + 1}`}
+          >
+            <img className={styles.thumb} src={image.url} alt="" />
+          </button>
         ))}
       </div>
     </div>

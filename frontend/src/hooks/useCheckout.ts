@@ -6,7 +6,7 @@ export function useCheckout() {
 
   // asks the backend for a Paystack link, then sends the browser there
   return async (bookingId: number) => {
-    const  url  = await dispatch(startPayment(bookingId)).unwrap();
+    const url = await dispatch(startPayment(bookingId)).unwrap();
     window.location.href = url;
   };
 }

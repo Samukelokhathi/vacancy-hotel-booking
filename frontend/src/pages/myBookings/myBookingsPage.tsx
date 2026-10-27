@@ -2,11 +2,13 @@ import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import type { AppDispatch, RootState } from "../../store/store";
 import { cancelBooking, fetchMyBookings } from "../../store/bookingSlice";
-import { startPayment } from "../../store/paymentSlice";
+import { useCheckout } from "../../hooks/useCheckout";
 import BookingCard from "../../components/bookingCard/bookingCard";
 import styles from "./myBookingsPage.module.css";
 
 export default function MyBookingsPage() {
+  const checkout = useCheckout();
+
   const dispatch = useDispatch<AppDispatch>();
   const bookings = useSelector((state: RootState) => state.bookings);
   const payments = useSelector((state: RootState) => state.payments);
@@ -15,7 +17,7 @@ export default function MyBookingsPage() {
     dispatch(fetchMyBookings());
   }, [dispatch]);
 
-  const handlePay = (id: number) => dispatch(startPayment(id));
+  const handlePay = (id: number) => checkout(id);
 
   const handleCancel = (id: number) => {
     if (window.confirm("Cancel this booking?")) dispatch(cancelBooking(id));

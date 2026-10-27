@@ -3,14 +3,15 @@ import { Link } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import type { AppDispatch, RootState } from "../../store/store";
 import { createBooking } from "../../store/bookingSlice";
-import { startPayment } from "../../store/paymentSlice";
-import type { Room } from "../../models/hotel.types";
-import type { BookingFormData } from "../../models/hotel.types";
+import type { Room, BookingFormData } from "../../models/hotel.types";
+import { useCheckout } from "../../hooks/useCheckout";
 import { formatPrice, countNights } from "../../utils/format";
 import Button from "../button/button";
 import styles from "./bookingForm.module.css";
 
 export default function BookingForm({ rooms }: { rooms: Room[] }) {
+  const checkout = useCheckout();
+
   const dispatch = useDispatch<AppDispatch>();
   const isAuthenticated = useSelector(
     (state: RootState) => state.login.isAuthenticated,
@@ -28,11 +29,11 @@ export default function BookingForm({ rooms }: { rooms: Room[] }) {
   const [formError, setFormError] = useState("");
 
   if (rooms.length === 0) {
-    return <p className="muted">No rooms available to book yet.</p>;
+    return <p className={styles.empty}>No rooms available to book yet.</p>;
   }
   if (!isAuthenticated) {
     return (
-      <p>
+      <p className={styles.loginPrompt}>
         <Link to="/login">Log in</Link> to book a room.
       </p>
     );
@@ -79,7 +80,7 @@ export default function BookingForm({ rooms }: { rooms: Room[] }) {
         createBooking({ ...form, roomId: room.id }),
       ).unwrap();
       // sends the browser to Paystack
-      await dispatch(startPayment(booking.id)).unwrap();
+      await checkout(booking.id);
     } catch (error) {
       setFormError(typeof error === "string" ? error : "Something went wrong");
     }
@@ -87,17 +88,19 @@ export default function BookingForm({ rooms }: { rooms: Room[] }) {
 
   return (
     <form className={styles.form} onSubmit={handleSubmit}>
-      <h3>Book your stay</h3>
-
       <label>
-        Room type
+        Room
         <select name="roomId" value={room.id} onChange={handleChange}>
           {rooms.map((r) => (
             <option key={r.id} value={r.id}>
-              {r.roomType} - {formatPrice(r.pricePerNight)}
+              {r.roomType}
             </option>
           ))}
         </select>
+        <span className={styles.hint}>
+          {formatPrice(room.pricePerNight)} / night - sleeps up to{" "}
+          {room.capacity}
+        </span>
       </label>
 
       <div className={styles.row}>
@@ -152,17 +155,25 @@ export default function BookingForm({ rooms }: { rooms: Room[] }) {
       </div>
 
       {nights > 0 && (
-        <p className={styles.summary}>
-          {nights} night(s) × {form.numberOfRooms} room(s) ={" "}
-          <strong>{formatPrice(total)}</strong>
-        </p>
+        <div className={styles.summary}>
+          <div className={styles.summaryRow}>
+            <span>
+              {formatPrice(room.pricePerNight)} × {nights}{" "}
+              {nights === 1 ? "night" : "nights"} × {form.numberOfRooms}
+            </span>
+            <span>{formatPrice(total)}</span>
+          </div>
+          <div className={styles.totalRow}>
+            <span>Total</span>
+            <span>{formatPrice(total)}</span>
+          </div>
+        </div>
       )}
 
-      {formError && <p className="error-text">{formError}</p>}
+      {formError && <p className={styles.error}>{formError}</p>}
 
       <Button type="submit" disabled={isBusy}>
-        {isBusy ? "Please wait..." : "Book and pay"}
-       
+        {isBusy ? "Please wait..." : "Book and Pay"}
       </Button>
     </form>
   );

@@ -8,8 +8,9 @@ import PhotoGallery from "../../components/photoGallery/photoGallery";
 import HotelMap from "../../components/hotelMap/hotelMap";
 import ShareButton from "../../components/shareButton/shareButton";
 import StarRating from "../../components/starRating/starRating";
-import styles from "./hotelDetailsPage.module.css";
+import FacilitiesList from "../../components/facilitieslist/facilitieslist";
 import BookingForm from "../../components/bookingForm/bookingForm";
+import styles from "./hotelDetailsPage.module.css";
 
 export default function HotelDetailsPage() {
   const { id } = useParams();
@@ -23,73 +24,86 @@ export default function HotelDetailsPage() {
     dispatch(fetchHotelDetails(hotelId));
   }, [dispatch, hotelId]);
 
-  if (error) return <p className="error-text">{error}</p>;
+  if (error) return <p className={styles.errorMessage}>{error}</p>;
 
   // also covers the moment between two hotels, so the old one never flashes
   if (isLoading || !selected || selected.hotel.id !== hotelId) {
-    return <p>Loading hotel...</p>;
+    return <p className={styles.message}>Loading hotel...</p>;
   }
 
   const { hotel, images, rooms } = selected;
 
   return (
-    <>
-      <PhotoGallery images={images} />
+    <div className={styles.layout}>
+      {/* LEFT: photos and details */}
+      <div className={styles.main}>
+        <PhotoGallery images={images} />
 
-      <div className={styles.layout}>
-        <section>
-          <h1>{hotel.name}</h1>
-          <StarRating value={hotel.starRating} />
-          <p className="muted">
-            {hotel.address}, {hotel.city}
-          </p>
-          <p>{hotel.description}</p>
+        <div className={styles.titleRow}>
+          <div>
+            <h1 className={styles.name}>{hotel.name}</h1>
+            <p className={styles.meta}>
+              <StarRating value={hotel.starRating} />
+              <span className={styles.address}>
+                <svg
+                  width="16"
+                  height="16"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                >
+                  <path d="M12 21s-7-6.2-7-11a7 7 0 1 1 14 0c0 4.8-7 11-7 11z" />
+                  <circle cx="12" cy="10" r="2.5" />
+                </svg>
+                {hotel.address}, {hotel.city}
+              </span>
+            </p>
+          </div>
 
-          <h2>Facilities</h2>
-          {hotel.facilities.length === 0 ? (
-            <p className="muted">No facilities listed.</p>
-          ) : (
-            <ul className={styles.chips}>
-              {hotel.facilities.map((facility) => (
-                <li key={facility}>{facility}</li>
-              ))}
-            </ul>
-          )}
+          {/* more buttons (like Save) can go in here later */}
+          <div className={styles.actions}>
+            <ShareButton title={hotel.name} />
+          </div>
+        </div>
 
-          <h2>Policies</h2>
-          <p className={styles.policies}>
-            {hotel.policies || "No policies listed."}
-          </p>
+        {hotel.description && (
+          <p className={styles.description}>{hotel.description}</p>
+        )}
 
-          <h2>Location</h2>
-          <HotelMap
-            latitude={hotel.latitude}
-            longitude={hotel.longitude}
-            name={hotel.name}
-          />
+        <section className={styles.card}>
+          <h2 className={styles.cardTitle}>Facilities</h2>
+          <FacilitiesList facilities={hotel.facilities} />
         </section>
 
-        <aside className={styles.sidebar}>
-          <p className={styles.price}>
-            {formatPrice(hotel.pricePerNight)} <span>/ night</span>
-          </p>
-          <ShareButton title={hotel.name} />
+        <div className={styles.twoColumns}>
+          <section className={styles.card}>
+            <h2 className={styles.cardTitle}>Policies</h2>
+            <p className={styles.policies}>
+              {hotel.policies || "No policies listed."}
+            </p>
+          </section>
 
-          <h3>Rooms</h3>
-          {rooms.length === 0 ? (
-            <p className="muted">No rooms listed yet.</p>
-          ) : (
-            rooms.map((room) => (
-              <div key={room.id} className={styles.room}>
-                <strong>{room.roomType}</strong>
-                <span className="muted">Up to {room.capacity} guests</span>
-                <span>{formatPrice(room.pricePerNight)} / night</span>
-              </div>
-            ))
-          )}
-          <BookingForm rooms={rooms} />
-        </aside>
+          <section className={styles.card}>
+            <h2 className={styles.cardTitle}>Location</h2>
+            <HotelMap
+              latitude={hotel.latitude}
+              longitude={hotel.longitude}
+              name={hotel.name}
+            />
+          </section>
+        </div>
       </div>
-    </>
+
+      {/* RIGHT: price and booking card */}
+      <aside className={styles.sidebar}>
+        <p className={styles.price}>
+          {formatPrice(hotel.pricePerNight)} <span>/ night</span>
+        </p>
+        <BookingForm rooms={rooms} />
+      </aside>
+    </div>
   );
 }

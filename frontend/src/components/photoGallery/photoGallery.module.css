@@ -1,44 +1,63 @@
+/* the big photo */
 .main {
+  display: block;
   width: 100%;
-  height: 420px;
+  aspect-ratio: 16 / 10;
   object-fit: cover;
-  border-radius: 14px;
+  border-radius: 18px;
+  border: 1px solid #2c2d31;
 }
 
+/* shown when the hotel has no photos */
 .empty {
-  height: 240px;
   display: flex;
   align-items: center;
   justify-content: center;
-  background: #e5e7eb;
-  color: #6b7280;
-  border-radius: 14px;
+  aspect-ratio: 16 / 10;
+  color: #9b9ca3;
+  background-color: #1a1b1e;
+  border: 1px solid #2c2d31;
+  border-radius: 18px;
 }
 
+/* the small photos under it: 4 in a row */
 .thumbs {
-  display: flex;
-  gap: 10px;
-  margin-top: 10px;
-  overflow-x: auto;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 12px;
+  margin-top: 12px;
 }
 
-.thumb,
-.activeThumb {
-  width: 90px;
-  height: 64px;
-  object-fit: cover;
-  border-radius: 8px;
-  cursor: pointer;
-  flex-shrink: 0;
+/* each small photo is a button, so the keyboard can use it */
+.thumbButton {
+  padding: 0;
+  overflow: hidden;
+  background: none;
   border: 2px solid transparent;
+  border-radius: 12px;
+  cursor: pointer;
 }
 
+.thumbButton:hover {
+  border-color: #55565c;
+}
+
+/* the photo that is showing now: amber border (must stay below .thumbButton) */
 .activeThumb {
-  border-color: #2563eb;
+  border-color: #f5a93b;
 }
 
+.thumb {
+  display: block;
+  width: 100%;
+  aspect-ratio: 4 / 3;
+  object-fit: cover;
+}
+
+/* phone: 3 small photos in a row */
 @media (max-width: 600px) {
-  .main {
-    height: 260px;
+  .thumbs {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 8px;
   }
 }

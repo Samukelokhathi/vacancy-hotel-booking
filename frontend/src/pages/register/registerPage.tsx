@@ -1,12 +1,12 @@
 import { Input } from "../../components/inputs/input";
 import Button from "../../components/button/button";
 import styles from "../register/registerPage.module.css";
-import VideoBackground from "../../components/videoBackround/videoBackground";
+// import VideoBackground from "../../components/videoBackround/videoBackground";
 
 import { NavLink, useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import type { RootState, AppDispatch } from "../../store/store";
-import videoSrc from "../../../public/videos/hotel_promo.mp4";
+// import videoSrc from "../../../public/videos/hotel_promo.mp4";
 
 import {
   setField,
@@ -44,7 +44,7 @@ function Register() {
 
   return (
     <div className={styles.page}>
-      <VideoBackground src={videoSrc} />
+      {/* <VideoBackground src={videoSrc} /> */}
 
       <div className={styles.container}>
         <NavLink to="/home" className={styles.logo}>

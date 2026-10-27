@@ -4,6 +4,7 @@ import "leaflet/dist/leaflet.css";
 import markerIcon from "leaflet/dist/images/marker-icon.png";
 import markerIcon2x from "leaflet/dist/images/marker-icon-2x.png";
 import markerShadow from "leaflet/dist/images/marker-shadow.png";
+import styles from "./hotelMap.module.css";
 
 // Leaflet's default pin image breaks with Vite, so it's set by hand
 const pin = L.icon({
@@ -24,7 +25,7 @@ interface HotelMapProps {
 
 export default function HotelMap({ latitude, longitude, name }: HotelMapProps) {
   if (latitude === null || longitude === null) {
-    return <p className="muted">Map location not available for this hotel.</p>;
+    return <p className={styles.empty}>Map location not available for this hotel.</p>;
   }
 
   const position: [number, number] = [Number(latitude), Number(longitude)];
@@ -34,7 +35,7 @@ export default function HotelMap({ latitude, longitude, name }: HotelMapProps) {
       center={position}
       zoom={14}
       scrollWheelZoom={false}
-      style={{ height: 300, width: "100%", borderRadius: 12 }}
+      className={styles.map}
     >
       <TileLayer
         attribution="&copy; OpenStreetMap contributors"
