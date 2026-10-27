@@ -30,6 +30,7 @@ export const createBooking = createAsyncThunk<
 >("bookings/create", async (data, { rejectWithValue }) => {
   try {
     const response = await api.post<Booking>("/bookings", data);
+    console.log("Booking created:", response.data.id); // runs only after a booking succeeds
     return response.data;
   } catch (error) {
     return rejectWithValue(getErrorMessage(error, "Unable to create booking"));

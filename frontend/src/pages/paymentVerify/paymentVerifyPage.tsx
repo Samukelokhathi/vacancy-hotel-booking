@@ -47,8 +47,6 @@ export default function PaymentVerifyPage() {
   return <p>Confirming your payment...</p>;
 }
 
-
-
 // const https = require('https')
 
 // const params = JSON.stringify({

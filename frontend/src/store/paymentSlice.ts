@@ -16,18 +16,21 @@ const initialState: PaymentState = {
 
 // asks the server for a Paystack link, then sends the browser to it
 export const startPayment = createAsyncThunk<
-  string, 
+  string,
   number,
   { rejectValue: string }
 >("payments/start", async (bookingId, { rejectWithValue }) => {
+  console.log("Starting payment for booking", bookingId); // runs only when the thunk is dispatched
   try {
     const response = await api.post<{ authorizationUrl: string }>(
       "/payments/initialize",
       { bookingId },
     );
-    return response.data.authorizationUrl; // CHANGED: no redirect here
+    return response.data.authorizationUrl;
   } catch (error) {
-    return rejectWithValue(getErrorMessage(error, "Unable to start the payment"));
+    return rejectWithValue(
+      getErrorMessage(error, "Unable to start the payment"),
+    );
   }
 });
 
@@ -41,7 +44,9 @@ export const verifyPayment = createAsyncThunk<
     const response = await api.post<Payment>("/payments/verify", { reference });
     return response.data;
   } catch (error) {
-    return rejectWithValue(getErrorMessage(error, "Unable to verify the payment"));
+    return rejectWithValue(
+      getErrorMessage(error, "Unable to verify the payment"),
+    );
   }
 });
 
