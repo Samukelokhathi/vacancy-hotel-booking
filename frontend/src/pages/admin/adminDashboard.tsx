@@ -5,6 +5,7 @@ import { Navigate } from "react-router-dom";
 import type { AppDispatch, RootState } from "../../store/store";
 import { fetchHotels } from "../../store/hotelSlice";
 import { api, getErrorMessage } from "../../api/axios";
+
 import styles from "./adminDashboard.module.css";
 
 interface HotelForm {
@@ -29,7 +30,7 @@ export default function AdminDashboard() {
   const dispatch = useDispatch<AppDispatch>();
 
   const { user, isAuthenticated, authChecked } = useSelector(
-    (state: RootState) => state.login,
+    (state: RootState) => state.login
   );
 
   const [form, setForm] = useState<HotelForm>(initialForm);
@@ -46,9 +47,10 @@ export default function AdminDashboard() {
   }
 
   const handleChange = (
-    event: React.ChangeEvent<
-      HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
-    >,
+    event:
+      | React.ChangeEvent<HTMLInputElement>
+      | React.ChangeEvent<HTMLTextAreaElement>
+      | React.ChangeEvent<HTMLSelectElement>
   ) => {
     setForm({
       ...form,
@@ -56,8 +58,11 @@ export default function AdminDashboard() {
     });
   };
 
-  const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (
+    event: FormEvent<HTMLFormElement>
+  ) => {
     event.preventDefault();
+
     setMessage("");
     setFormError("");
     setIsSaving(true);
@@ -73,7 +78,9 @@ export default function AdminDashboard() {
       });
 
       await dispatch(fetchHotels()).unwrap();
+
       setForm(initialForm);
+
       setMessage("Hotel added successfully.");
     } catch (error) {
       setFormError(getErrorMessage(error, "Unable to add hotel."));
@@ -84,29 +91,36 @@ export default function AdminDashboard() {
 
   return (
     <main className={styles.page}>
-      <header className={styles.header}>
+      <header className={styles.hero}>
         <div>
-          <p className={styles.eyebrow}>VACANCY HOTELS</p>
-          <h1>Admin dashboard</h1>
-          <p>Manage your hotel listings.</p>
+          <p className={styles.badge}>STAYWISE ADMIN</p>
+
+          <h1>Admin Dashboard</h1>
+
+          <p>
+            Manage reservations, hotel listings and platform
+            content.
+          </p>
         </div>
-        <span className={styles.role}>Administrator</span>
+
+        <div className={styles.role}>
+          Administrator
+        </div>
       </header>
 
       <section className={styles.panel}>
-        <h2>Add a hotel</h2>
-        <p className={styles.help}>
-          Enter the hotel details below to create a new listing.
-        </p>
+        <h2>Add Hotel</h2>
 
-        <form onSubmit={handleSubmit} className={styles.form}>
+        <form
+          onSubmit={handleSubmit}
+          className={styles.form}
+        >
           <label>
-            Hotel name
+            Hotel Name
             <input
               name="name"
               value={form.name}
               onChange={handleChange}
-              placeholder="e.g. The Sable House"
               required
             />
           </label>
@@ -117,53 +131,52 @@ export default function AdminDashboard() {
               name="city"
               value={form.city}
               onChange={handleChange}
-              placeholder="e.g. Durban"
               required
             />
           </label>
 
           <label>
-            Price per night
+            Price Per Night
             <input
-              name="pricePerNight"
               type="number"
-              min="0"
-              step="0.01"
+              name="pricePerNight"
               value={form.pricePerNight}
               onChange={handleChange}
-              placeholder="1500"
               required
             />
           </label>
 
           <label>
-            Star rating
-            <select name="stars" value={form.stars} onChange={handleChange}>
-              <option value="1">1 star</option>
-              <option value="2">2 stars</option>
-              <option value="3">3 stars</option>
-              <option value="4">4 stars</option>
-              <option value="5">5 stars</option>
+            Stars
+            <select
+              name="stars"
+              value={form.stars}
+              onChange={handleChange}
+            >
+              <option value="1">1 Star</option>
+              <option value="2">2 Stars</option>
+              <option value="3">3 Stars</option>
+              <option value="4">4 Stars</option>
+              <option value="5">5 Stars</option>
             </select>
           </label>
 
           <label className={styles.fullWidth}>
-            Hotel description
+            Description
             <textarea
+              rows={4}
               name="description"
               value={form.description}
               onChange={handleChange}
-              placeholder="Describe the hotel and its facilities..."
-              rows={4}
               required
             />
           </label>
 
           <label className={styles.fullWidth}>
-            Hotel image URL
+            Image URL
             <input
-              name="imageUrl"
               type="url"
+              name="imageUrl"
               value={form.imageUrl}
               onChange={handleChange}
               placeholder="https://example.com/hotel.jpg"
@@ -171,19 +184,19 @@ export default function AdminDashboard() {
           </label>
 
           {formError && (
-            <p className={styles.error} role="alert">
-              {formError}
-            </p>
+            <p className={styles.error}>{formError}</p>
           )}
 
           {message && (
-            <p className={styles.success} role="status">
-              {message}
-            </p>
+            <p className={styles.success}>{message}</p>
           )}
 
-          <button type="submit" disabled={isSaving} className={styles.submit}>
-            {isSaving ? "Adding hotel..." : "Add hotel"}
+          <button
+            type="submit"
+            disabled={isSaving}
+            className={styles.submit}
+          >
+            {isSaving ? "Adding..." : "Add Hotel"}
           </button>
         </form>
       </section>

@@ -1,6 +1,7 @@
 import { type Request, type Response } from "express";
 import {
   CURRENCY,
+  PaystackError,
   initializeTransaction,
   verifyTransaction,
 } from "../config/paystack.js";
@@ -28,6 +29,15 @@ export const initializePayment = async (req: AuthRequest, res: Response) => {
     }
     if (booking.paid) {
       return res.status(400).json({ message: "Booking is already paid" });
+    }
+
+    if (!process.env.PAYSTACK_SECRET_KEY || !process.env.FRONTEND_URL) {
+      console.error(
+        "Payments need PAYSTACK_SECRET_KEY and FRONTEND_URL to be set",
+      );
+      return res
+        .status(500)
+        .json({ message: "Payments are not configured on the server" });
     }
 
     // CHANGED: uncommented, and it looks up the booking's room (was the bookingId)
@@ -67,6 +77,13 @@ export const initializePayment = async (req: AuthRequest, res: Response) => {
     });
   } catch (error) {
     console.error("Initialize Payment Error:", error);
+
+    // Paystack's own reason is safe to show; database errors are not
+    if (error instanceof PaystackError) {
+      return res
+        .status(502)
+        .json({ message: `Payment provider error: ${error.message}` });
+    }
     return res.status(500).json({ message: "Error starting the payment" });
   }
 };

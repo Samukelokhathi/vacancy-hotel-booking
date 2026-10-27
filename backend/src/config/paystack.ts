@@ -2,8 +2,13 @@ import "dotenv/config";
 
 const PAYSTACK_URL = "https://api.paystack.co";
 
-// the currency every payment is charged in
-export const CURRENCY = "ZAR";
+// the currency every payment is charged in.
+// To change it, set PAYSTACK_CURRENCY in .env / Render (no code change needed)
+export const CURRENCY = process.env.PAYSTACK_CURRENCY ?? "ZAR";
+
+// an error that comes from Paystack itself (wrong key, unsupported currency, ...)
+// its message is safe to show to the user, other errors (database, etc.) are not
+export class PaystackError extends Error {}
 
 interface PaystackResponse<T> {
   status: boolean;
@@ -21,10 +26,22 @@ const paystackRequest = async <T>(path: string, body?: object): Promise<T> => {
     body: body ? JSON.stringify(body) : undefined,
   });
 
-  const result = (await response.json()) as PaystackResponse<T>;
-  if (!response.ok || !result.status) {
-    throw new Error(result.message || "Paystack request failed");
+  // Paystack answers with JSON. If it does not, say so clearly
+  let result: PaystackResponse<T>;
+  try {
+    result = (await response.json()) as PaystackResponse<T>;
+  } catch {
+    throw new PaystackError(
+      `Paystack sent an unreadable answer (HTTP ${response.status})`,
+    );
   }
+
+  if (!response.ok || !result.status) {
+    // shows in the Render logs, so the real reason is easy to find
+    console.error(`Paystack ${path} failed (HTTP ${response.status}):`, result.message);
+    throw new PaystackError(result.message || "Paystack request failed");
+  }
+
   return result.data;
 };
 
