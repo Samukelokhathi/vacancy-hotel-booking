@@ -1,5 +1,5 @@
 import type { ReactNode } from "react";
-import styles from "./facilitiesList.module.css";
+import styles from "./facilitieslist.module.css";
 
 // small line icons, all drawn inside a 24 x 24 box
 const icons: Record<string, ReactNode> = {
