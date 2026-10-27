@@ -73,23 +73,23 @@ export const login = createAsyncThunk<User, LoginData, { rejectValue: string }>(
 
 // GOOGLE LOGIN THUNK: sends Google's credential to our server,
 // which checks it with Google and answers with our own token
-export const googleLogin = createAsyncThunk<
-  User,
-  string,
-  { rejectValue: string }
->("auth/googleLogin", async (credential, { rejectWithValue }) => {
-  try {
-    const response = await api.post<{ message: string; token: string }>(
-      "/auth/google",
-      { credential },
-    );
+// export const googleLogin = createAsyncThunk<
+//   User,
+//   string,
+//   { rejectValue: string }
+// >("auth/googleLogin", async (credential, { rejectWithValue }) => {
+//   try {
+//     const response = await api.post<{ message: string; token: string }>(
+//       "/auth/google",
+//       { credential },
+//     );
 
-    return await finishLogin(response.data.token);
-  } catch (error) {
-    localStorage.removeItem("token");
-    return rejectWithValue(getErrorMessage(error, "Google sign-in failed"));
-  }
-});
+//     return await finishLogin(response.data.token);
+//   } catch (error) {
+//     localStorage.removeItem("token");
+//     return rejectWithValue(getErrorMessage(error, "Google sign-in failed"));
+//   }
+// });
 
 // GET LOGGED-IN USER
 // This runs when the page is refreshed.
@@ -174,9 +174,9 @@ const Login = createSlice({
       .addCase(login.rejected, loginFailed)
 
       // LOGIN (Google)
-      .addCase(googleLogin.pending, startLoading)
-      .addCase(googleLogin.fulfilled, setUser)
-      .addCase(googleLogin.rejected, loginFailed)
+      // .addCase(googleLogin.pending, startLoading)
+      // .addCase(googleLogin.fulfilled, setUser)
+      // .addCase(googleLogin.rejected, loginFailed)
 
       // RESTORE USER (page refresh)
       .addCase(getLoggedInUser.pending, (state) => {

@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { GoogleLogin, type CredentialResponse } from "@react-oauth/google";
+// import { GoogleLogin, type CredentialResponse } from "@react-oauth/google";
 import { NavLink, useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 
@@ -9,7 +9,7 @@ import VideoBackground from "../../components/videoBackround/videoBackground";
 import styles from "../login/login.module.css";
 
 import type { RootState, AppDispatch } from "../../store/store";
-import { login, googleLogin, logout } from "../../store/loginSlice";
+import { login, logout } from "../../store/loginSlice";
 import videoSrc from "../../../public/videos/A hotel entrance video showing the exterior entrance of a hotel, with the entrance and surrounding facade as the main focus..mp4";
 
 type Mode = "client" | "admin";
@@ -18,7 +18,7 @@ function Login() {
   const dispatch = useDispatch<AppDispatch>();
   const navigate = useNavigate();
   const { error, isLoading } = useSelector((state: RootState) => state.login);
-0
+  0;
   const [form, setForm] = useState({ email: "", password: "" });
   const [mode, setMode] = useState<Mode>("client");
   const [formError, setFormError] = useState("");
@@ -58,21 +58,21 @@ function Login() {
     }
   };
 
-  const handleGoogle = async (response: CredentialResponse) => {
-    setFormError("");
+  // const handleGoogle = async (response: CredentialResponse) => {
+  //   setFormError("");
 
-    if (!response.credential) {
-      setFormError("Google sign-in failed. Please try again.");
-      return;
-    }
+  //   if (!response.credential) {
+  //     setFormError("Google sign-in failed. Please try again.");
+  //     return;
+  //   }
 
-    try {
-      const user = await dispatch(googleLogin(response.credential)).unwrap();
-      goToStart(user.role);
-    } catch (error) {
-      console.error("Google login failed:", error);
-    }
-  };
+  //   try {
+  //     const user = await dispatch(googleLogin(response.credential)).unwrap();
+  //     goToStart(user.role);
+  //   } catch (error) {
+  //     console.error("Google login failed:", error);
+  //   }
+  // };
 
   const message = formError || error;
 
@@ -153,7 +153,7 @@ function Login() {
               </div>
 
               <div className={styles.googleWrap}>
-                <GoogleLogin
+                {/* <GoogleLogin
                   onSuccess={handleGoogle}
                   onError={() =>
                     setFormError("Google sign-in failed. Please try again.")
@@ -162,7 +162,7 @@ function Login() {
                   shape="pill"
                   text="continue_with"
                   width="300"
-                />
+                /> */}
               </div>
 
               <p className={styles.registerText}>

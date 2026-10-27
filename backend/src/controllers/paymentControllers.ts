@@ -87,7 +87,10 @@ export const initializePayment = async (req: AuthRequest, res: Response) => {
   }
 };
 
+
+
 export const verifyPayment = async (req: AuthRequest, res: Response) => {
+
   const { reference } = req.body;
   if (!reference) {
     return res.status(400).json({ message: "reference is required" });
