@@ -30,16 +30,15 @@ export const initializePayment = async (req: AuthRequest, res: Response) => {
     if (booking.paid) {
       return res.status(400).json({ message: "Booking is already paid" });
     }
-
-    if (!process.env.PAYSTACK_SECRET_KEY || !process.env.FRONTEND_URL) {
-      console.error(
-        "Payments need PAYSTACK_SECRET_KEY and FRONTEND_URL to be set",
-      );
+    const missing = ["PAYSTACK_SECRET_KEY", "FRONTEND_URL"].filter(
+      (name) => !process.env[name],
+    );
+    if (missing.length > 0) {
+      console.error("Missing environment variables:", missing.join(", "));
       return res
         .status(500)
         .json({ message: "Payments are not configured on the server" });
     }
-
     // CHANGED: uncommented, and it looks up the booking's room (was the bookingId)
     const room = await roomService.findRoomById(booking.roomId);
     if (!room) {
