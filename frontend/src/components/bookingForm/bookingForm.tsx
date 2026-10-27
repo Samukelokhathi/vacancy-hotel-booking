@@ -162,6 +162,7 @@ export default function BookingForm({ rooms }: { rooms: Room[] }) {
 
       <Button type="submit" disabled={isBusy}>
         {isBusy ? "Please wait..." : "Book and pay"}
+       
       </Button>
     </form>
   );

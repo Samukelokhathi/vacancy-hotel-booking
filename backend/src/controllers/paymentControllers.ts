@@ -10,6 +10,7 @@ import * as paymentService from "../services/paymentServices.js";
 import * as roomService from "../services/roomService.js";
 import { type AuthRequest } from "../middleware/authMiddleware.js";
 
+console.log("initilizin payments");
 export const initializePayment = async (req: AuthRequest, res: Response) => {
   const { bookingId } = req.body;
   if (!bookingId) {
@@ -87,10 +88,7 @@ export const initializePayment = async (req: AuthRequest, res: Response) => {
   }
 };
 
-
-
 export const verifyPayment = async (req: AuthRequest, res: Response) => {
-
   const { reference } = req.body;
   if (!reference) {
     return res.status(400).json({ message: "reference is required" });
