@@ -1,0 +1,74 @@
+.footer {
+  padding: 40px 32px 24px 32px;
+  background-color: #0b0c0e;
+  border-top: 1px solid #26262b;
+}
+
+/* brand on the left, two link columns on the right */
+.inner {
+  max-width: 1200px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: 2fr 1fr 1fr;
+  gap: 32px;
+}
+
+.logo {
+  font-family: "Space Grotesk", "DM Sans", sans-serif;
+  font-size: 20px;
+  font-weight: bold;
+  color: #ffffff;
+}
+
+.text {
+  margin: 10px 0 0 0;
+  max-width: 320px;
+  font-size: 15px;
+  line-height: 1.5;
+  color: #9b9ca3;
+}
+
+.column {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.heading {
+  margin: 0 0 4px 0;
+  font-size: 14px;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  color: #ffffff;
+}
+
+.link {
+  font-size: 15px;
+  color: #9b9ca3;
+  text-decoration: none;
+}
+
+.link:hover {
+  color: #f5a93b;
+}
+
+.copy {
+  max-width: 1200px;
+  margin: 32px auto 0 auto;
+  padding-top: 20px;
+  border-top: 1px solid #1f1f24;
+  font-size: 14px;
+  color: #6b6c73;
+}
+
+/* phone */
+@media (max-width: 700px) {
+  .footer {
+    padding: 32px 16px 20px 16px;
+  }
+
+  .inner {
+    grid-template-columns: 1fr;
+    gap: 24px;
+  }
+}

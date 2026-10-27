@@ -2,65 +2,133 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 16px 32px;
-  background-color: #0c0c0f;
+  flex-wrap: wrap;
+  gap: 12px 24px;
+  padding: 14px 32px;
+  background-color: #0b0c0e;
   border-bottom: 1px solid #26262b;
   position: sticky;
   top: 0;
   z-index: 10;
 }
 
-.logo {
+/* logo + name */
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  text-decoration: none;
+}
+
+.logoIcon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  background-color: #f5a93b;
+  border-radius: 12px;
+}
+
+.brandName {
+  font-family: "Space Grotesk", "DM Sans", sans-serif;
   font-size: 22px;
   font-weight: bold;
   color: #ffffff;
-  text-decoration: none;
 }
 
+/* the links in the middle */
 .links {
   display: flex;
   align-items: center;
-  gap: 20px;
+  gap: 28px;
 }
 
-.links a {
-  color: #a1a1aa;
+.link {
+  padding: 6px 0;
+  font-size: 16px;
+  color: #9b9ca3;
   text-decoration: none;
-  font-weight: 500;
+  border-bottom: 2px solid transparent;
 }
 
-.links a:hover {
+.link:hover {
   color: #ffffff;
 }
 
-.cta {
-  background-color: #f6ad37;
-  color: #1a1204 !important;
-  padding: 8px 16px;
-  border-radius: 8px;
-  font-weight: bold;
+/* the page you are on: white text with an amber line */
+.active {
+  color: #ffffff;
+  border-bottom-color: #f5a93b;
+}
+
+/* the right side */
+.actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
 }
 
 .greeting {
-  color: #a1a1aa;
+  color: #9b9ca3;
 }
 
-.linkButton {
+.badge {
+  padding: 3px 10px;
+  font-size: 13px;
+  font-weight: bold;
+  color: #f5a93b;
+  background-color: #2b2310;
+  border-radius: 999px;
+}
+
+/* Login and Log out (a link and a button that look the same) */
+.darkButton {
+  padding: 10px 16px;
+  font: inherit;
+  font-size: 15px;
+  font-weight: bold;
+  color: #ffffff;
   background-color: #1f1f24;
   border: none;
-  color: #ffffff;
-  font: inherit;
-  font-weight: 500;
-  padding: 8px 14px;
-  border-radius: 8px;
+  border-radius: 10px;
+  text-decoration: none;
   cursor: pointer;
 }
 
-@media (max-width: 520px) {
+.darkButton:hover {
+  background-color: #2a2a30;
+}
+
+.signupButton {
+  padding: 10px 16px;
+  font-size: 15px;
+  font-weight: bold;
+  color: #1b1305;
+  background-color: #f5a93b;
+  border-radius: 10px;
+  text-decoration: none;
+}
+
+.signupButton:hover {
+  background-color: #fbbf4a;
+}
+
+/* small screens: the links drop to their own row under the logo */
+@media (max-width: 760px) {
   .navbar {
     padding: 12px 16px;
   }
 
+  .links {
+    order: 3;
+    width: 100%;
+    justify-content: center;
+    gap: 22px;
+  }
+}
+
+@media (max-width: 520px) {
   .greeting {
     display: none;
   }

@@ -1,0 +1,90 @@
+/* the dark box that holds the filters */
+.bar {
+  display: grid;
+  grid-template-columns: 2fr 1.2fr 0.8fr auto;
+  gap: 20px;
+  align-items: end;
+  padding: 26px;
+  background-color: #141518;
+  border: 1px solid #2c2d31;
+  border-radius: 22px;
+}
+
+/* one label + one input */
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  min-width: 0;
+}
+
+.label {
+  font-size: 13px;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  color: #9b9ca3;
+}
+
+.input,
+.select {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 14px 16px;
+  font-size: 16px;
+  color: #ffffff;
+  background-color: #1f2024;
+  border: 1px solid #2c2d31;
+  border-radius: 10px;
+}
+
+.input::placeholder {
+  color: #6b6c73;
+}
+
+/* amber border when you click inside */
+.input:focus,
+.select:focus {
+  outline: none;
+  border-color: #f5a93b;
+}
+
+/* the dropdown list colours */
+.select option {
+  background-color: #1f2024;
+  color: #ffffff;
+}
+
+.button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 14px 28px;
+  font-size: 16px;
+  font-weight: bold;
+  color: #1b1305;
+  background-color: #f5a93b;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.button:hover {
+  background-color: #fbbf4a;
+}
+
+/* tablet: 2 columns */
+@media (max-width: 900px) {
+  .bar {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+/* phone: 1 column */
+@media (max-width: 600px) {
+  .bar {
+    grid-template-columns: 1fr;
+    padding: 20px;
+  }
+}

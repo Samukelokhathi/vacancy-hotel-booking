@@ -1,81 +1,124 @@
-/* the heading area at the top */
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 24px;
+}
+
+/* Heading Area */
 .hero {
-  text-align: center;
-  padding: 40px 0 28px 0;
+  padding: 56px 0 32px 0;
 }
 
 .title {
-  margin: 0 0 8px 0;
-  font-size: 40px;
+  margin: 0 0 12px 0;
+  font-family:
+    Inter,
+    system-ui,
+    -apple-system,
+    sans-serif;
+  font-size: 48px;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  line-height: 1.15;
   color: #ffffff;
 }
 
 .subtitle {
-  margin: 0 0 20px 0;
+  margin: 0;
   font-size: 16px;
-  color: #a1a1aa;
+  font-weight: 400;
+  color: #8e8f96;
 }
 
-/* the search box */
-.searchBox {
-  width: 100%;
-  max-width: 420px;
-  box-sizing: border-box;
-  padding: 12px 16px;
-  font-size: 16px;
+/* Hotel list structure */
+.listing {
+  margin-top: 48px;
+}
+
+.sectionTitle {
+  margin: 0 0 6px 0;
+  font-family:
+    Inter,
+    system-ui,
+    -apple-system,
+    sans-serif;
+  font-size: 20px;
+  font-weight: 600;
   color: #ffffff;
-  background-color: #18181b;
-  border: 1px solid #2e2e33;
-  border-radius: 10px;
 }
 
-.searchBox:focus {
-  outline: none;
-  border-color: #f6ad37;
-}
-
-/* "6 hotels found" */
 .count {
-  margin: 0 0 16px 0;
-  font-size: 16px;
-  color: #a1a1aa;
+  margin: 0 0 28px 0;
+  font-size: 14px;
+  color: #8e8f96;
+}
+
+.clearButton {
+  margin-left: 14px;
+  padding: 0;
+  font: inherit;
+  color: #f5a93b;
+  background: none;
+  border: none;
+  text-decoration: underline;
+  cursor: pointer;
 }
 
 .message {
-  text-align: center;
-  color: #a1a1aa;
+  color: #8e8f96;
+  margin-top: 20px;
 }
 
 .errorMessage {
-  text-align: center;
   color: #f87171;
+  margin-bottom: 20px;
 }
 
-/* the cards: 3 in a row on a big screen */
+/* Responsive Grid Matching the Layout */
 .grid {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 24px;
+  width: 100%;
 }
 
-/* tablet: 2 in a row */
-@media (max-width: 900px) {
-  .grid {
-    grid-template-columns: repeat(2, 1fr);
+/* Shimmer Loading Blocks */
+.skeleton {
+  width: 100%;
+  aspect-ratio: 1.45 / 1;
+  background: linear-gradient(90deg, #18181c 25%, #25252b 50%, #18181c 75%);
+  background-size: 200% 100%;
+  animation: loadingShimmer 1.6s infinite ease-in-out;
+  border-radius: 12px;
+}
+
+@keyframes loadingShimmer {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
   }
 }
 
-/* phone: 1 in a row */
-@media (max-width: 600px) {
+/* Tablet & Mobile Media Queries */
+@media (max-width: 1024px) {
   .grid {
-    grid-template-columns: 1fr;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 640px) {
+  .hero {
+    padding: 36px 0 24px 0;
   }
 
   .title {
-    font-size: 30px;
+    font-size: 32px;
   }
 
-  .image {
-    height: 220px;
+  .grid {
+    grid-template-columns: 1fr;
+    gap: 16px;
   }
 }
