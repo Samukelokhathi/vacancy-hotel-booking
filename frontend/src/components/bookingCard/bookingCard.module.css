@@ -6,7 +6,7 @@
   border-radius: 22px;
 }
 
-/* hotel name on the left, badges on the right */
+/* hotel name on the left, badge on the right */
 .top {
   display: flex;
   align-items: flex-start;
@@ -27,13 +27,7 @@
   color: #9b9ca3;
 }
 
-.badges {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-}
-
-/* the coloured pills */
+/* the coloured pill */
 .badge {
   padding: 6px 14px;
   font-size: 14px;
@@ -42,24 +36,28 @@
   white-space: nowrap;
 }
 
+/* green: the hotel confirmed it */
 .approved {
   color: #3ddc84;
   background-color: #173324;
 }
 
+/* amber: waiting for the guest to pay */
 .pending {
   color: #f5a93b;
   background-color: #3a2d12;
 }
 
+/* blue: paid, waiting for the hotel to confirm */
+.awaiting {
+  color: #60a5fa;
+  background-color: #15263f;
+}
+
+/* red: cancelled */
 .cancelled {
   color: #f87171;
   background-color: #3a1517;
-}
-
-.paid {
-  color: #60a5fa;
-  background-color: #15263f;
 }
 
 /* the darker box with check-in, check-out, rooms, guests and price */
@@ -84,6 +82,14 @@
   font-size: 18px;
   font-weight: bold;
   color: #ffffff;
+}
+
+/* the small "Paid" word next to the price */
+.paidTag {
+  margin-left: 8px;
+  font-size: 13px;
+  font-weight: 500;
+  color: #60a5fa;
 }
 
 /* the buttons, lined up on the right */
