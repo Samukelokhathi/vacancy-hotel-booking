@@ -1,6 +1,52 @@
+/* "My Bookings" and the small text under it */
+.header {
+  margin-bottom: 24px;
+}
+
+.title {
+  margin: 0 0 6px 0;
+  font-family: "Space Grotesk", "DM Sans", sans-serif;
+  font-size: 34px;
+  color: #ffffff;
+}
+
+.subtitle {
+  margin: 0;
+  font-size: 17px;
+  color: #9b9ca3;
+}
+
+/* the booking cards, one under the other */
 .list {
   display: flex;
   flex-direction: column;
-  gap: 16px;
-  margin-top: 16px;
+  gap: 24px;
+}
+
+.message {
+  color: #9b9ca3;
+}
+
+.error {
+  margin: 0 0 20px 0;
+  padding: 12px 16px;
+  color: #f87171;
+  background-color: #2a1416;
+  border-radius: 10px;
+}
+
+.link {
+  color: #f5a93b;
+  font-weight: bold;
+  text-decoration: none;
+}
+
+.link:hover {
+  text-decoration: underline;
+}
+
+@media (max-width: 600px) {
+  .title {
+    font-size: 28px;
+  }
 }

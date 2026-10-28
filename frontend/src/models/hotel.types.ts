@@ -72,6 +72,8 @@ export interface BookingDetails extends Booking {
   guestEmail: string;
   hotelName: string;
   roomType: string;
+  hotelId: number;
+  totalPrice: number;
 }
 
 export interface Payment {

@@ -1,77 +1,143 @@
+/* one booking */
 .card {
+  padding: 26px 28px;
+  background-color: #1a1b1e;
+  border: 1px solid #2c2d31;
+  border-radius: 22px;
+}
+
+/* hotel name on the left, badges on the right */
+.top {
   display: flex;
+  align-items: flex-start;
   justify-content: space-between;
   gap: 16px;
-  background: #fff;
-  border-radius: 14px;
-  padding: 18px;
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.07);
 }
 
-.card h3,
-.card p {
-  margin: 0 0 4px;
+.name {
+  margin: 0 0 4px 0;
+  font-family: "Space Grotesk", "DM Sans", sans-serif;
+  font-size: 20px;
+  color: #ffffff;
 }
 
-.side {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-end;
-  gap: 8px;
+.reference {
+  margin: 0;
+  font-size: 15px;
+  color: #9b9ca3;
 }
 
 .badges {
   display: flex;
-  gap: 6px;
+  flex-wrap: wrap;
+  gap: 8px;
 }
 
+/* the coloured pills */
 .badge {
-  padding: 3px 10px;
+  padding: 6px 14px;
+  font-size: 14px;
+  font-weight: 500;
   border-radius: 999px;
-  font-size: 0.8rem;
-  font-weight: 600;
-  text-transform: capitalize;
-}
-
-.pending {
-  background: #fef3c7;
-  color: #92400e;
+  white-space: nowrap;
 }
 
 .approved {
-  background: #dcfce7;
-  color: #166534;
+  color: #3ddc84;
+  background-color: #173324;
+}
+
+.pending {
+  color: #f5a93b;
+  background-color: #3a2d12;
 }
 
 .cancelled {
-  background: #fee2e2;
-  color: #991b1b;
+  color: #f87171;
+  background-color: #3a1517;
 }
 
 .paid {
-  background: #dbeafe;
-  color: #1e40af;
+  color: #60a5fa;
+  background-color: #15263f;
+}
+
+/* the darker box with check-in, check-out, rooms, guests and price */
+.details {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 20px;
+  margin-top: 22px;
+  padding: 20px 22px;
+  background-color: #232428;
+  border-radius: 14px;
+}
+
+.label {
+  margin: 0 0 6px 0;
+  font-size: 15px;
+  color: #9b9ca3;
+}
+
+.value {
+  margin: 0;
+  font-size: 18px;
+  font-weight: bold;
+  color: #ffffff;
+}
+
+/* the buttons, lined up on the right */
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 20px;
+}
+
+/* "View Hotel" looks like plain text */
+.viewLink {
+  padding: 11px 16px;
+  font-size: 15px;
+  font-weight: 500;
+  color: #ffffff;
+  text-decoration: none;
+}
+
+.viewLink:hover {
+  text-decoration: underline;
 }
 
 .pay,
 .cancel {
-  padding: 8px 14px;
-  border-radius: 8px;
+  padding: 11px 18px;
   font: inherit;
-  font-weight: 600;
+  font-size: 15px;
+  font-weight: 500;
+  border: none;
+  border-radius: 10px;
   cursor: pointer;
 }
 
+/* amber button */
 .pay {
-  background: #2563eb;
-  color: #fff;
-  border: none;
+  color: #1b1305;
+  background-color: #f5a93b;
 }
 
+.pay:hover {
+  background-color: #fbbf4a;
+}
+
+/* red button */
 .cancel {
-  background: #fff;
-  color: #991b1b;
-  border: 1px solid #fca5a5;
+  color: #ffffff;
+  background-color: #ef4444;
+}
+
+.cancel:hover {
+  background-color: #f35d5d;
 }
 
 .pay:disabled,
@@ -80,11 +146,53 @@
   cursor: not-allowed;
 }
 
-@media (max-width: 520px) {
-  .card {
-    flex-direction: column;
+/* small grey note under the buttons */
+.note {
+  margin: 14px 0 0 0;
+  text-align: right;
+  font-size: 13px;
+  color: #7c7d85;
+}
+
+/* tablet: 3 facts per row */
+@media (max-width: 900px) {
+  .details {
+    grid-template-columns: repeat(3, 1fr);
   }
-  .side {
-    align-items: flex-start;
+}
+
+/* phone */
+@media (max-width: 600px) {
+  .card {
+    padding: 20px 16px;
+  }
+
+  .top {
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .details {
+    grid-template-columns: repeat(2, 1fr);
+    padding: 16px;
+  }
+
+  /* the buttons share the row */
+  .actions {
+    justify-content: stretch;
+  }
+
+  .viewLink {
+    width: 100%;
+    padding: 4px 0 8px 0;
+  }
+
+  .pay,
+  .cancel {
+    flex: 1;
+  }
+
+  .note {
+    text-align: left;
   }
 }

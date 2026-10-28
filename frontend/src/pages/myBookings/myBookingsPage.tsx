@@ -1,4 +1,5 @@
 import { useEffect } from "react";
+import { Link } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import type { AppDispatch, RootState } from "../../store/store";
 import { cancelBooking, fetchMyBookings } from "../../store/bookingSlice";
@@ -17,7 +18,8 @@ export default function MyBookingsPage() {
     dispatch(fetchMyBookings());
   }, [dispatch]);
 
-  const handlePay = (id: number) => checkout(id);
+  // the error message is shown by the slice, so the catch only stops a console warning
+  const handlePay = (id: number) => checkout(id).catch(() => {});
 
   const handleCancel = (id: number) => {
     if (window.confirm("Cancel this booking?")) dispatch(cancelBooking(id));
@@ -25,17 +27,28 @@ export default function MyBookingsPage() {
 
   const error = bookings.error ?? payments.error;
   const busy = bookings.isLoading || payments.isLoading;
+  const isEmpty = !bookings.isLoading && bookings.myBookings.length === 0;
 
   return (
-    <>
-      <h1>My bookings</h1>
+    <div>
+      <header className={styles.header}>
+        <h1 className={styles.title}>My Bookings</h1>
+        <p className={styles.subtitle}>Upcoming and recent stays</p>
+      </header>
 
-      {error && <p className="error-text">{error}</p>}
+      {error && <p className={styles.error}>{error}</p>}
+
       {bookings.isLoading && bookings.myBookings.length === 0 && (
-        <p>Loading bookings...</p>
+        <p className={styles.message}>Loading bookings...</p>
       )}
-      {!bookings.isLoading && bookings.myBookings.length === 0 && !error && (
-        <p className="muted">You have no bookings yet.</p>
+
+      {isEmpty && !error && (
+        <p className={styles.message}>
+          You have no bookings yet.{" "}
+          <Link className={styles.link} to="/home">
+            Browse hotels
+          </Link>
+        </p>
       )}
 
       <div className={styles.list}>
@@ -49,6 +62,6 @@ export default function MyBookingsPage() {
           />
         ))}
       </div>
-    </>
+    </div>
   );
 }
