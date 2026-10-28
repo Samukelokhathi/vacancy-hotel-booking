@@ -1,0 +1,21 @@
+/* dark circular icon button */
+.button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  color: #9ca3af; /* initial icon color (e.g., a muted grey) */
+  background-color: #26272b;
+  border: none;
+  border-radius: 50%;
+  cursor: pointer;
+  transition:
+    background-color 0.2s ease,
+    color 0.2s ease; /* smooth transition for both properties */
+}
+
+.button:hover {
+  background-color: #323338;
+  color: #ffffff; /* icon changes to bright white on hover */
+}
