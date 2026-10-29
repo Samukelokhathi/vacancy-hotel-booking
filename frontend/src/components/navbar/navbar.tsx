@@ -17,7 +17,6 @@ export default function Navbar() {
     navigate("/login", { replace: true });
   };
 
-  // NavLink tells us if this link is the page you are on
   const linkClass = ({ isActive }: { isActive: boolean }) =>
     isActive ? `${styles.link} ${styles.active}` : styles.link;
 
@@ -47,9 +46,9 @@ export default function Navbar() {
           Hotels
         </NavLink>
 
-        {isAuthenticated && !isAdmin && (
-          <NavLink to="/bookings" className={linkClass}>
-            My bookings
+        {isAuthenticated && (
+          <NavLink to="/profile" className={linkClass}>
+            Profile
           </NavLink>
         )}
 

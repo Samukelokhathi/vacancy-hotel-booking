@@ -1,0 +1,29 @@
+/* src/components/admin/footer.module.css */
+.footer {
+  background-color: #0b0c0e;
+  border-top: 1px solid #26262b;
+  padding: 24px 32px;
+  color: #8e8f96;
+  font-size: 14px;
+}
+.footerContent {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  max-width: 1400px;
+  margin: 0 auto;
+  width: 100%;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+.footerLinks {
+  display: flex;
+  gap: 20px;
+}
+.footerLinks a {
+  color: #8e8f96;
+  text-decoration: none;
+}
+.footerLinks a:hover {
+  color: #ffffff;
+}

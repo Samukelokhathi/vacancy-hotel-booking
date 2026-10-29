@@ -12,6 +12,7 @@ import ProtectedRoute from "./components/protectedRoute/protectedRoute";
 import MyBookingsPage from "./pages/myBookings/myBookingsPage";
 import PaymentVerifyPage from "./pages/paymentVerify/paymentVerifyPage";
 import AdminDashboard from "./pages/admin/adminDashboard";
+import ProfilePage from "./pages/profile/profilePage";
 
 export default function App() {
   const dispatch = useDispatch<AppDispatch>();
@@ -26,15 +27,17 @@ export default function App() {
         <Route path="/" element={<Navigate to="/home" replace />} />
         <Route path="/register" element={<RegisterPage />} />
         <Route path="/login" element={<Login />} />
-        <Route path="/admin" element={<AdminDashboard />} />
-        {/* CHANGED: public pages share the Navbar. Hotels need no login */}
+
         <Route element={<Layout />}>
           <Route path="/home" element={<HomePage />} />
           <Route path="/hotels/:id" element={<HotelDetailsPage />} />
-        </Route>
-        <Route element={<ProtectedRoute />}>
-          <Route path="/bookings" element={<MyBookingsPage />} />
-          <Route path="/payment/verify" element={<PaymentVerifyPage />} />
+
+          <Route element={<ProtectedRoute />}>
+            <Route path="/bookings" element={<MyBookingsPage />} />
+            <Route path="/profile" element={<ProfilePage />} />
+            <Route path="/admin" element={<AdminDashboard />} />
+            <Route path="/payment/verify" element={<PaymentVerifyPage />} />
+          </Route>
         </Route>
 
         <Route path="*" element={<Navigate to="/home" replace />} />

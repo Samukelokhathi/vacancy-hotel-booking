@@ -1,0 +1,70 @@
+/* src/components/admin/reservationsTable.module.css */
+.card {
+  background-color: #141517;
+  border: 1px solid #22242a;
+  border-radius: 12px;
+  padding: 24px;
+  margin-bottom: 32px;
+}
+.cardHeader h2 {
+  font-size: 20px;
+  font-weight: 600;
+  margin: 0 0 6px 0;
+}
+.cardHeader p {
+  color: #8e8f96;
+  font-size: 14px;
+  margin: 0;
+}
+.tableResponsive {
+  width: 100%;
+  overflow-x: auto;
+  margin-top: 20px;
+}
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: left;
+}
+.table th {
+  font-size: 12px;
+  color: #6b7280;
+  padding: 16px;
+  font-weight: 600;
+  border-bottom: 1px solid #22242a;
+}
+.table td {
+  padding: 16px;
+  border-bottom: 1px solid #22242a;
+  font-size: 14px;
+}
+.bold {
+  font-weight: 600;
+}
+.badge {
+  padding: 6px 14px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 600;
+  display: inline-block;
+  text-transform: capitalize;
+}
+.pending { background-color: rgba(245, 169, 59, 0.12); color: #f5a93b; }
+.approved { background-color: rgba(16, 185, 129, 0.12); color: #10b981; }
+.cancelled { background-color: rgba(239, 68, 68, 0.12); color: #ef4444; opacity: 0.6; }
+.actionGroup {
+  display: flex;
+  gap: 8px;
+  justify-content: flex-end;
+}
+.approveBtn, .cancelBtn {
+  border: none;
+  padding: 8px 16px;
+  border-radius: 6px;
+  font-weight: 600;
+  font-size: 13px;
+  cursor: pointer;
+}
+.approveBtn { background-color: #f5a93b; color: #1b1305; }
+.cancelBtn { background-color: #ef4444; color: #ffffff; }
+.approveBtn:disabled, .cancelBtn:disabled { opacity: 0.25; cursor: not-allowed; }

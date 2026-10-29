@@ -1,0 +1,276 @@
+.modalOverlay {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  background: rgba(12, 18, 28, 0.75);
+  backdrop-filter: blur(6px);
+  overflow-y: auto;
+}
+
+.modalContent {
+  width: 100%;
+  max-width: 850px;
+  max-height: 92vh;
+  overflow-y: auto;
+  background: #ffffff;
+  border-radius: 16px;
+  box-shadow: 0 24px 80px rgba(0, 0, 0, 0.3);
+  animation: modalEnter 0.25s ease-out;
+}
+
+.modalHeader {
+  position: sticky;
+  top: 0;
+  z-index: 5;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 24px 30px;
+  background: #ffffff;
+  border-bottom: 1px solid #e9e9ed;
+}
+
+.modalHeader h2 {
+  margin: 0;
+  color: #172033;
+  font-size: 23px;
+  font-weight: 700;
+  letter-spacing: -0.5px;
+}
+
+.closeModal {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 38px;
+  height: 38px;
+  padding: 0;
+  border: 1px solid #e5e7eb;
+  border-radius: 50%;
+  background: #f8f9fb;
+  color: #4b5563;
+  font-size: 27px;
+  cursor: pointer;
+  transition:
+    background 0.2s ease,
+    color 0.2s ease,
+    transform 0.2s ease;
+}
+
+.closeModal:hover {
+  background: #172033;
+  color: #ffffff;
+  transform: rotate(90deg);
+}
+
+.formGrid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 22px;
+  padding: 30px;
+}
+
+.fullWidth {
+  grid-column: 1 / -1;
+  min-width: 0;
+}
+
+.halfWidth {
+  grid-column: span 1;
+  min-width: 0;
+}
+
+.selectGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 9px;
+  width: 100%;
+}
+
+.selectLabel {
+  display: block;
+  color: #374151;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+}
+
+.select,
+.textarea {
+  width: 100%;
+  box-sizing: border-box;
+  border: 1px solid #dfe3e8;
+  border-radius: 8px;
+  background: #ffffff;
+  color: #172033;
+  font-family: inherit;
+  font-size: 14px;
+  outline: none;
+  transition:
+    border-color 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+.select {
+  min-height: 46px;
+  padding: 0 14px;
+  cursor: pointer;
+}
+
+.textarea {
+  min-height: 110px;
+  padding: 13px 14px;
+  resize: vertical;
+  line-height: 1.6;
+}
+
+.select:focus,
+.textarea:focus {
+  border-color: #b99556;
+  box-shadow: 0 0 0 3px rgba(185, 149, 86, 0.14);
+}
+
+.imageRowInput {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  margin-bottom: 12px;
+}
+
+.imageRowInput > :first-child {
+  flex: 1;
+  min-width: 0;
+}
+
+.imageRowInput button {
+  flex-shrink: 0;
+}
+
+.formGrid button {
+  transition:
+    background 0.2s ease,
+    transform 0.2s ease;
+}
+
+.formGrid button:active {
+  transform: scale(0.98);
+}
+
+.error,
+.success {
+  grid-column: 1 / -1;
+  margin: 0;
+  padding: 13px 15px;
+  border-radius: 8px;
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+.error {
+  border: 1px solid #fecaca;
+  background: #fef2f2;
+  color: #b91c1c;
+}
+
+.success {
+  border: 1px solid #bbf7d0;
+  background: #f0fdf4;
+  color: #166534;
+}
+
+.submitBtn {
+  width: 100%;
+  min-height: 48px;
+  border: none;
+  border-radius: 8px;
+  background: #172033;
+  color: #ffffff;
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: 0.3px;
+  cursor: pointer;
+  transition:
+    background 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+.submitBtn:hover:not(:disabled) {
+  background: #b99556;
+  box-shadow: 0 5px 15px rgba(185, 149, 86, 0.2);
+}
+
+.submitBtn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+@keyframes modalEnter {
+  from {
+    opacity: 0;
+    transform: translateY(12px) scale(0.99);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@media (max-width: 600px) {
+  .modalOverlay {
+    align-items: flex-start;
+    padding: 12px;
+  }
+
+  .modalContent {
+    max-height: calc(100vh - 24px);
+    border-radius: 12px;
+  }
+
+  .modalHeader {
+    padding: 20px;
+  }
+
+  .modalHeader h2 {
+    font-size: 19px;
+  }
+
+  .formGrid {
+    grid-template-columns: 1fr;
+    gap: 19px;
+    padding: 20px;
+  }
+
+  .halfWidth,
+  .fullWidth {
+    grid-column: 1 / -1;
+  }
+
+  .imageRowInput {
+    gap: 8px;
+  }
+
+  .closeModal {
+    width: 34px;
+    height: 34px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .modalContent {
+    animation: none;
+  }
+
+  .closeModal,
+  .formGrid button,
+  .select,
+  .textarea,
+  .submitBtn {
+    transition: none;
+  }
+}
