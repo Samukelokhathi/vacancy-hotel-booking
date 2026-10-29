@@ -1,0 +1,110 @@
+/* src/components/admin/navbar.module.css */
+.navbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 12px 24px;
+  padding: 14px 32px;
+  background-color: #0b0c0e;
+  border-bottom: 1px solid #26262b;
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  text-decoration: none;
+}
+.logoIcon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  background-color: #f5a93b;
+  border-radius: 12px;
+}
+.brandName {
+  font-family: "Space Grotesk", sans-serif;
+  font-size: 22px;
+  font-weight: bold;
+  color: #ffffff;
+}
+.links {
+  display: flex;
+  align-items: center;
+  gap: 28px;
+}
+.link {
+  padding: 6px 0;
+  font-size: 16px;
+  color: #9b9ca3;
+  text-decoration: none;
+  border-bottom: 2px solid transparent;
+}
+.link:hover {
+  color: #ffffff;
+}
+.active {
+  color: #ffffff;
+  border-bottom-color: #f5a93b;
+}
+.actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.greeting {
+  color: #9b9ca3;
+}
+.badge {
+  padding: 3px 10px;
+  font-size: 13px;
+  font-weight: bold;
+  color: #f5a93b;
+  background-color: #2b2310;
+  border-radius: 999px;
+}
+.darkButton {
+  padding: 10px 16px;
+  font: inherit;
+  font-size: 15px;
+  font-weight: bold;
+  color: #ffffff;
+  background-color: #1f1f24;
+  border: none;
+  border-radius: 10px;
+  text-decoration: none;
+  cursor: pointer;
+}
+.darkButton:hover {
+  background-color: #2a2a30;
+}
+.signupButton {
+  padding: 10px 16px;
+  font-size: 15px;
+  font-weight: bold;
+  color: #1b1305;
+  background-color: #f5a93b;
+  border-radius: 10px;
+  text-decoration: none;
+}
+.signupButton:hover {
+  background-color: #fbbf4a;
+}
+@media (max-width: 760px) {
+  .links {
+    order: 3;
+    width: 100%;
+    justify-content: center;
+    gap: 22px;
+  }
+}
+@media (max-width: 520px) {
+  .greeting {
+    display: none;
+  }
+}

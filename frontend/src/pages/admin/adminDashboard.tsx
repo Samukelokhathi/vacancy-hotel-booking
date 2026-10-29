@@ -1,205 +1,207 @@
-import { useState, type FormEvent } from "react";
+// src/pages/admin/AdminDashboard.tsx
+import { useState, useEffect, type FormEvent } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Navigate } from "react-router-dom";
-
 import type { AppDispatch, RootState } from "../../store/store";
 import { fetchHotels } from "../../store/hotelSlice";
 import { api, getErrorMessage } from "../../api/axios";
 
+import Navbar from "../../components/";
+import Footer from "../../components/admin/Footer";
+import ReservationsTable from "../../components/admin/ReservationsTable";
+import ManageHotels from "../../components/admin/ManageHotels";
+import AddHotelModal from "../../components/admin/AddHotelModal";
+
+import type { BookingDetails, Hotel } from "../../models/hotel.types";
 import styles from "./adminDashboard.module.css";
 
-interface HotelForm {
+interface HotelFormState {
   name: string;
-  city: string;
   description: string;
+  address: string;
+  city: string;
+  starRating: string;
   pricePerNight: string;
-  stars: string;
+  facilities: string;
+  policies: string;
+  roomType: string;
+  roomQuantity: string;
+  roomCapacity: string;
   imageUrl: string;
 }
 
-const initialForm: HotelForm = {
+const initialForm: HotelFormState = {
   name: "",
-  city: "",
   description: "",
+  address: "",
+  city: "",
+  starRating: "4",
   pricePerNight: "",
-  stars: "3",
+  facilities: "WiFi, Parking, Pool",
+  policies: "Check-in 14:00.",
+  roomType: "Standard Room",
+  roomQuantity: "10",
+  roomCapacity: "2",
   imageUrl: "",
 };
 
 export default function AdminDashboard() {
   const dispatch = useDispatch<AppDispatch>();
+  const { user, isAuthenticated, authChecked } = useSelector((state: RootState) => state.login);
+  const { items: hotelsList } = useSelector((state: RootState) => state.hotels) || { items: [] };
 
-  const { user, isAuthenticated, authChecked } = useSelector(
-    (state: RootState) => state.login
-  );
-
-  const [form, setForm] = useState<HotelForm>(initialForm);
+  const [reservations, setReservations] = useState<BookingDetails[]>([]);
+  const [form, setForm] = useState<HotelFormState>(initialForm);
   const [isSaving, setIsSaving] = useState(false);
   const [message, setMessage] = useState("");
   const [formError, setFormError] = useState("");
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
+  useEffect(() => {
+    if (isAuthenticated && user?.role === "admin") {
+      dispatch(fetchHotels());
+      fetchBookings();
+    }
+  }, [dispatch, isAuthenticated, user]);
+
+  const fetchBookings = async () => {
+    try {
+      const response = await api.get("/bookings");
+      setReservations(response.data);
+    } catch (err) {
+      console.error(err);
+    }
+  };
 
   if (!authChecked) {
-    return <p>Checking your account...</p>;
+    return <div className={styles.loading}><p>Loading...</p></div>;
   }
 
   if (!isAuthenticated || user?.role !== "admin") {
-    return <Navigate to="/login" replace />;
+    return <Navigate to="/home" replace />;
   }
 
-  const handleChange = (
-    event:
-      | React.ChangeEvent<HTMLInputElement>
-      | React.ChangeEvent<HTMLTextAreaElement>
-      | React.ChangeEvent<HTMLSelectElement>
-  ) => {
-    setForm({
-      ...form,
-      [event.target.name]: event.target.value,
-    });
+  const handleChange = (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
+    setForm({ ...form, [event.target.name]: event.target.value });
   };
 
-  const handleSubmit = async (
-    event: FormEvent<HTMLFormElement>
-  ) => {
-    event.preventDefault();
+  const handleUpdateStatus = async (id: number, status: "approved" | "cancelled") => {
+    try {
+      await api.patch(`/bookings/${id}/status`, { status });
+      setReservations(prev => prev.map(res => (res.id === id ? { ...res, status } : res)));
+    } catch (err) {
+      console.error(err);
+    }
+  };
 
+  const handleDeleteHotel = async (id: number) => {
+    if (!window.confirm("Delete this hotel?")) return;
+    try {
+      await api.delete(`/hotels/${id}`);
+      dispatch(fetchHotels());
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
     setMessage("");
     setFormError("");
     setIsSaving(true);
 
     try {
-      await api.post("/hotels", {
+      const hotelRes = await api.post("/hotels", {
         name: form.name.trim(),
-        city: form.city.trim(),
         description: form.description.trim(),
+        address: form.address.trim(),
+        city: form.city.trim(),
+        latitude: null,
+        longitude: null,
+        starRating: Number(form.starRating),
         pricePerNight: Number(form.pricePerNight),
-        stars: Number(form.stars),
-        imageUrl: form.imageUrl.trim(),
+        facilities: form.facilities.split(",").map(f => f.trim()).filter(Boolean),
+        policies: form.policies.trim(),
       });
 
+      const hotelId = hotelRes.data?.id;
+
+      if (hotelId) {
+        await api.post("/rooms", {
+          hotelId: Number(hotelId),
+          roomType: form.roomType.trim(),
+          capacity: Number(form.roomCapacity),
+          pricePerNight: Number(form.pricePerNight),
+          quantity: Number(form.roomQuantity),
+        });
+
+        if (form.imageUrl.trim()) {
+          await api.post("/hotel-images", {
+            hotelId: Number(hotelId),
+            url: form.imageUrl.trim(),
+          });
+        }
+      }
+
       await dispatch(fetchHotels()).unwrap();
-
       setForm(initialForm);
-
       setMessage("Hotel added successfully.");
+      setTimeout(() => {
+        setIsModalOpen(false);
+        setMessage("");
+      }, 1000);
     } catch (error) {
-      setFormError(getErrorMessage(error, "Unable to add hotel."));
+      setFormError(getErrorMessage(error, "Error adding hotel."));
     } finally {
       setIsSaving(false);
     }
   };
 
   return (
-    <main className={styles.page}>
-      <header className={styles.hero}>
-        <div>
-          <p className={styles.badge}>STAYWISE ADMIN</p>
-
+    <div className={styles.wrapper}>
+      <Navbar />
+      
+      <main className={styles.main}>
+        <div className={styles.sectionHeader}>
           <h1>Admin Dashboard</h1>
-
-          <p>
-            Manage reservations, hotel listings and platform
-            content.
-          </p>
         </div>
 
-        <div className={styles.role}>
-          Administrator
+        <ReservationsTable 
+          reservations={reservations} 
+          onUpdateStatus={handleUpdateStatus} 
+        />
+
+        <div className={styles.bottomGrid}>
+          <section className={styles.addTriggerSection}>
+            <div className={styles.addCardInner}>
+              <h2>Add Hotel</h2>
+              <p>Create a new listing</p>
+              <button className={styles.launchBtn} onClick={() => setIsModalOpen(true)}>
+                + Add Hotel
+              </button>
+            </div>
+          </section>
+
+          <ManageHotels 
+            hotelsList={hotelsList as Hotel[]} 
+            onDeleteHotel={handleDeleteHotel} 
+          />
         </div>
-      </header>
+      </main>
 
-      <section className={styles.panel}>
-        <h2>Add Hotel</h2>
+      <Footer />
 
-        <form
+      {isModalOpen && (
+        <AddHotelModal
+          form={form}
+          isSaving={isSaving}
+          message={message}
+          formError={formError}
+          onChange={handleChange}
           onSubmit={handleSubmit}
-          className={styles.form}
-        >
-          <label>
-            Hotel Name
-            <input
-              name="name"
-              value={form.name}
-              onChange={handleChange}
-              required
-            />
-          </label>
-
-          <label>
-            City
-            <input
-              name="city"
-              value={form.city}
-              onChange={handleChange}
-              required
-            />
-          </label>
-
-          <label>
-            Price Per Night
-            <input
-              type="number"
-              name="pricePerNight"
-              value={form.pricePerNight}
-              onChange={handleChange}
-              required
-            />
-          </label>
-
-          <label>
-            Stars
-            <select
-              name="stars"
-              value={form.stars}
-              onChange={handleChange}
-            >
-              <option value="1">1 Star</option>
-              <option value="2">2 Stars</option>
-              <option value="3">3 Stars</option>
-              <option value="4">4 Stars</option>
-              <option value="5">5 Stars</option>
-            </select>
-          </label>
-
-          <label className={styles.fullWidth}>
-            Description
-            <textarea
-              rows={4}
-              name="description"
-              value={form.description}
-              onChange={handleChange}
-              required
-            />
-          </label>
-
-          <label className={styles.fullWidth}>
-            Image URL
-            <input
-              type="url"
-              name="imageUrl"
-              value={form.imageUrl}
-              onChange={handleChange}
-              placeholder="https://example.com/hotel.jpg"
-            />
-          </label>
-
-          {formError && (
-            <p className={styles.error}>{formError}</p>
-          )}
-
-          {message && (
-            <p className={styles.success}>{message}</p>
-          )}
-
-          <button
-            type="submit"
-            disabled={isSaving}
-            className={styles.submit}
-          >
-            {isSaving ? "Adding..." : "Add Hotel"}
-          </button>
-        </form>
-      </section>
-    </main>
+          onClose={() => setIsModalOpen(false)}
+        />
+      )}
+    </div>
   );
 }
