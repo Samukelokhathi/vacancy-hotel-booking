@@ -6,8 +6,6 @@ import type { AppDispatch, RootState } from "../../store/store";
 import { fetchHotels } from "../../store/hotelSlice";
 import { api, getErrorMessage } from "../../api/axios";
 
-import Navbar from "../../components/navbar/navbar";
-import Footer from "../../components/footer/footer";
 import ReservationsTable from "../../components/admin/reservations/reservations";
 import ManageHotels from "../../components/admin/manageHotels/manageHotels";
 import AddHotelModal from "../../components/admin/addHotelModal/addHotelModal";
@@ -263,7 +261,6 @@ export default function AdminDashboard() {
           </div>
         </div>
       </main>
-
 
       {isModalOpen && (
         <AddHotelModal

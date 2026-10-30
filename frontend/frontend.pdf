@@ -144,3 +144,7 @@ vercel.JSON
 {
   "rewrites": [{ "source": "/(.*)", "destination": "/index.html" }]
 }
+
+
+-----------------
+important to run buld before pushing code 

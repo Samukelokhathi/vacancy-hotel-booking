@@ -28,7 +28,9 @@ export default function ProfilePage() {
 
   const [bookings, setBookings] = useState<BookingDetails[]>([]);
   const [favorites, setFavorites] = useState<Hotel[]>([]);
-  const [notifications, setNotifications] = useState<string[]>([
+
+  // Removed setNotifications here to resolve the unused variable warning
+  const [notifications] = useState<string[]>([
     "Your booking at Azure Bay Resort has been confirmed.",
     "Special Promotion: Get 15% off bookings in Cape Town this weekend!",
   ]);

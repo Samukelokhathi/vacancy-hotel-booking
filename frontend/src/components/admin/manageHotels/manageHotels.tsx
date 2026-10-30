@@ -5,6 +5,7 @@ import styles from "./manageHotels.module.css";
 interface ManageHotelsProps {
   hotelsList: Hotel[];
   onDeleteHotel: (id: number) => void;
+  onEditHotel: (hotel: Hotel) => void;
 }
 
 export default function ManageHotels({
