@@ -2,7 +2,6 @@ import { type Request, type Response } from "express";
 import * as HotelService from "../services/hotelServices.js";
 import { type AuthRequest } from "../middleware/authMiddleware.js";
 import type { Hotel } from "../models/hotel.types.js";
-import { query } from "../config/database.js";
 
 export const addHotel = async (req: AuthRequest, res: Response) => {
   const {
@@ -17,9 +16,9 @@ export const addHotel = async (req: AuthRequest, res: Response) => {
     facilities,
     policies,
     imageUrlsArray,
+    coverImage,
   } = req.body;
 
-  // Validation updated to include the mandatory HotelInput fields
   if (
     !name ||
     !description ||
@@ -30,7 +29,8 @@ export const addHotel = async (req: AuthRequest, res: Response) => {
     latitude === undefined ||
     longitude === undefined ||
     !facilities ||
-    !policies
+    !policies ||
+    !coverImage
   ) {
     return res.status(400).json({ message: "All fields are required" });
   }
@@ -42,7 +42,6 @@ export const addHotel = async (req: AuthRequest, res: Response) => {
   }
 
   try {
-    // 1. Create the hotel using all fields required by HotelInput
     const hotel = (await HotelService.createHotel(
       {
         name,
@@ -55,13 +54,13 @@ export const addHotel = async (req: AuthRequest, res: Response) => {
         longitude,
         facilities,
         policies,
+        coverImage,
       },
       req.user!.id,
     )) as Hotel;
 
     const newHotelId = hotel.id;
 
-    // 2. If there are image URLs, register them
     if (
       newHotelId &&
       Array.isArray(imageUrlsArray) &&
@@ -69,9 +68,7 @@ export const addHotel = async (req: AuthRequest, res: Response) => {
     ) {
       await Promise.all(
         imageUrlsArray.map((url: string) =>
-          HotelService.addHotelImage
-            ? HotelService.addHotelImage({ hotelId: newHotelId, url })
-            : null,
+          HotelService.addHotelImage({ hotelId: newHotelId, url }),
         ),
       );
     }

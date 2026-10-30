@@ -1,5 +1,5 @@
 import { query } from "../config/database.js";
-import { type Hotel, type HotelInput } from "../models/hotel.types.js";
+import { type Hotel, type HotelInput, type HotelImage } from "../models/hotel.types.js";
 
 const hotelColumns = `id, name, description, address, city, latitude, longitude,
   star_rating AS "starRating",
@@ -116,4 +116,19 @@ export const deleteHotel = async (id: number): Promise<Hotel | null> => {
   );
 
   return rows[0] || null;
+};
+
+export const addHotelImage = async (
+  imageData: { hotelId: number; url: string }
+): Promise<HotelImage> => {
+  const { hotelId, url } = imageData;
+  
+  const { rows } = await query(
+    `INSERT INTO hotel_images (hotel_id, url)
+     VALUES ($1, $2)
+     RETURNING id, hotel_id AS "hotelId", url`,
+    [hotelId, url]
+  );
+  
+  return rows[0];
 };

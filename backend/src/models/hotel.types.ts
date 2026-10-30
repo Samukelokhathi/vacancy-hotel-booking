@@ -25,7 +25,7 @@ export interface Hotel {
   policies: string;
   createdBy: number | null;
   createdAt: Date;
-  coverImage?: string | null;
+  coverImage: string | null;
 }
 export type HotelInput = Omit<Hotel, "id" | "createdBy" | "createdAt">;
 
