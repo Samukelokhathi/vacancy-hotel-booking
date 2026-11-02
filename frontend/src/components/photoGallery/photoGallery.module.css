@@ -1,4 +1,11 @@
-/* the big photo */
+.gallery {
+  width: 100%;
+}
+
+.mainWrap {
+  position: relative;
+}
+
 .main {
   display: block;
   width: 100%;
@@ -8,7 +15,6 @@
   border: 1px solid #2c2d31;
 }
 
-/* shown when the hotel has no photos */
 .empty {
   display: flex;
   align-items: center;
@@ -20,15 +26,40 @@
   border-radius: 18px;
 }
 
-/* the small photos under it: 4 in a row */
+.navButton {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 40px;
+  height: 40px;
+  border: none;
+  border-radius: 50%;
+  background: rgba(12, 14, 18, 0.72);
+  color: #ffffff;
+  font-size: 28px;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.navButton:hover {
+  background: rgba(12, 14, 18, 0.9);
+}
+
+.prev {
+  left: 12px;
+}
+
+.next {
+  right: 12px;
+}
+
 .thumbs {
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
+  grid-template-columns: repeat(4, minmax(0, 1fr));
   gap: 12px;
   margin-top: 12px;
 }
 
-/* each small photo is a button, so the keyboard can use it */
 .thumbButton {
   padding: 0;
   overflow: hidden;
@@ -42,7 +73,6 @@
   border-color: #55565c;
 }
 
-/* the photo that is showing now: amber border (must stay below .thumbButton) */
 .activeThumb {
   border-color: #f5a93b;
 }
@@ -54,10 +84,25 @@
   object-fit: cover;
 }
 
-/* phone: 3 small photos in a row */
+.thumbFallback {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  aspect-ratio: 4 / 3;
+  background: #232428;
+  color: #9b9ca3;
+  font-size: 12px;
+}
+
 @media (max-width: 600px) {
   .thumbs {
-    grid-template-columns: repeat(3, 1fr);
+    grid-template-columns: repeat(3, minmax(0, 1fr));
     gap: 8px;
+  }
+
+  .navButton {
+    width: 34px;
+    height: 34px;
+    font-size: 24px;
   }
 }

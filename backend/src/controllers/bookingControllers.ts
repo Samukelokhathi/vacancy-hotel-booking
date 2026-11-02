@@ -104,7 +104,88 @@ export const updateBookingStatusById = async (req: Request, res: Response) => {
   }
 };
 
+export const getBookingById = async (req: AuthRequest, res: Response) => {
+  try {
+    const id = parseInt(String(req.params.id));
+    const booking = await bookingService.findBookingDetailsById(id);
+    if (!booking) {
+      return res.status(404).json({ message: "Booking not found" });
+    }
+    if (req.user!.role !== "admin" && booking.userId !== req.user!.id) {
+      return res.status(403).json({ message: "Access denied" });
+    }
+    return res.status(200).json(booking);
+  } catch (error) {
+    return res.status(500).json({ message: "Error retrieving booking" });
+  }
+};
+
+export const updateBookingById = async (req: AuthRequest, res: Response) => {
+  try {
+    const id = parseInt(String(req.params.id));
+    const { checkIn, checkOut, numberOfRooms, guests } = req.body;
+    if (!checkIn || !checkOut || !numberOfRooms || !guests) {
+      return res.status(400).json({ message: "All fields are required" });
+    }
+    const isAdmin = req.user!.role === "admin";
+    const updated = await bookingService.updateBooking(
+      id,
+      {
+        checkIn,
+        checkOut,
+        numberOfRooms: Number(numberOfRooms),
+        guests: Number(guests),
+      },
+      req.user!.id,
+      isAdmin,
+    );
+    if (!updated) {
+      return res.status(404).json({ message: "Booking not found" });
+    }
+    return res.status(200).json(updated);
+  } catch (error) {
+    const message =
+      error instanceof Error ? error.message : "Error updating booking";
+    return res.status(400).json({ message });
+  }
+};
+
 export const cancelMyBooking = async (req: AuthRequest, res: Response) => {
+  try {
+    const id = parseInt(String(req.params.id));
+    const booking = await bookingService.findBookingById(id);
+    if (!booking) {
+      return res.status(404).json({ message: "Booking not found" });
+    }
+    if (booking.userId !== req.user!.id) {
+      return res.status(403).json({ message: "Access denied" });
+    }
+    if (booking.paid) {
+      return res
+        .status(400)
+        .json({ message: "Paid bookings can only be cancelled by an admin" });
+    }
+    const cancelled = await bookingService.updateBookingStatus(id, "cancelled");
+    return res.status(200).json(cancelled);
+  } catch (error) {
+    return res.status(500).json({ message: "Error cancelling booking" });
+  }
+};
+  try {
+    const id = parseInt(String(req.params.id));
+    const booking = await bookingService.findBookingById(id);
+    if (!booking) {
+      return res.status(404).json({ message: "Booking not found" });
+    }
+    if (req.user!.role !== "admin" && booking.userId !== req.user!.id) {
+      return res.status(403).json({ message: "Access denied" });
+    }
+    const cancelled = await bookingService.updateBookingStatus(id, "cancelled");
+    return res.status(200).json(cancelled);
+  } catch (error) {
+    return res.status(500).json({ message: "Error deleting booking" });
+  }
+};
   try {
     const id = parseInt(String(req.params.id));
     const booking = await bookingService.findBookingById(id);
@@ -125,5 +206,21 @@ export const cancelMyBooking = async (req: AuthRequest, res: Response) => {
     return res.status(200).json(cancelled);
   } catch (error) {
     return res.status(500).json({ message: "Error cancelling booking" });
+  }
+};
+export const deleteBookingById = async (req: AuthRequest, res: Response) => {
+  try {
+    const id = parseInt(String(req.params.id));
+    const booking = await bookingService.findBookingById(id);
+    if (!booking) {
+      return res.status(404).json({ message: "Booking not found" });
+    }
+    if (req.user!.role !== "admin" && booking.userId !== req.user!.id) {
+      return res.status(403).json({ message: "Access denied" });
+    }
+    const cancelled = await bookingService.updateBookingStatus(id, "cancelled");
+    return res.status(200).json(cancelled);
+  } catch (error) {
+    return res.status(500).json({ message: "Error deleting booking" });
   }
 };

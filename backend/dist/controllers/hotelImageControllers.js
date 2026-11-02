@@ -33,28 +33,59 @@ var __importStar = (this && this.__importStar) || (function () {
     };
 })();
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.deleteHotelImageById = exports.getHotelImages = exports.addHotelImage = void 0;
+exports.deleteHotelImageById = exports.setHotelImageCover = exports.getHotelImageById = exports.getHotelImages = exports.addHotelImages = void 0;
 const hotelImageService = __importStar(require("../services/hotelImageService.js"));
 const hotelService = __importStar(require("../services/hotelServices.js"));
-const addHotelImage = async (req, res) => {
-    const { hotelId, url } = req.body;
-    if (!hotelId || !url) {
-        return res.status(400).json({ message: "hotelId and url are required" });
+const addHotelImages = async (req, res) => {
+    const hotelId = Number(req.body.hotelId);
+    if (!hotelId || Number.isNaN(hotelId)) {
+        return res.status(400).json({ message: "hotelId is required" });
     }
     try {
-        const hotel = await hotelService.findHotelById(Number(hotelId));
+        const hotel = await hotelService.findHotelById(hotelId);
         if (!hotel) {
             return res.status(404).json({ message: "Hotel not found" });
         }
-        const image = await hotelImageService.createHotelImage(req.body);
-        return res.status(201).json(image);
+        const files = req.files ?? [];
+        const urls = Array.isArray(req.body.urls)
+            ? req.body.urls
+            : typeof req.body.url === "string" && req.body.url
+                ? [req.body.url]
+                : typeof req.body.urls === "string" && req.body.urls
+                    ? [req.body.urls]
+                    : [];
+        if (files.length === 0 && urls.length === 0) {
+            return res
+                .status(400)
+                .json({ message: "At least one image file or url is required" });
+        }
+        const createdImages = [];
+        for (const file of files) {
+            const img = await hotelImageService.createHotelImage({
+                hotelId,
+                url: "",
+                data: file.buffer,
+                mimeType: file.mimetype,
+            });
+            createdImages.push(img);
+        }
+        for (const url of urls) {
+            if (!url || typeof url !== "string")
+                continue;
+            const img = await hotelImageService.createHotelImage({
+                hotelId,
+                url,
+            });
+            createdImages.push(img);
+        }
+        return res.status(201).json(createdImages);
     }
     catch (error) {
-        console.error("Add Image Error:", error);
-        return res.status(500).json({ message: "Error adding the image" });
+        console.error("Add Images Error:", error);
+        return res.status(500).json({ message: "Error adding hotel images" });
     }
 };
-exports.addHotelImage = addHotelImage;
+exports.addHotelImages = addHotelImages;
 const getHotelImages = async (req, res) => {
     const hotelId = parseInt(String(req.query.hotelId));
     if (isNaN(hotelId)) {
@@ -62,7 +93,12 @@ const getHotelImages = async (req, res) => {
     }
     try {
         const images = await hotelImageService.findImagesByHotel(hotelId);
-        return res.status(200).json(images);
+        return res.status(200).json(images.map((img) => ({
+            id: img.id,
+            hotelId: img.hotelId,
+            url: img.url,
+            isCover: img.isCover ?? false,
+        })));
     }
     catch (error) {
         console.error("Get Images Error:", error);
@@ -70,6 +106,50 @@ const getHotelImages = async (req, res) => {
     }
 };
 exports.getHotelImages = getHotelImages;
+const getHotelImageById = async (req, res) => {
+    try {
+        const id = parseInt(String(req.params.id));
+        if (isNaN(id)) {
+            return res.status(400).json({ message: "Invalid image id" });
+        }
+        const image = await hotelImageService.findImageDataById(id);
+        if (!image) {
+            return res.status(404).json({ message: "Image not found" });
+        }
+        res.setHeader("Content-Type", image.mimeType || "application/octet-stream");
+        res.setHeader("Cross-Origin-Resource-Policy", "cross-origin");
+        res.setHeader("Cache-Control", "public, max-age=86400");
+        return res.status(200).send(image.data);
+    }
+    catch (error) {
+        console.error("Get Image By Id Error:", error);
+        return res.status(500).json({ message: "Error retrieving image" });
+    }
+};
+exports.getHotelImageById = getHotelImageById;
+const setHotelImageCover = async (req, res) => {
+    try {
+        const id = parseInt(String(req.params.id));
+        if (isNaN(id)) {
+            return res.status(400).json({ message: "Invalid image id" });
+        }
+        const updated = await hotelImageService.setCoverImage(id);
+        if (!updated) {
+            return res.status(404).json({ message: "Image not found" });
+        }
+        return res.status(200).json({
+            id: updated.id,
+            hotelId: updated.hotelId,
+            url: updated.url,
+            isCover: updated.isCover ?? true,
+        });
+    }
+    catch (error) {
+        console.error("Set Cover Error:", error);
+        return res.status(500).json({ message: "Error setting cover image" });
+    }
+};
+exports.setHotelImageCover = setHotelImageCover;
 const deleteHotelImageById = async (req, res) => {
     try {
         const id = parseInt(String(req.params.id));

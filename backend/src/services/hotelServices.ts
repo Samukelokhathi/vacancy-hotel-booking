@@ -1,12 +1,20 @@
 import { query } from "../config/database.js";
-import { type Hotel, type HotelInput, type HotelImage } from "../models/hotel.types.js";
+import { type Hotel, type HotelInput } from "../models/hotel.types.js";
+import * as hotelImageService from "./hotelImageService.js";
 
 const hotelColumns = `id, name, description, address, city, latitude, longitude,
   star_rating AS "starRating",
   price_per_night AS "pricePerNight",
   facilities, policies,
-  created_by AS "createdby",
-  created_at AS "createdat"`;
+  created_by AS "createdBy",
+  created_at AS "createdAt"`;
+
+const coverImageSelect = `(
+  SELECT url FROM hotel_images
+  WHERE hotel_id = hotels.id
+  ORDER BY is_cover DESC NULLS LAST, id ASC
+  LIMIT 1
+) AS "coverImage"`;
 
 export const createHotel = async (
   hotelData: HotelInput,
@@ -43,22 +51,29 @@ export const createHotel = async (
       createdBy,
     ],
   );
-  return rows[0];
+  return { ...rows[0], coverImage: null };
 };
 
 export const findAllHotels = async (): Promise<Hotel[]> => {
   const { rows } = await query(
-    `SELECT ${hotelColumns} FROM hotels ORDER BY id DESC`,
+    `SELECT ${hotelColumns},
+      ${coverImageSelect}
+     FROM hotels ORDER BY id DESC`,
   );
   return rows;
 };
 
 export const findHotelById = async (id: number): Promise<Hotel | null> => {
   const { rows } = await query(
-    `SELECT ${hotelColumns} FROM hotels WHERE id = $1`,
+    `SELECT ${hotelColumns},
+      ${coverImageSelect}
+     FROM hotels WHERE id = $1`,
     [id],
   );
-  return rows[0] || null;
+  if (!rows[0]) return null;
+
+  const images = await hotelImageService.findImagesByHotel(id);
+  return { ...rows[0], images };
 };
 
 export const updateHotelById = async (
@@ -87,7 +102,7 @@ export const updateHotelById = async (
      latitude = $5,
      longitude = $6,
      "star_rating" = $7,
-     "price_per_night"   = $8,
+     "price_per_night" = $8,
      facilities = $9,
      policies = $10
      WHERE id = $11
@@ -106,7 +121,12 @@ export const updateHotelById = async (
       id,
     ],
   );
-  return rows[0] || null;
+  if (!rows[0]) return null;
+
+  const images = await hotelImageService.findImagesByHotel(id);
+  const coverImage =
+    images.find((img) => img.isCover)?.url ?? images[0]?.url ?? null;
+  return { ...rows[0], coverImage, images };
 };
 
 export const deleteHotel = async (id: number): Promise<Hotel | null> => {
@@ -114,21 +134,5 @@ export const deleteHotel = async (id: number): Promise<Hotel | null> => {
     `DELETE FROM hotels WHERE id = $1 RETURNING ${hotelColumns}`,
     [id],
   );
-
   return rows[0] || null;
-};
-
-export const addHotelImage = async (
-  imageData: { hotelId: number; url: string }
-): Promise<HotelImage> => {
-  const { hotelId, url } = imageData;
-  
-  const { rows } = await query(
-    `INSERT INTO hotel_images (hotel_id, url)
-     VALUES ($1, $2)
-     RETURNING id, hotel_id AS "hotelId", url`,
-    [hotelId, url]
-  );
-  
-  return rows[0];
 };

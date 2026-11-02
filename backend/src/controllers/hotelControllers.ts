@@ -15,8 +15,6 @@ export const addHotel = async (req: AuthRequest, res: Response) => {
     longitude,
     facilities,
     policies,
-    imageUrlsArray,
-    coverImage,
   } = req.body;
 
   if (
@@ -26,11 +24,8 @@ export const addHotel = async (req: AuthRequest, res: Response) => {
     !city ||
     !starRating ||
     !pricePerNight ||
-    latitude === undefined ||
-    longitude === undefined ||
     !facilities ||
-    !policies ||
-    !coverImage
+    !policies
   ) {
     return res.status(400).json({ message: "All fields are required" });
   }
@@ -50,28 +45,13 @@ export const addHotel = async (req: AuthRequest, res: Response) => {
         city,
         starRating,
         pricePerNight,
-        latitude,
-        longitude,
+        latitude: latitude ?? null,
+        longitude: longitude ?? null,
         facilities,
         policies,
-        coverImage,
       },
       req.user!.id,
     )) as Hotel;
-
-    const newHotelId = hotel.id;
-
-    if (
-      newHotelId &&
-      Array.isArray(imageUrlsArray) &&
-      imageUrlsArray.length > 0
-    ) {
-      await Promise.all(
-        imageUrlsArray.map((url: string) =>
-          HotelService.addHotelImage({ hotelId: newHotelId, url }),
-        ),
-      );
-    }
 
     return res.status(201).json(hotel);
   } catch (error) {
@@ -97,7 +77,15 @@ export const getHotelById = async (req: Request, res: Response) => {
     if (!hotel) {
       return res.status(404).json({ message: "Hotel not found" });
     }
-    return res.status(200).json(hotel);
+    return res.status(200).json({
+      ...hotel,
+      images: (hotel.images ?? []).map((img) => ({
+        id: img.id,
+        hotelId: img.hotelId,
+        url: img.url,
+        isCover: img.isCover ?? false,
+      })),
+    });
   } catch (error) {
     return res.status(500).json({ message: "Error retrieving hotel" });
   }

@@ -39,7 +39,10 @@ CREATE TABLE IF NOT EXISTS rooms (
 CREATE TABLE IF NOT EXISTS hotel_images (
   id SERIAL PRIMARY KEY,
   hotel_id INTEGER NOT NULL REFERENCES hotels(id) ON DELETE CASCADE,
-  url TEXT NOT NULL
+  url TEXT NOT NULL,
+  data BYTEA,
+  mime_type VARCHAR(100),
+  is_cover BOOLEAN NOT NULL DEFAULT false
 );
 
 CREATE TABLE IF NOT EXISTS bookings (
@@ -58,6 +61,11 @@ CREATE TABLE IF NOT EXISTS bookings (
 CREATE INDEX IF NOT EXISTS idx_rooms_hotel_id ON rooms(hotel_id);
 CREATE INDEX IF NOT EXISTS idx_hotel_images_hotel_id ON hotel_images(hotel_id);
 
+ALTER TABLE hotel_images ADD COLUMN IF NOT EXISTS data BYTEA;
+ALTER TABLE hotel_images ADD COLUMN IF NOT EXISTS mime_type VARCHAR(100);
+ALTER TABLE hotel_images ADD COLUMN IF NOT EXISTS is_cover BOOLEAN NOT NULL DEFAULT false;
+
+ALTER TABLE bookings DROP COLUMN IF EXISTS paid;
 
 CREATE TABLE IF NOT EXISTS payments (
   id SERIAL PRIMARY KEY,
@@ -72,12 +80,3 @@ CREATE TABLE IF NOT EXISTS payments (
 );
 
 CREATE INDEX IF NOT EXISTS idx_payments_booking_id ON payments(booking_id);
-
-ALTER TABLE bookings DROP COLUMN IF EXISTS paid;
-
-UPDATE rooms SET quantity = 100;
-
--- free the rooms held by old unpaid test bookings (paid ones are kept)
-UPDATE bookings SET status = 'cancelled'
-WHERE status = 'pending'
-AND id NOT IN (SELECT booking_id FROM payments WHERE status = 'success');

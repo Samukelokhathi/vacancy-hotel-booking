@@ -11,11 +11,9 @@ import { protect, adminOnly } from "../middleware/authMiddleware.js";
 
 const router = Router();
 
-// client
 router.get("/", getAllHotels);
-router.get("/:id", protect, getHotelById);
+router.get("/:id", getHotelById);
 
-// admin
 router.post("/", protect, adminOnly, addHotel);
 router.put("/:id", protect, adminOnly, updateHotelById);
 router.delete("/:id", protect, adminOnly, deleteHotelById);

@@ -1,26 +1,29 @@
-/* src/components/admin/manageHotels.module.css */
-.card {
+.panel {
   background-color: #141517;
   border: 1px solid #22242a;
   border-radius: 12px;
   padding: 24px;
 }
-.cardHeader h2 {
+
+.panelHeader h2 {
   font-size: 20px;
   font-weight: 600;
   margin: 0 0 6px 0;
 }
-.cardHeader p {
+
+.sub {
   color: #8e8f96;
   font-size: 14px;
   margin: 0;
 }
+
 .hotelsList {
   display: flex;
   flex-direction: column;
   gap: 16px;
   margin-top: 20px;
 }
+
 .hotelRow {
   display: flex;
   justify-content: space-between;
@@ -31,26 +34,62 @@
   padding: 16px;
   gap: 16px;
 }
+
 .hotelLeft {
   display: flex;
   align-items: center;
   gap: 16px;
+  min-width: 0;
 }
+
 .thumb {
   width: 64px;
   height: 64px;
   object-fit: cover;
   border-radius: 8px;
   background-color: #141517;
+  flex-shrink: 0;
 }
-.hotelInfo h3 { font-size: 16px; font-weight: 600; margin: 0 0 6px 0; }
-.metaRow { display: flex; gap: 12px; font-size: 13px; color: #8e8f96; align-items: center; }
-.stars { color: #f5a93b; }
+
+.thumbFallback {
+  width: 64px;
+  height: 64px;
+  border-radius: 8px;
+  background-color: #141517;
+  color: #8e8f96;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 11px;
+  text-align: center;
+  flex-shrink: 0;
+}
+
+.hotelInfo h3 {
+  font-size: 16px;
+  font-weight: 600;
+  margin: 0 0 6px 0;
+}
+
+.metaRow {
+  display: flex;
+  gap: 12px;
+  font-size: 13px;
+  color: #8e8f96;
+  align-items: center;
+}
+
+.stars {
+  color: #f5a93b;
+}
+
 .rowButtons {
   display: flex;
   gap: 8px;
 }
-.editRowBtn, .deleteRowBtn {
+
+.editRowBtn,
+.deleteRowBtn {
   background-color: #26282e;
   border: none;
   color: #ffffff;
@@ -60,9 +99,24 @@
   cursor: pointer;
   font-weight: 600;
 }
-.deleteRowBtn { color: #ef4444; }
-.editRowBtn:hover, .deleteRowBtn:hover { background-color: #31343c; }
+
+.deleteRowBtn {
+  color: #ef4444;
+}
+
+.editRowBtn:hover,
+.deleteRowBtn:hover {
+  background-color: #31343c;
+}
+
 @media (max-width: 640px) {
-  .hotelRow { flex-direction: column; align-items: flex-start; }
-  .rowButtons { width: 100%; justify-content: flex-end; }
+  .hotelRow {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .rowButtons {
+    width: 100%;
+    justify-content: flex-end;
+  }
 }

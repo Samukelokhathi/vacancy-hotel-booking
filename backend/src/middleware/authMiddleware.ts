@@ -25,13 +25,13 @@ export const protect = async (
       const decoded = jwt.verify(token!, process.env.JWT_SECRET!) as JwtPayload;
 
       const user: User | null = await findUserByEmail(decoded.email);
-      req.user = user || undefined;
-
-      if (!req.user) {
+      if (!user) {
         return res
           .status(401)
           .json({ message: "Not authorized, user not found" });
       }
+      const { password: _pw, ...safeUser } = user;
+      req.user = safeUser as User;
 
       return next();
     } catch (error) {

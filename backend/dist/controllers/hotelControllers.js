@@ -36,14 +36,16 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.deleteHotelById = exports.updateHotelById = exports.getHotelById = exports.getAllHotels = exports.addHotel = void 0;
 const HotelService = __importStar(require("../services/hotelServices.js"));
 const addHotel = async (req, res) => {
-    const { name, description, address, city, starRating, pricePerNight } = req.body;
+    const { name, description, address, city, starRating, pricePerNight, latitude, longitude, facilities, policies, } = req.body;
     if (!name ||
         !description ||
         !address ||
         !city ||
         !starRating ||
-        !pricePerNight) {
-        return res.status(400).json({ message: "All field are required" });
+        !pricePerNight ||
+        !facilities ||
+        !policies) {
+        return res.status(400).json({ message: "All fields are required" });
     }
     if (starRating < 1 || starRating > 5) {
         return res
@@ -51,7 +53,18 @@ const addHotel = async (req, res) => {
             .json({ message: "Star rating must be between 1 and 5" });
     }
     try {
-        const hotel = await HotelService.createHotel(req.body, req.user.id);
+        const hotel = (await HotelService.createHotel({
+            name,
+            description,
+            address,
+            city,
+            starRating,
+            pricePerNight,
+            latitude: latitude ?? null,
+            longitude: longitude ?? null,
+            facilities,
+            policies,
+        }, req.user.id));
         return res.status(201).json(hotel);
     }
     catch (error) {
@@ -78,7 +91,15 @@ const getHotelById = async (req, res) => {
         if (!hotel) {
             return res.status(404).json({ message: "Hotel not found" });
         }
-        return res.status(200).json(hotel);
+        return res.status(200).json({
+            ...hotel,
+            images: (hotel.images ?? []).map((img) => ({
+                id: img.id,
+                hotelId: img.hotelId,
+                url: img.url,
+                isCover: img.isCover ?? false,
+            })),
+        });
     }
     catch (error) {
         return res.status(500).json({ message: "Error retrieving hotel" });

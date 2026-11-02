@@ -13,12 +13,13 @@ const protect = async (req, res, next) => {
             const token = req.headers.authorization.split(" ")[1];
             const decoded = jsonwebtoken_1.default.verify(token, process.env.JWT_SECRET);
             const user = await (0, userService_js_1.findUserByEmail)(decoded.email);
-            req.user = user || undefined;
-            if (!req.user) {
+            if (!user) {
                 return res
                     .status(401)
                     .json({ message: "Not authorized, user not found" });
             }
+            const { password: _pw, ...safeUser } = user;
+            req.user = safeUser;
             return next();
         }
         catch (error) {

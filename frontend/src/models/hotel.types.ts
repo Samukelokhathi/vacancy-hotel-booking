@@ -26,12 +26,14 @@ export interface Hotel {
   createdBy: number | null;
   createdAt: string;
   coverImage?: string | null;
+  images?: HotelImage[];
 }
 
 export interface HotelImage {
   id: number;
   hotelId: number;
   url: string;
+  isCover?: boolean;
 }
 
 export interface Room {
@@ -57,7 +59,6 @@ export interface Booking {
   paid: boolean;
 }
 
-// what the form sends
 export interface BookingFormData {
   roomId: number;
   checkIn: string;
@@ -66,7 +67,6 @@ export interface BookingFormData {
   guests: number;
 }
 
-// Booking plus hotel and room info, from GET /bookings/my
 export interface BookingDetails extends Booking {
   guestName: string;
   guestEmail: string;

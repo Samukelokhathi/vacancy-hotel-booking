@@ -1,4 +1,3 @@
-// src/pages/admin/AdminDashboard.tsx
 import { useState, useEffect, type FormEvent } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Navigate } from "react-router-dom";
@@ -10,7 +9,7 @@ import ReservationsTable from "../../components/admin/reservations/reservations"
 import ManageHotels from "../../components/admin/manageHotels/manageHotels";
 import AddHotelModal from "../../components/admin/addHotelModal/addHotelModal";
 
-import type { BookingDetails, Hotel } from "../../models/hotel.types";
+import type { BookingDetails, Hotel, HotelImage } from "../../models/hotel.types";
 import styles from "./adminDashboard.module.css";
 
 interface HotelFormState {
@@ -25,7 +24,6 @@ interface HotelFormState {
   roomType: string;
   roomQuantity: string;
   roomCapacity: string;
-  imageUrl: string;
 }
 
 const initialForm: HotelFormState = {
@@ -40,8 +38,15 @@ const initialForm: HotelFormState = {
   roomType: "Standard Room",
   roomQuantity: "10",
   roomCapacity: "2",
-  imageUrl: "",
 };
+
+async function uploadHotelImages(hotelId: number, files: File[]) {
+  if (files.length === 0) return;
+  const formData = new FormData();
+  formData.append("hotelId", String(hotelId));
+  files.forEach((file) => formData.append("images", file));
+  await api.post("/hotel-images", formData);
+}
 
 export default function AdminDashboard() {
   const dispatch = useDispatch<AppDispatch>();
@@ -58,7 +63,9 @@ export default function AdminDashboard() {
   const [message, setMessage] = useState("");
   const [formError, setFormError] = useState("");
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [editingHotelId, setEditingHotelId] = useState<number | null>(null); // ADDED: Tracking editing status
+  const [editingHotelId, setEditingHotelId] = useState<number | null>(null);
+  const [existingImages, setExistingImages] = useState<HotelImage[]>([]);
+  const [pendingFiles, setPendingFiles] = useState<File[]>([]);
 
   useEffect(() => {
     if (isAuthenticated && user?.role === "admin") {
@@ -73,6 +80,18 @@ export default function AdminDashboard() {
       setReservations(response.data);
     } catch (err) {
       console.error(err);
+    }
+  };
+
+  const loadHotelImages = async (hotelId: number) => {
+    try {
+      const response = await api.get<HotelImage[]>("/hotel-images", {
+        params: { hotelId },
+      });
+      setExistingImages(response.data);
+    } catch (error) {
+      console.error("Failed to load hotel images", error);
+      setExistingImages([]);
     }
   };
 
@@ -97,16 +116,16 @@ export default function AdminDashboard() {
   };
 
   const handleOpenAddModal = () => {
-    // ADDED: Reset form tracking variables for creation
     setEditingHotelId(null);
     setForm(initialForm);
+    setExistingImages([]);
+    setPendingFiles([]);
     setFormError("");
     setMessage("");
     setIsModalOpen(true);
   };
 
-  const handleOpenEditModal = (hotel: Hotel) => {
-    // ADDED: Map current data to form for modifying listings
+  const handleOpenEditModal = async (hotel: Hotel) => {
     setEditingHotelId(hotel.id);
     setForm({
       name: hotel.name,
@@ -122,11 +141,12 @@ export default function AdminDashboard() {
       roomType: "Standard Room",
       roomQuantity: "10",
       roomCapacity: "2",
-      imageUrl: hotel.coverImage || "",
     });
+    setPendingFiles([]);
     setFormError("");
     setMessage("");
     setIsModalOpen(true);
+    await loadHotelImages(hotel.id);
   };
 
   const handleUpdateStatus = async (
@@ -153,18 +173,46 @@ export default function AdminDashboard() {
     }
   };
 
-  const handleSubmit = async (
-    event: FormEvent<HTMLFormElement>,
-    validImages?: string[],
-  ) => {
-    // CHANGED: Added dynamic multiple image upload parameters mapping arrays
+  const handleFilesSelected = (files: FileList | null) => {
+    if (!files || files.length === 0) return;
+    setPendingFiles((prev) => [...prev, ...Array.from(files)]);
+  };
+
+  const handleRemovePendingFile = (index: number) => {
+    setPendingFiles((prev) => prev.filter((_, i) => i !== index));
+  };
+
+  const handleDeleteImage = async (imageId: number) => {
+    try {
+      await api.delete(`/hotel-images/${imageId}`);
+      setExistingImages((prev) => prev.filter((img) => img.id !== imageId));
+      await dispatch(fetchHotels());
+    } catch (error) {
+      console.error("Failed to delete hotel image", error);
+      setFormError(getErrorMessage(error, "Failed to delete image."));
+    }
+  };
+
+  const handleSetCover = async (imageId: number) => {
+    try {
+      await api.patch(`/hotel-images/${imageId}/cover`);
+      setExistingImages((prev) =>
+        prev.map((img) => ({ ...img, isCover: img.id === imageId })),
+      );
+      await dispatch(fetchHotels());
+    } catch (error) {
+      console.error("Failed to set cover image", error);
+      setFormError(getErrorMessage(error, "Failed to set cover image."));
+    }
+  };
+
+  const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     setMessage("");
     setFormError("");
     setIsSaving(true);
 
     const payload = {
-      // ADDED: Consolidated payload tracking variable parameters
       name: form.name.trim(),
       description: form.description.trim(),
       address: form.address.trim(),
@@ -182,17 +230,10 @@ export default function AdminDashboard() {
 
     try {
       if (editingHotelId) {
-        // ADDED: Split update vs write request pipelines logic tracking metrics
         await api.put(`/hotels/${editingHotelId}`, payload);
-
-        if (validImages && validImages.length > 0) {
-          // ADDED: Loop and save multiple photos references
-          await Promise.all(
-            validImages.map((url) =>
-              api.post("/hotel-images", { hotelId: editingHotelId, url }),
-            ),
-          );
-        }
+        await uploadHotelImages(editingHotelId, pendingFiles);
+        await loadHotelImages(editingHotelId);
+        setPendingFiles([]);
         setMessage("Hotel updated successfully.");
       } else {
         const hotelRes = await api.post("/hotels", payload);
@@ -207,14 +248,7 @@ export default function AdminDashboard() {
             quantity: Number(form.roomQuantity),
           });
 
-          if (validImages && validImages.length > 0) {
-            // CHANGED: Handle sequential iterative mapping loop creations natively from inputs file array
-            await Promise.all(
-              validImages.map((url) =>
-                api.post("/hotel-images", { hotelId: Number(hotelId), url }),
-              ),
-            );
-          }
+          await uploadHotelImages(Number(hotelId), pendingFiles);
         }
         setMessage("Hotel added successfully.");
       }
@@ -223,9 +257,11 @@ export default function AdminDashboard() {
       setTimeout(() => {
         setIsModalOpen(false);
         setMessage("");
+        setPendingFiles([]);
+        setExistingImages([]);
       }, 1000);
     } catch (error) {
-      setFormError(getErrorMessage(error, "Error saving hotel data.")); // CHANGED: Standard fallback message
+      setFormError(getErrorMessage(error, "Error saving hotel data."));
     } finally {
       setIsSaving(false);
     }
@@ -236,10 +272,7 @@ export default function AdminDashboard() {
       <main className={styles.main}>
         <div className={styles.topContainer}>
           <h1>Admin Dashboard</h1>
-          <button
-            className={styles.launchBtn}
-            onClick={handleOpenAddModal} // CHANGED: Use specific open target lifecycle routine trigger
-          >
+          <button className={styles.launchBtn} onClick={handleOpenAddModal}>
             Add hotel
           </button>
         </div>
@@ -268,9 +301,15 @@ export default function AdminDashboard() {
           isSaving={isSaving}
           message={message}
           formError={formError}
-          isEditMode={!!editingHotelId} // ADDED: Explicit variable type condition lookup
+          isEditMode={!!editingHotelId}
+          existingImages={existingImages}
+          pendingFiles={pendingFiles}
           onChange={handleChange}
-          onSubmit={handleSubmit} // CHANGED: Connected handle submit matching parameters vector rules
+          onFilesSelected={handleFilesSelected}
+          onRemovePendingFile={handleRemovePendingFile}
+          onDeleteImage={handleDeleteImage}
+          onSetCover={handleSetCover}
+          onSubmit={handleSubmit}
           onClose={() => setIsModalOpen(false)}
         />
       )}

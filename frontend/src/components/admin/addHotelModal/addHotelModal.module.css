@@ -101,7 +101,8 @@
 }
 
 .select,
-.textarea {
+.textarea,
+.fileInput {
   width: 100%;
   box-sizing: border-box;
   border: 1px solid #dfe3e8;
@@ -129,36 +130,79 @@
   line-height: 1.6;
 }
 
+.fileInput {
+  min-height: 46px;
+  padding: 10px 14px;
+}
+
 .select:focus,
-.textarea:focus {
+.textarea:focus,
+.fileInput:focus {
   border-color: #b99556;
   box-shadow: 0 0 0 3px rgba(185, 149, 86, 0.14);
 }
 
-.imageRowInput {
+.imageGrid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+  margin-top: 14px;
+}
+
+.imageCard {
+  border: 1px solid #e5e7eb;
+  border-radius: 10px;
+  overflow: hidden;
+  background: #f8f9fb;
+}
+
+.preview {
+  display: block;
+  width: 100%;
+  aspect-ratio: 16 / 10;
+  object-fit: cover;
+}
+
+.previewFallback {
   display: flex;
-  align-items: flex-start;
-  gap: 10px;
-  margin-bottom: 12px;
+  align-items: center;
+  justify-content: center;
+  aspect-ratio: 16 / 10;
+  color: #6b7280;
+  font-size: 12px;
+  background: #eef0f4;
 }
 
-.imageRowInput > :first-child {
+.imageActions {
+  display: flex;
+  gap: 8px;
+  padding: 8px;
+}
+
+.coverBtn,
+.deleteImgBtn {
   flex: 1;
-  min-width: 0;
+  border: none;
+  border-radius: 6px;
+  padding: 8px 6px;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
 }
 
-.imageRowInput button {
-  flex-shrink: 0;
+.coverBtn {
+  background: #172033;
+  color: #ffffff;
 }
 
-.formGrid button {
-  transition:
-    background 0.2s ease,
-    transform 0.2s ease;
+.coverBtn:disabled {
+  background: #b99556;
+  cursor: default;
 }
 
-.formGrid button:active {
-  transform: scale(0.98);
+.deleteImgBtn {
+  background: #fee2e2;
+  color: #b91c1c;
 }
 
 .error,
@@ -251,8 +295,8 @@
     grid-column: 1 / -1;
   }
 
-  .imageRowInput {
-    gap: 8px;
+  .imageGrid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
   .closeModal {
@@ -267,7 +311,6 @@
   }
 
   .closeModal,
-  .formGrid button,
   .select,
   .textarea,
   .submitBtn {

@@ -36,10 +36,13 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.deleteUserById = exports.updateUserById = exports.getUserById = exports.getAllUsers = exports.login = exports.register = void 0;
+exports.deleteUserById = exports.updateUserById = exports.getUserById = exports.getAllUsers = exports.googleLogin = exports.login = exports.register = void 0;
 const UserService = __importStar(require("../services/userService.js"));
 const bcryptjs_1 = __importDefault(require("bcryptjs"));
 const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
+const google_auth_library_1 = require("google-auth-library");
+const googleClient = new google_auth_library_1.OAuth2Client(process.env.GOOGLE_CLIENT_ID);
+const createToken = (user) => jsonwebtoken_1.default.sign({ id: user.id, email: user.email, role: user.role }, process.env.JWT_SECRET, { expiresIn: "1h" });
 const register = async (req, res) => {
     const { email, password, name, surname, cellphone } = req.body;
     if (!email || !password || !name || !surname || !cellphone) {
@@ -78,7 +81,8 @@ const login = async (req, res) => {
             expiresIn: "1h",
         });
         console.log(`User ${email} logged in successfully`);
-        return res.status(200).json({ message: "Login Successful", token });
+        const { password: _pw, ...safeUser } = user;
+        return res.status(200).json({ message: "Login Successful", token, user: safeUser });
     }
     catch (error) {
         console.error("Login Error:", error);
@@ -86,6 +90,42 @@ const login = async (req, res) => {
     }
 };
 exports.login = login;
+const googleLogin = async (req, res) => {
+    const { credential } = req.body;
+    if (!credential) {
+        return res.status(400).json({ message: "Google credential is required" });
+    }
+    // 1. check the token really came from Google, for our app
+    let payload;
+    try {
+        const ticket = await googleClient.verifyIdToken({
+            idToken: credential,
+            audience: process.env.GOOGLE_CLIENT_ID,
+        });
+        payload = ticket.getPayload();
+    }
+    catch (error) {
+        return res.status(401).json({ message: "Invalid Google sign-in" });
+    }
+    if (!payload?.email || !payload.email_verified) {
+        return res.status(401).json({ message: "Google email is not verified" });
+    }
+    // 2. find the user, or create a new client account
+    try {
+        let user = await UserService.findUserByEmail(payload.email);
+        if (!user) {
+            user = await UserService.createGoogleUser(payload.email, payload.given_name ?? payload.name ?? "Google", payload.family_name ?? "");
+        }
+        return res
+            .status(200)
+            .json({ message: "Login Successful", token: createToken(user) });
+    }
+    catch (error) {
+        console.error("Google Login Error:", error);
+        return res.status(500).json({ message: "Error logging in with Google" });
+    }
+};
+exports.googleLogin = googleLogin;
 const getAllUsers = async (req, res) => {
     try {
         const users = await UserService.findAllUsers();
@@ -107,7 +147,8 @@ const getUserById = async (req, res) => {
         if (!user) {
             return res.status(404).json({ message: "User not found" });
         }
-        return res.status(200).json(user);
+        const { password: _pw, ...safeUser } = user;
+        return res.status(200).json(safeUser);
     }
     catch (error) {
         res.status(500).json({ message: "Error retrieving user" });

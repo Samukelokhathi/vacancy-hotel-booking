@@ -73,10 +73,10 @@ export const updateUser = async (
          name = $3,
          surname = $4,
          cellphone = $5,
-         password = $6
+         password = COALESCE($6, password)
          WHERE id = $7
         RETURNING id, name, surname, cellphone, email, role, createdat`,
-    [email, role, name, surname, cellphone, password, id],
+    [email, role, name, surname, cellphone, password ?? null, id],
   );
   return rows[0] || null;
 };

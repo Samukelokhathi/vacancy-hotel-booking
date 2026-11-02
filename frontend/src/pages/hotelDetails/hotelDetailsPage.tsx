@@ -26,7 +26,6 @@ export default function HotelDetailsPage() {
 
   if (error) return <p className={styles.errorMessage}>{error}</p>;
 
-  // also covers the moment between two hotels, so the old one never flashes
   if (isLoading || !selected || selected.hotel.id !== hotelId) {
     return <p className={styles.message}>Loading hotel...</p>;
   }
@@ -35,7 +34,6 @@ export default function HotelDetailsPage() {
 
   return (
     <div className={styles.layout}>
-      {/* LEFT: photos and details */}
       <div className={styles.main}>
         <PhotoGallery images={images} />
 
@@ -63,7 +61,6 @@ export default function HotelDetailsPage() {
             </p>
           </div>
 
-          {/* more buttons (like Save) can go in here later */}
           <div className={styles.actions}>
             <ShareButton title={hotel.name} />
           </div>
@@ -97,7 +94,6 @@ export default function HotelDetailsPage() {
         </div>
       </div>
 
-      {/* RIGHT: price and booking card */}
       <aside className={styles.sidebar}>
         <p className={styles.price}>
           {formatPrice(hotel.pricePerNight)} <span>/ night</span>

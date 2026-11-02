@@ -27,7 +27,6 @@ const initialState: HotelState = {
   error: null,
 };
 
-// LIST
 export const fetchHotels = createAsyncThunk<
   Hotel[],
   void,
@@ -41,19 +40,21 @@ export const fetchHotels = createAsyncThunk<
   }
 });
 
-// DETAILS: hotel + photos + rooms, loaded together
 export const fetchHotelDetails = createAsyncThunk<
   HotelDetails,
   number,
   { rejectValue: string }
 >("hotels/fetchDetails", async (id, { rejectWithValue }) => {
   try {
-    const [hotel, images, rooms] = await Promise.all([
+    const [hotelRes, roomsRes] = await Promise.all([
       api.get<Hotel>(`/hotels/${id}`),
-      api.get<HotelImage[]>("/hotel-images", { params: { hotelId: id } }),
       api.get<Room[]>("/rooms", { params: { hotelId: id } }),
     ]);
-    return { hotel: hotel.data, images: images.data, rooms: rooms.data };
+
+    const hotel = hotelRes.data;
+    const images = Array.isArray(hotel.images) ? hotel.images : [];
+
+    return { hotel, images, rooms: roomsRes.data };
   } catch (error) {
     return rejectWithValue(getErrorMessage(error, "Unable to load the hotel"));
   }
@@ -73,7 +74,6 @@ const hotelSlice = createSlice({
         state.isLoading = false;
         state.selected = action.payload;
       })
-      // pending and rejected are the same for both thunks, so they're written once
       .addMatcher(isPending(fetchHotels, fetchHotelDetails), (state) => {
         state.isLoading = true;
         state.error = null;

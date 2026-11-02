@@ -18,7 +18,7 @@ router.post("/login", login);
 
 router.get("/users", protect, adminOnly, getAllUsers);
 router.get("/users/:id", protect, getUserById);
-router.put("/users/:id", protect, adminOnly, updateUserById);
+router.put("/users/:id", protect, updateUserById);
 router.delete("/users/:id", protect, adminOnly, deleteUserById);
 router.post("/google", googleLogin);
 

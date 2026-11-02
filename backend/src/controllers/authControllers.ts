@@ -65,7 +65,8 @@ export const login = async (req: Request, res: Response) => {
     });
 
     console.log(`User ${email} logged in successfully`);
-    return res.status(200).json({ message: "Login Successful", token, user });
+    const { password: _pw, ...safeUser } = user;
+    return res.status(200).json({ message: "Login Successful", token, user: safeUser });
   } catch (error) {
     console.error("Login Error:", error);
     return res.status(500).json({ message: "Error logging in" });
@@ -135,7 +136,8 @@ export const getUserById = async (req: AuthRequest, res: Response) => {
     if (!user) {
       return res.status(404).json({ message: "User not found" });
     }
-    return res.status(200).json(user);
+    const { password: _pw, ...safeUser } = user;
+    return res.status(200).json(safeUser);
   } catch (error) {
     res.status(500).json({ message: "Error retrieving user" });
   }

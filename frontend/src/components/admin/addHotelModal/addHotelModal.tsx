@@ -1,6 +1,8 @@
 import type { FormEvent } from "react";
 import { Input } from "../../inputs/input";
 import Button from "../../button/button";
+import type { HotelImage } from "../../../models/hotel.types";
+import { resolveImageUrl } from "../../../utils/imageUrl";
 import styles from "./addHotelModal.module.css";
 
 interface HotelFormState {
@@ -15,7 +17,6 @@ interface HotelFormState {
   roomType: string;
   roomQuantity: string;
   roomCapacity: string;
-  imageUrl: string;
 }
 
 interface AddHotelModalProps {
@@ -24,11 +25,17 @@ interface AddHotelModalProps {
   message: string;
   formError: string;
   isEditMode: boolean;
+  existingImages: HotelImage[];
+  pendingFiles: File[];
   onChange: (
     event: React.ChangeEvent<
       HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
     >,
   ) => void;
+  onFilesSelected: (files: FileList | null) => void;
+  onRemovePendingFile: (index: number) => void;
+  onDeleteImage: (imageId: number) => void;
+  onSetCover: (imageId: number) => void;
   onSubmit: (event: FormEvent<HTMLFormElement>) => void;
   onClose: () => void;
 }
@@ -39,7 +46,13 @@ export default function AddHotelModal({
   message,
   formError,
   isEditMode,
+  existingImages,
+  pendingFiles,
   onChange,
+  onFilesSelected,
+  onRemovePendingFile,
+  onDeleteImage,
+  onSetCover,
   onSubmit,
   onClose,
 }: AddHotelModalProps) {
@@ -130,20 +143,103 @@ export default function AddHotelModal({
                   required
                 />
               </div>
+              <div className={styles.halfWidth}>
+                <Input
+                  label="ROOM CAPACITY"
+                  type="number"
+                  name="roomCapacity"
+                  value={form.roomCapacity}
+                  onChange={onChange}
+                  required
+                />
+              </div>
             </>
           )}
 
           <div className={styles.fullWidth}>
-            <Input
-              label="HOTEL PHOTO IMAGE URL"
-              type="url"
-              name="imageUrl"
-              value={form.imageUrl}
-              onChange={onChange}
-              placeholder="https://example.com"
-              required
-            />
+            <div className={styles.selectGroup}>
+              <label className={styles.selectLabel}>HOTEL PHOTOS</label>
+              <input
+                type="file"
+                accept="image/*"
+                multiple
+                className={styles.fileInput}
+                onChange={(event) => onFilesSelected(event.target.files)}
+              />
+            </div>
+
+            {existingImages.length > 0 && (
+              <div className={styles.imageGrid}>
+                {existingImages.map((image) => {
+                  const src = resolveImageUrl(image.url);
+                  return (
+                    <div key={image.id} className={styles.imageCard}>
+                      {src ? (
+                        <img
+                          src={src}
+                          alt=""
+                          className={styles.preview}
+                          loading="lazy"
+                          onError={() => {
+                            console.error(
+                              "Admin edit image preview failed to load",
+                              { imageId: image.id, src },
+                            );
+                          }}
+                        />
+                      ) : (
+                        <div className={styles.previewFallback}>No photo</div>
+                      )}
+                      <div className={styles.imageActions}>
+                        <button
+                          type="button"
+                          className={styles.coverBtn}
+                          disabled={image.isCover}
+                          onClick={() => onSetCover(image.id)}
+                        >
+                          {image.isCover ? "Cover" : "Set cover"}
+                        </button>
+                        <button
+                          type="button"
+                          className={styles.deleteImgBtn}
+                          onClick={() => onDeleteImage(image.id)}
+                        >
+                          Delete
+                        </button>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            )}
+
+            {pendingFiles.length > 0 && (
+              <div className={styles.imageGrid}>
+                {pendingFiles.map((file, index) => (
+                  <div
+                    key={`${file.name}-${index}`}
+                    className={styles.imageCard}
+                  >
+                    <img
+                      src={URL.createObjectURL(file)}
+                      alt=""
+                      className={styles.preview}
+                    />
+                    <div className={styles.imageActions}>
+                      <button
+                        type="button"
+                        className={styles.deleteImgBtn}
+                        onClick={() => onRemovePendingFile(index)}
+                      >
+                        Remove
+                      </button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
           </div>
+
           <div className={styles.fullWidth}>
             <Input
               label="FACILITIES (COMMA-SEPARATED)"

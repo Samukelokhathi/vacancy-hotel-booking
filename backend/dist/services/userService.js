@@ -3,9 +3,19 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.deleteUser = exports.updateUser = exports.findUserById = exports.findAllUsers = exports.createUser = exports.findUserByEmail = void 0;
+exports.deleteUser = exports.updateUser = exports.findUserById = exports.findAllUsers = exports.createUser = exports.findUserByEmail = exports.createGoogleUser = void 0;
 const database_js_1 = require("../config/database.js");
 const bcryptjs_1 = __importDefault(require("bcryptjs"));
+const crypto_1 = __importDefault(require("crypto"));
+const createGoogleUser = async (email, name, surname) => {
+    const randomPassword = crypto_1.default.randomBytes(32).toString("hex");
+    const hashedPassword = await bcryptjs_1.default.hash(randomPassword, 10);
+    const { rows } = await (0, database_js_1.query)(`INSERT INTO users (name, surname, email, password, role)
+     VALUES ($1, $2, $3, $4, 'client')
+     RETURNING id, name, surname, email, cellphone, role, "createdat"`, [name, surname, email.toLowerCase(), hashedPassword]);
+    return rows[0];
+};
+exports.createGoogleUser = createGoogleUser;
 const findUserByEmail = async (email) => {
     const { rows } = await (0, database_js_1.query)("SELECT * FROM users WHERE EMAIL = $1", [
         email?.toLocaleLowerCase(),
@@ -40,9 +50,9 @@ const updateUser = async (id, appData) => {
          name = $3,
          surname = $4,
          cellphone = $5,
-         password = $6
+         password = COALESCE($6, password)
          WHERE id = $7
-        RETURNING id, name, surname, cellphone, email, role, createdat`, [email, role, name, surname, cellphone, password, id]);
+        RETURNING id, name, surname, cellphone, email, role, createdat`, [email, role, name, surname, cellphone, password ?? null, id]);
     return rows[0] || null;
 };
 exports.updateUser = updateUser;

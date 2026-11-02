@@ -26,8 +26,10 @@ export interface Hotel {
   createdBy: number | null;
   createdAt: Date;
   coverImage: string | null;
+  images?: HotelImage[];
 }
-export type HotelInput = Omit<Hotel, "id" | "createdBy" | "createdAt">;
+
+export type HotelInput = Omit<Hotel, "id" | "createdBy" | "createdAt" | "coverImage" | "images">;
 
 export interface Room {
   id: number;
@@ -45,9 +47,14 @@ export interface HotelImage {
   id: number;
   hotelId: number;
   url: string;
+  mimeType?: string | null;
+  isCover?: boolean;
 }
 
-export type HotelImageInput = Omit<HotelImage, "id">;
+export type HotelImageInput = {
+  hotelId: number;
+  url: string;
+};
 
 export type BookingStatus = "pending" | "approved" | "cancelled";
 export interface Booking {
@@ -69,6 +76,7 @@ export interface BookingDetails extends Booking {
   guestEmail: string;
   hotelName: string;
   roomType: string;
+  totalPrice: number;
 }
 
 export type PaymentStatus = "pending" | "success" | "failed";
@@ -86,7 +94,6 @@ export interface Payment {
 
 export type PaymentInput = Omit<Payment, "id" | "status" | "paidAt">;
 
-// Payment plus guest, hotel and room info, for the admin list
 export interface PaymentDetails extends Payment {
   guestName: string;
   guestEmail: string;

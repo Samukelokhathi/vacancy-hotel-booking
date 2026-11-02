@@ -1,14 +1,32 @@
+import { useState } from "react";
 import { Link } from "react-router-dom";
 import type { Hotel } from "../../models/hotel.types";
 import { formatPrice } from "../../utils/format";
+import { resolveImageUrl } from "../../utils/imageUrl";
 import StarRating from "../starRating/starRating";
 import styles from "./hotelCard.module.css";
 
 export default function HotelCard({ hotel }: { hotel: Hotel }) {
+  const [imageFailed, setImageFailed] = useState(false);
+  const imageSrc = resolveImageUrl(hotel.coverImage);
+  const showImage = Boolean(imageSrc) && !imageFailed;
+
   return (
     <article className={styles.card}>
-      {hotel.coverImage ? (
-        <img className={styles.image} src={hotel.coverImage} alt={hotel.name} />
+      {showImage ? (
+        <img
+          className={styles.image}
+          src={imageSrc!}
+          alt={hotel.name}
+          loading="lazy"
+          onError={() => {
+            console.error("Hotel card image failed to load", {
+              hotelId: hotel.id,
+              src: imageSrc,
+            });
+            setImageFailed(true);
+          }}
+        />
       ) : (
         <div className={styles.noImage}>No photo yet</div>
       )}

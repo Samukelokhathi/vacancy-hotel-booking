@@ -12,18 +12,39 @@ const hotelRoutes_js_1 = __importDefault(require("./routes/hotelRoutes.js"));
 const roomRoutes_js_1 = __importDefault(require("./routes/roomRoutes.js"));
 const hotelImageRoutes_js_1 = __importDefault(require("./routes/hotelImageRoutes.js"));
 const bookingRoutes_js_1 = __importDefault(require("./routes/bookingRoutes.js"));
+const paymentRoutes_js_1 = __importDefault(require("./routes/paymentRoutes.js"));
+const cors_1 = __importDefault(require("cors"));
 dotenv_1.default.config();
 const app = (0, express_1.default)();
 const PORT = process.env.PORT;
 const startServer = async () => {
     await (0, database_js_1.testDbConnection)();
     await (0, initDb_js_1.initDb)();
-    app.use(express_1.default.json());
+    console.log("Starting corse operation");
+    const allowedOrigins = [
+        process.env.FRONTEND_URL?.replace(/\/$/, ""),
+        "http://localhost:5173",
+    ].filter(Boolean);
+    app.use((0, cors_1.default)({
+        origin: allowedOrigins,
+        methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
+        allowedHeaders: ["Content-Type", "Authorization"],
+    }));
+    app.use((req, res, next) => {
+        if (req.path.startsWith("/api/hotel-images") || req.path.startsWith("/hotel-images")) {
+            res.setHeader("Cross-Origin-Resource-Policy", "cross-origin");
+        }
+        next();
+    });
+    console.log("Done with  corse");
+    app.use(express_1.default.json({ limit: "12mb" }));
     app.use("/auth", authRoutes_js_1.default);
     app.use("/hotels", hotelRoutes_js_1.default);
     app.use("/rooms", roomRoutes_js_1.default);
     app.use("/hotel-images", hotelImageRoutes_js_1.default);
+    app.use("/api/hotel-images", hotelImageRoutes_js_1.default);
     app.use("/bookings", bookingRoutes_js_1.default);
+    app.use("/payments", paymentRoutes_js_1.default);
     app.listen(PORT, () => {
         console.log(`Server is running on http://localhost:${PORT}`);
     });

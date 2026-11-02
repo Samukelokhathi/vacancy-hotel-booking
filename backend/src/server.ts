@@ -22,7 +22,7 @@ const startServer = async () => {
   console.log("Starting corse operation");
 
   const allowedOrigins = [
-    process.env.FRONTEND_URL?.replace(/\/$/, ""), // the hosted site
+    process.env.FRONTEND_URL?.replace(/\/$/, ""),
     "http://localhost:5173",
   ].filter(Boolean) as string[];
 
@@ -34,13 +34,21 @@ const startServer = async () => {
     }),
   );
 
+  app.use((req, res, next) => {
+    if (req.path.startsWith("/api/hotel-images") || req.path.startsWith("/hotel-images")) {
+      res.setHeader("Cross-Origin-Resource-Policy", "cross-origin");
+    }
+    next();
+  });
+
   console.log("Done with  corse");
 
-  app.use(express.json());
+  app.use(express.json({ limit: "12mb" }));
   app.use("/auth", authRoutes);
   app.use("/hotels", hotelRoutes);
   app.use("/rooms", roomRoutes);
   app.use("/hotel-images", hotelImageRoutes);
+  app.use("/api/hotel-images", hotelImageRoutes);
   app.use("/bookings", bookingRoutes);
   app.use("/payments", paymentRoutes);
 

@@ -2,6 +2,7 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.updateBookingStatus = exports.findBookingById = exports.findBookingsByUser = exports.findAllBookings = exports.countBookedRooms = exports.createBooking = void 0;
 const database_js_1 = require("../config/database.js");
+const isPaid = (bookingId) => `EXISTS (SELECT 1 FROM payments WHERE booking_id = ${bookingId} AND status = 'success') AS paid`;
 const bookingColumns = `id,
   user_id AS "userId",
   room_id AS "roomId",
@@ -9,7 +10,8 @@ const bookingColumns = `id,
   TO_CHAR(check_out, 'YYYY-MM-DD') AS "checkOut",
   number_of_rooms AS "numberOfRooms",
   guests,
-  status`;
+  status,
+  ${isPaid("bookings.id")}`;
 const detailsSelect = `SELECT b.id,
   b.user_id AS "userId",
   b.room_id AS "roomId",
@@ -17,6 +19,7 @@ const detailsSelect = `SELECT b.id,
   TO_CHAR(b.check_out, 'YYYY-MM-DD') AS "checkOut",
   b.number_of_rooms AS "numberOfRooms",
   b.guests,
+  ${isPaid("b.id")},
   b.status,
   u.name || ' ' || u.surname AS "guestName",
   u.email AS "guestEmail",
@@ -38,7 +41,7 @@ const countBookedRooms = async (roomId, checkIn, checkOut) => {
     const { rows } = await (0, database_js_1.query)(`SELECT COALESCE(SUM(number_of_rooms), 0)::int AS booked
      FROM bookings
      WHERE room_id = $1
-     AND status <> 'cancelled'
+     AND status = 'approved'
      AND check_in < $3
      AND check_out > $2`, [roomId, checkIn, checkOut]);
     return rows[0].booked;

@@ -33,7 +33,7 @@ var __importStar = (this && this.__importStar) || (function () {
     };
 })();
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.updateBookingStatusById = exports.getMyBookings = exports.getAllBookings = exports.addBooking = void 0;
+exports.cancelMyBooking = exports.updateBookingStatusById = exports.getMyBookings = exports.getAllBookings = exports.addBooking = void 0;
 const bookingService = __importStar(require("../services/bookingService.js"));
 const roomService = __importStar(require("../services/roomService.js"));
 const addBooking = async (req, res) => {
@@ -67,7 +67,7 @@ const addBooking = async (req, res) => {
                 .json({ message: "Not enough rooms available for these dates" });
         }
         const booking = await bookingService.createBooking({
-            roomId,
+            roomId: room.id, // CHANGED: the verified number, not the raw request value
             checkIn,
             checkOut,
             numberOfRooms: Number(numberOfRooms),
@@ -123,3 +123,27 @@ const updateBookingStatusById = async (req, res) => {
     }
 };
 exports.updateBookingStatusById = updateBookingStatusById;
+const cancelMyBooking = async (req, res) => {
+    try {
+        const id = parseInt(String(req.params.id));
+        const booking = await bookingService.findBookingById(id);
+        if (!booking) {
+            return res.status(404).json({ message: "Booking not found" });
+        }
+        if (booking.userId !== req.user.id) {
+            return res.status(403).json({ message: "Access denied" });
+        }
+        // CHANGED: moved here from addBooking
+        if (booking.paid) {
+            return res
+                .status(400)
+                .json({ message: "Paid bookings can only be cancelled by an admin" });
+        }
+        const cancelled = await bookingService.updateBookingStatus(id, "cancelled");
+        return res.status(200).json(cancelled);
+    }
+    catch (error) {
+        return res.status(500).json({ message: "Error cancelling booking" });
+    }
+};
+exports.cancelMyBooking = cancelMyBooking;
