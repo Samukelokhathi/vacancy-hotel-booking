@@ -46,7 +46,7 @@ export const addBooking = async (req: AuthRequest, res: Response) => {
 
     const booking = await bookingService.createBooking(
       {
-        roomId: room.id, // CHANGED: the verified number, not the raw request value
+        roomId: room.id,
         checkIn,
         checkOut,
         numberOfRooms: Number(numberOfRooms),
@@ -171,43 +171,7 @@ export const cancelMyBooking = async (req: AuthRequest, res: Response) => {
     return res.status(500).json({ message: "Error cancelling booking" });
   }
 };
-  try {
-    const id = parseInt(String(req.params.id));
-    const booking = await bookingService.findBookingById(id);
-    if (!booking) {
-      return res.status(404).json({ message: "Booking not found" });
-    }
-    if (req.user!.role !== "admin" && booking.userId !== req.user!.id) {
-      return res.status(403).json({ message: "Access denied" });
-    }
-    const cancelled = await bookingService.updateBookingStatus(id, "cancelled");
-    return res.status(200).json(cancelled);
-  } catch (error) {
-    return res.status(500).json({ message: "Error deleting booking" });
-  }
-};
-  try {
-    const id = parseInt(String(req.params.id));
-    const booking = await bookingService.findBookingById(id);
-    if (!booking) {
-      return res.status(404).json({ message: "Booking not found" });
-    }
-    if (booking.userId !== req.user!.id) {
-      return res.status(403).json({ message: "Access denied" });
-    }
-    // CHANGED: moved here from addBooking
-    if (booking.paid) {
-      return res
-        .status(400)
-        .json({ message: "Paid bookings can only be cancelled by an admin" });
-    }
 
-    const cancelled = await bookingService.updateBookingStatus(id, "cancelled");
-    return res.status(200).json(cancelled);
-  } catch (error) {
-    return res.status(500).json({ message: "Error cancelling booking" });
-  }
-};
 export const deleteBookingById = async (req: AuthRequest, res: Response) => {
   try {
     const id = parseInt(String(req.params.id));
