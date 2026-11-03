@@ -96,11 +96,6 @@ export const findBookingById = async (id: number): Promise<Booking | null> => {
   );
   return rows[0] || null;
 };
-  id: number,
-): Promise<BookingDetails | null> => {
-  const { rows } = await query(`${detailsSelect} WHERE b.id = $1`, [id]);
-  return rows[0] || null;
-};
 
 export const findBookingDetailsById = async (
   id: number,
@@ -140,7 +135,8 @@ export const updateBooking = async (
   if (data.guests > room.capacity * data.numberOfRooms) {
     throw new Error("Too many guests for the rooms selected");
   }
-  if (data.numberOfRooms < 1) throw new Error("Number of rooms must be at least 1");
+  if (data.numberOfRooms < 1)
+    throw new Error("Number of rooms must be at least 1");
 
   const booked = await countBookedRooms(
     room.id,
