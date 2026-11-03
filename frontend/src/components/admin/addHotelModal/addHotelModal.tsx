@@ -12,11 +12,10 @@ interface HotelFormState {
   city: string;
   starRating: string;
   pricePerNight: string;
+  latitude: string;
+  longitude: string;
   facilities: string;
   policies: string;
-  roomType: string;
-  roomQuantity: string;
-  roomCapacity: string;
 }
 
 interface AddHotelModalProps {
@@ -121,40 +120,24 @@ export default function AddHotelModal({
               required
             />
           </div>
-
-          {!isEditMode && (
-            <>
-              <div className={styles.halfWidth}>
-                <Input
-                  label="INITIAL ROOMS TYPE"
-                  name="roomType"
-                  value={form.roomType}
-                  onChange={onChange}
-                  required
-                />
-              </div>
-              <div className={styles.halfWidth}>
-                <Input
-                  label="ROOMS SUPPLY ALLOCATION"
-                  type="number"
-                  name="roomQuantity"
-                  value={form.roomQuantity}
-                  onChange={onChange}
-                  required
-                />
-              </div>
-              <div className={styles.halfWidth}>
-                <Input
-                  label="ROOM CAPACITY"
-                  type="number"
-                  name="roomCapacity"
-                  value={form.roomCapacity}
-                  onChange={onChange}
-                  required
-                />
-              </div>
-            </>
-          )}
+          <div className={styles.halfWidth}>
+            <Input
+              label="LATITUDE (OPTIONAL)"
+              name="latitude"
+              value={form.latitude}
+              onChange={onChange}
+              placeholder="e.g. -26.2041"
+            />
+          </div>
+          <div className={styles.halfWidth}>
+            <Input
+              label="LONGITUDE (OPTIONAL)"
+              name="longitude"
+              value={form.longitude}
+              onChange={onChange}
+              placeholder="e.g. 28.0473"
+            />
+          </div>
 
           <div className={styles.fullWidth}>
             <div className={styles.selectGroup}>

@@ -9,7 +9,11 @@ import ReservationsTable from "../../components/admin/reservations/reservations"
 import ManageHotels from "../../components/admin/manageHotels/manageHotels";
 import AddHotelModal from "../../components/admin/addHotelModal/addHotelModal";
 
-import type { BookingDetails, Hotel, HotelImage } from "../../models/hotel.types";
+import type {
+  BookingDetails,
+  Hotel,
+  HotelImage,
+} from "../../models/hotel.types";
 import styles from "./adminDashboard.module.css";
 
 interface HotelFormState {
@@ -19,11 +23,10 @@ interface HotelFormState {
   city: string;
   starRating: string;
   pricePerNight: string;
+  latitude: string;
+  longitude: string;
   facilities: string;
   policies: string;
-  roomType: string;
-  roomQuantity: string;
-  roomCapacity: string;
 }
 
 const initialForm: HotelFormState = {
@@ -33,11 +36,10 @@ const initialForm: HotelFormState = {
   city: "",
   starRating: "4",
   pricePerNight: "",
+  latitude: "",
+  longitude: "",
   facilities: "WiFi, Parking, Pool",
   policies: "Check-in 14:00.",
-  roomType: "Standard Room",
-  roomQuantity: "10",
-  roomCapacity: "2",
 };
 
 async function uploadHotelImages(hotelId: number, files: File[]) {
@@ -134,13 +136,12 @@ export default function AdminDashboard() {
       city: hotel.city,
       starRating: String(hotel.starRating),
       pricePerNight: String(hotel.pricePerNight),
+      latitude: hotel.latitude != null ? String(hotel.latitude) : "",
+      longitude: hotel.longitude != null ? String(hotel.longitude) : "",
       facilities: Array.isArray(hotel.facilities)
         ? hotel.facilities.join(", ")
         : "",
       policies: hotel.policies || "",
-      roomType: "Standard Room",
-      roomQuantity: "10",
-      roomCapacity: "2",
     });
     setPendingFiles([]);
     setFormError("");
@@ -212,13 +213,16 @@ export default function AdminDashboard() {
     setFormError("");
     setIsSaving(true);
 
+    const latitude = form.latitude.trim() || null;
+    const longitude = form.longitude.trim() || null;
+
     const payload = {
       name: form.name.trim(),
       description: form.description.trim(),
       address: form.address.trim(),
       city: form.city.trim(),
-      latitude: null,
-      longitude: null,
+      latitude,
+      longitude,
       starRating: Number(form.starRating),
       pricePerNight: Number(form.pricePerNight),
       facilities: form.facilities
@@ -242,10 +246,10 @@ export default function AdminDashboard() {
         if (hotelId) {
           await api.post("/rooms", {
             hotelId: Number(hotelId),
-            roomType: form.roomType.trim(),
-            capacity: Number(form.roomCapacity),
+            roomType: "Standard Room",
+            capacity: 2,
             pricePerNight: Number(form.pricePerNight),
-            quantity: Number(form.roomQuantity),
+            quantity: 10,
           });
 
           await uploadHotelImages(Number(hotelId), pendingFiles);

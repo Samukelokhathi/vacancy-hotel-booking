@@ -17,38 +17,67 @@ export const addHotel = async (req: AuthRequest, res: Response) => {
     policies,
   } = req.body;
 
-  if (
-    !name ||
-    !description ||
-    !address ||
-    !city ||
-    !starRating ||
-    !pricePerNight ||
-    !facilities ||
-    !policies
-  ) {
-    return res.status(400).json({ message: "All fields are required" });
-  }
+  const nameTrim = typeof name === "string" ? name.trim() : "";
+  const descriptionTrim =
+    typeof description === "string" ? description.trim() : "";
+  const addressTrim = typeof address === "string" ? address.trim() : "";
+  const cityTrim = typeof city === "string" ? city.trim() : "";
+  const policiesTrim = typeof policies === "string" ? policies.trim() : "";
 
-  if (starRating < 1 || starRating > 5) {
+  const star = Number(starRating);
+  const price = Number(pricePerNight);
+
+  const facilitiesArray: string[] = Array.isArray(facilities)
+    ? facilities
+        .map(String)
+        .map((f) => f.trim())
+        .filter(Boolean)
+    : typeof facilities === "string"
+      ? facilities
+          .split(",")
+          .map((f) => f.trim())
+          .filter(Boolean)
+      : [];
+
+  if (!nameTrim) {
+    return res.status(400).json({ message: "Hotel name is required" });
+  }
+  if (!descriptionTrim) {
+    return res.status(400).json({ message: "Description is required" });
+  }
+  if (!addressTrim) {
+    return res.status(400).json({ message: "Address is required" });
+  }
+  if (!cityTrim) {
+    return res.status(400).json({ message: "City is required" });
+  }
+  if (!Number.isFinite(star) || star < 1 || star > 5) {
     return res
       .status(400)
-      .json({ message: "Star rating must be between 1 and 5" });
+      .json({ message: "Star rating must be a number between 1 and 5" });
+  }
+  if (!Number.isFinite(price) || price <= 0) {
+    return res
+      .status(400)
+      .json({ message: "Price per night must be a number greater than 0" });
+  }
+  if (!policiesTrim) {
+    return res.status(400).json({ message: "Policies are required" });
   }
 
   try {
     const hotel = (await HotelService.createHotel(
       {
-        name,
-        description,
-        address,
-        city,
-        starRating,
-        pricePerNight,
+        name: nameTrim,
+        description: descriptionTrim,
+        address: addressTrim,
+        city: cityTrim,
+        starRating: star,
+        pricePerNight: price,
         latitude: latitude ?? null,
         longitude: longitude ?? null,
-        facilities,
-        policies,
+        facilities: facilitiesArray,
+        policies: policiesTrim,
       },
       req.user!.id,
     )) as Hotel;

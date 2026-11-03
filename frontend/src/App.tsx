@@ -31,12 +31,12 @@ export default function App() {
         <Route element={<Layout />}>
           <Route path="/home" element={<HomePage />} />
           <Route path="/hotels/:id" element={<HotelDetailsPage />} />
+          <Route path="/payment/verify" element={<PaymentVerifyPage />} />
 
           <Route element={<ProtectedRoute />}>
             <Route path="/bookings" element={<MyBookingsPage />} />
             <Route path="/profile" element={<ProfilePage />} />
             <Route path="/admin" element={<AdminDashboard />} />
-            <Route path="/payment/verify" element={<PaymentVerifyPage />} />
           </Route>
         </Route>
 
