@@ -65,6 +65,17 @@ export const addHotel = async (req: AuthRequest, res: Response) => {
     return res.status(400).json({ message: "Policies are required" });
   }
 
+  const latNum =
+    latitude === null || latitude === undefined || latitude === ""
+      ? NaN
+      : Number(latitude);
+  const lngNum =
+    longitude === null || longitude === undefined || longitude === ""
+      ? NaN
+      : Number(longitude);
+  const lat = Number.isFinite(latNum) ? latNum : null;
+  const lng = Number.isFinite(lngNum) ? lngNum : null;
+
   try {
     const hotel = (await HotelService.createHotel(
       {
@@ -74,8 +85,8 @@ export const addHotel = async (req: AuthRequest, res: Response) => {
         city: cityTrim,
         starRating: star,
         pricePerNight: price,
-        latitude: latitude ?? null,
-        longitude: longitude ?? null,
+        latitude: lat,
+        longitude: lng,
         facilities: facilitiesArray,
         policies: policiesTrim,
       },
