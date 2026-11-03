@@ -23,10 +23,11 @@ interface HotelFormState {
   city: string;
   starRating: string;
   pricePerNight: string;
-  latitude: string;
-  longitude: string;
   facilities: string;
   policies: string;
+  roomType: string;
+  roomQuantity: string;
+  roomCapacity: string;
 }
 
 const initialForm: HotelFormState = {
@@ -36,25 +37,34 @@ const initialForm: HotelFormState = {
   city: "",
   starRating: "4",
   pricePerNight: "",
-  latitude: "",
-  longitude: "",
   facilities: "WiFi, Parking, Pool",
   policies: "Check-in 14:00.",
+  roomType: "Standard Room",
+  roomQuantity: "10",
+  roomCapacity: "2",
 };
 
 async function uploadHotelImages(hotelId: number, files: File[]) {
   if (files.length === 0) return;
+
   const formData = new FormData();
+
   formData.append("hotelId", String(hotelId));
-  files.forEach((file) => formData.append("images", file));
+
+  files.forEach((file) => {
+    formData.append("images", file);
+  });
+
   await api.post("/hotel-images", formData);
 }
 
 export default function AdminDashboard() {
   const dispatch = useDispatch<AppDispatch>();
+
   const { user, isAuthenticated, authChecked } = useSelector(
     (state: RootState) => state.login,
   );
+
   const { hotels: hotelsList } = useSelector(
     (state: RootState) => state.hotels,
   ) || { hotels: [] };
@@ -80,8 +90,8 @@ export default function AdminDashboard() {
     try {
       const response = await api.get("/bookings");
       setReservations(response.data);
-    } catch (err) {
-      console.error(err);
+    } catch (error) {
+      console.error("Failed to fetch bookings:", error);
     }
   };
 
@@ -90,9 +100,10 @@ export default function AdminDashboard() {
       const response = await api.get<HotelImage[]>("/hotel-images", {
         params: { hotelId },
       });
+
       setExistingImages(response.data);
     } catch (error) {
-      console.error("Failed to load hotel images", error);
+      console.error("Failed to load hotel images:", error);
       setExistingImages([]);
     }
   };
@@ -114,7 +125,10 @@ export default function AdminDashboard() {
       HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
     >,
   ) => {
-    setForm({ ...form, [event.target.name]: event.target.value });
+    setForm({
+      ...form,
+      [event.target.name]: event.target.value,
+    });
   };
 
   const handleOpenAddModal = () => {
@@ -129,6 +143,7 @@ export default function AdminDashboard() {
 
   const handleOpenEditModal = async (hotel: Hotel) => {
     setEditingHotelId(hotel.id);
+
     setForm({
       name: hotel.name,
       description: hotel.description,
@@ -136,17 +151,21 @@ export default function AdminDashboard() {
       city: hotel.city,
       starRating: String(hotel.starRating),
       pricePerNight: String(hotel.pricePerNight),
-      latitude: hotel.latitude != null ? String(hotel.latitude) : "",
-      longitude: hotel.longitude != null ? String(hotel.longitude) : "",
       facilities: Array.isArray(hotel.facilities)
         ? hotel.facilities.join(", ")
         : "",
       policies: hotel.policies || "",
+      roomType: "Standard Room",
+      roomQuantity: "10",
+      roomCapacity: "2",
     });
+
     setPendingFiles([]);
+    setExistingImages([]);
     setFormError("");
     setMessage("");
     setIsModalOpen(true);
+
     await loadHotelImages(hotel.id);
   };
 
@@ -156,27 +175,43 @@ export default function AdminDashboard() {
   ) => {
     try {
       await api.patch(`/bookings/${id}/status`, { status });
+
       setReservations((prev) =>
         prev.map((res) => (res.id === id ? { ...res, status } : res)),
       );
-    } catch (err) {
-      console.error(err);
+    } catch (error) {
+      console.error("Failed to update booking:", error);
     }
   };
 
   const handleDeleteHotel = async (id: number) => {
     if (!window.confirm("Delete this hotel?")) return;
+
     try {
       await api.delete(`/hotels/${id}`);
-      dispatch(fetchHotels());
-    } catch (err) {
-      console.error(err);
+      await dispatch(fetchHotels()).unwrap();
+    } catch (error) {
+      console.error("Failed to delete hotel:", error);
     }
   };
 
   const handleFilesSelected = (files: FileList | null) => {
     if (!files || files.length === 0) return;
-    setPendingFiles((prev) => [...prev, ...Array.from(files)]);
+
+    const selectedFiles = Array.from(files);
+
+    if (pendingFiles.length + selectedFiles.length > 12) {
+      setFormError("You can upload a maximum of 12 images.");
+      return;
+    }
+
+    if (selectedFiles.some((file) => file.size > 8 * 1024 * 1024)) {
+      setFormError("Each image must be smaller than 8MB.");
+      return;
+    }
+
+    setFormError("");
+    setPendingFiles((prev) => [...prev, ...selectedFiles]);
   };
 
   const handleRemovePendingFile = (index: number) => {
@@ -186,10 +221,11 @@ export default function AdminDashboard() {
   const handleDeleteImage = async (imageId: number) => {
     try {
       await api.delete(`/hotel-images/${imageId}`);
+
       setExistingImages((prev) => prev.filter((img) => img.id !== imageId));
-      await dispatch(fetchHotels());
+
+      await dispatch(fetchHotels()).unwrap();
     } catch (error) {
-      console.error("Failed to delete hotel image", error);
       setFormError(getErrorMessage(error, "Failed to delete image."));
     }
   };
@@ -197,71 +233,127 @@ export default function AdminDashboard() {
   const handleSetCover = async (imageId: number) => {
     try {
       await api.patch(`/hotel-images/${imageId}/cover`);
+
       setExistingImages((prev) =>
-        prev.map((img) => ({ ...img, isCover: img.id === imageId })),
+        prev.map((img) => ({
+          ...img,
+          isCover: img.id === imageId,
+        })),
       );
-      await dispatch(fetchHotels());
+
+      await dispatch(fetchHotels()).unwrap();
     } catch (error) {
-      console.error("Failed to set cover image", error);
       setFormError(getErrorMessage(error, "Failed to set cover image."));
     }
   };
 
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
+
     setMessage("");
     setFormError("");
-    setIsSaving(true);
-
-    const latRaw = form.latitude.trim();
-    const lngRaw = form.longitude.trim();
-    const latNum = latRaw === "" ? NaN : Number(latRaw);
-    const lngNum = lngRaw === "" ? NaN : Number(lngRaw);
-    const latitude = Number.isFinite(latNum) ? latNum : null;
-    const longitude = Number.isFinite(lngNum) ? lngNum : null;
 
     const payload = {
       name: form.name.trim(),
       description: form.description.trim(),
       address: form.address.trim(),
       city: form.city.trim(),
-      latitude,
-      longitude,
+      latitude: null,
+      longitude: null,
       starRating: Number(form.starRating),
       pricePerNight: Number(form.pricePerNight),
       facilities: form.facilities
         .split(",")
-        .map((f) => f.trim())
+        .map((item) => item.trim())
         .filter(Boolean),
       policies: form.policies.trim(),
     };
 
+    if (
+      !payload.name ||
+      !payload.description ||
+      !payload.address ||
+      !payload.city
+    ) {
+      setFormError(
+        "Please complete the hotel name, description, address and city.",
+      );
+      return;
+    }
+
+    if (
+      !Number.isInteger(payload.starRating) ||
+      payload.starRating < 1 ||
+      payload.starRating > 5
+    ) {
+      setFormError("Please select a valid hotel rating.");
+      return;
+    }
+
+    if (!Number.isFinite(payload.pricePerNight) || payload.pricePerNight <= 0) {
+      setFormError("Please enter a valid price per night.");
+      return;
+    }
+
+    if (!editingHotelId) {
+      if (!form.roomType.trim()) {
+        setFormError("Please enter the initial room type.");
+        return;
+      }
+
+      if (
+        !Number.isInteger(Number(form.roomQuantity)) ||
+        Number(form.roomQuantity) <= 0
+      ) {
+        setFormError("Please enter a valid room quantity.");
+        return;
+      }
+
+      if (
+        !Number.isInteger(Number(form.roomCapacity)) ||
+        Number(form.roomCapacity) <= 0
+      ) {
+        setFormError("Please enter a valid room capacity.");
+        return;
+      }
+    }
+
+    setIsSaving(true);
+
     try {
       if (editingHotelId) {
         await api.put(`/hotels/${editingHotelId}`, payload);
+
         await uploadHotelImages(editingHotelId, pendingFiles);
+
         await loadHotelImages(editingHotelId);
+
         setPendingFiles([]);
+
         setMessage("Hotel updated successfully.");
       } else {
         const hotelRes = await api.post("/hotels", payload);
-        const hotelId = hotelRes.data?.id;
+        const hotelId = Number(hotelRes.data?.id);
 
-        if (hotelId) {
-          await api.post("/rooms", {
-            hotelId: Number(hotelId),
-            roomType: "Standard Room",
-            capacity: 2,
-            pricePerNight: Number(form.pricePerNight),
-            quantity: 10,
-          });
-
-          await uploadHotelImages(Number(hotelId), pendingFiles);
+        if (!hotelId || !Number.isFinite(hotelId)) {
+          throw new Error("Hotel was created but no hotel ID was returned.");
         }
-        setMessage("Hotel added successfully.");
+
+        await api.post("/rooms", {
+          hotelId,
+          roomType: form.roomType.trim(),
+          capacity: Number(form.roomCapacity),
+          pricePerNight: payload.pricePerNight,
+          quantity: Number(form.roomQuantity),
+        });
+
+        await uploadHotelImages(hotelId, pendingFiles);
+
+        setMessage("Hotel and images added successfully.");
       }
 
       await dispatch(fetchHotels()).unwrap();
+
       setTimeout(() => {
         setIsModalOpen(false);
         setMessage("");
@@ -280,6 +372,7 @@ export default function AdminDashboard() {
       <main className={styles.main}>
         <div className={styles.topContainer}>
           <h1>Admin Dashboard</h1>
+
           <button className={styles.launchBtn} onClick={handleOpenAddModal}>
             Add hotel
           </button>

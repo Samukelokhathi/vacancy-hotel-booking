@@ -12,10 +12,11 @@ interface HotelFormState {
   city: string;
   starRating: string;
   pricePerNight: string;
-  latitude: string;
-  longitude: string;
   facilities: string;
   policies: string;
+  roomType: string;
+  roomQuantity: string;
+  roomCapacity: string;
 }
 
 interface AddHotelModalProps {
@@ -60,10 +61,12 @@ export default function AddHotelModal({
       <div className={styles.modalContent} onClick={(e) => e.stopPropagation()}>
         <div className={styles.modalHeader}>
           <h2>{isEditMode ? "Edit Hotel Listing" : "Add Hotel Listing"}</h2>
-          <button className={styles.closeModal} onClick={onClose}>
+
+          <button type="button" className={styles.closeModal} onClick={onClose}>
             &times;
           </button>
         </div>
+
         <form onSubmit={onSubmit} className={styles.formGrid}>
           <div className={styles.fullWidth}>
             <Input
@@ -74,6 +77,7 @@ export default function AddHotelModal({
               required
             />
           </div>
+
           <div className={styles.halfWidth}>
             <Input
               label="CITY"
@@ -83,19 +87,21 @@ export default function AddHotelModal({
               required
             />
           </div>
+
           <div className={styles.halfWidth}>
             <Input
               label="STREET ADDRESS"
               name="address"
               value={form.address}
               onChange={onChange}
-              placeholder="e.g. 42 Beach Road"
               required
             />
           </div>
+
           <div className={styles.halfWidth}>
             <div className={styles.selectGroup}>
               <label className={styles.selectLabel}>STARS</label>
+
               <select
                 name="starRating"
                 value={form.starRating}
@@ -110,6 +116,7 @@ export default function AddHotelModal({
               </select>
             </div>
           </div>
+
           <div className={styles.halfWidth}>
             <Input
               label="PRICE / NIGHT (R)"
@@ -117,62 +124,85 @@ export default function AddHotelModal({
               name="pricePerNight"
               value={form.pricePerNight}
               onChange={onChange}
+              min={1}
               required
             />
           </div>
-          <div className={styles.halfWidth}>
-            <Input
-              label="LATITUDE (OPTIONAL)"
-              name="latitude"
-              value={form.latitude}
-              onChange={onChange}
-              placeholder="e.g. -26.2041"
-            />
-          </div>
-          <div className={styles.halfWidth}>
-            <Input
-              label="LONGITUDE (OPTIONAL)"
-              name="longitude"
-              value={form.longitude}
-              onChange={onChange}
-              placeholder="e.g. 28.0473"
-            />
-          </div>
+
+          {!isEditMode && (
+            <>
+              <div className={styles.halfWidth}>
+                <Input
+                  label="INITIAL ROOM TYPE"
+                  name="roomType"
+                  value={form.roomType}
+                  onChange={onChange}
+                  required
+                />
+              </div>
+
+              <div className={styles.halfWidth}>
+                <Input
+                  label="ROOMS SUPPLY ALLOCATION"
+                  type="number"
+                  name="roomQuantity"
+                  value={form.roomQuantity}
+                  onChange={onChange}
+                  min={1}
+                  required
+                />
+              </div>
+
+              <div className={styles.halfWidth}>
+                <Input
+                  label="ROOM CAPACITY"
+                  type="number"
+                  name="roomCapacity"
+                  value={form.roomCapacity}
+                  onChange={onChange}
+                  min={1}
+                  required
+                />
+              </div>
+            </>
+          )}
 
           <div className={styles.fullWidth}>
             <div className={styles.selectGroup}>
               <label className={styles.selectLabel}>HOTEL PHOTOS</label>
+
               <input
                 type="file"
                 accept="image/*"
                 multiple
                 className={styles.fileInput}
-                onChange={(event) => onFilesSelected(event.target.files)}
+                onChange={(event) => {
+                  onFilesSelected(event.target.files);
+                  event.target.value = "";
+                }}
               />
+
+              <small>Maximum 12 images, 8MB per image.</small>
             </div>
 
             {existingImages.length > 0 && (
               <div className={styles.imageGrid}>
                 {existingImages.map((image) => {
                   const src = resolveImageUrl(image.url);
+
                   return (
                     <div key={image.id} className={styles.imageCard}>
                       {src ? (
                         <img
                           src={src}
-                          alt=""
+                          alt="Hotel"
                           className={styles.preview}
                           loading="lazy"
-                          onError={() => {
-                            console.error(
-                              "Admin edit image preview failed to load",
-                              { imageId: image.id, src },
-                            );
-                          }}
                         />
                       ) : (
                         <div className={styles.previewFallback}>No photo</div>
                       )}
+
                       <div className={styles.imageActions}>
                         <button
                           type="button"
@@ -182,6 +212,7 @@ export default function AddHotelModal({
                         >
                           {image.isCover ? "Cover" : "Set cover"}
                         </button>
+
                         <button
                           type="button"
                           className={styles.deleteImgBtn}
@@ -205,9 +236,10 @@ export default function AddHotelModal({
                   >
                     <img
                       src={URL.createObjectURL(file)}
-                      alt=""
+                      alt={file.name}
                       className={styles.preview}
                     />
+
                     <div className={styles.imageActions}>
                       <button
                         type="button"
@@ -229,21 +261,22 @@ export default function AddHotelModal({
               name="facilities"
               value={form.facilities}
               onChange={onChange}
-              required
             />
           </div>
+
           <div className={styles.fullWidth}>
             <Input
               label="POLICIES"
               name="policies"
               value={form.policies}
               onChange={onChange}
-              required
             />
           </div>
+
           <div className={styles.fullWidth}>
             <div className={styles.selectGroup}>
               <label className={styles.selectLabel}>DESCRIPTION SUMMARY</label>
+
               <textarea
                 rows={3}
                 name="description"
@@ -256,6 +289,7 @@ export default function AddHotelModal({
           </div>
 
           {formError && <p className={styles.error}>{formError}</p>}
+
           {message && <p className={styles.success}>{message}</p>}
 
           <div className={styles.fullWidth}>
@@ -268,7 +302,7 @@ export default function AddHotelModal({
                 ? "Saving..."
                 : isEditMode
                   ? "Save Changes"
-                  : "Create Hotel listing"}
+                  : "Create Hotel Listing"}
             </Button>
           </div>
         </form>
