@@ -213,8 +213,12 @@ export default function AdminDashboard() {
     setFormError("");
     setIsSaving(true);
 
-    const latitude = form.latitude.trim() || null;
-    const longitude = form.longitude.trim() || null;
+    const latRaw = form.latitude.trim();
+    const lngRaw = form.longitude.trim();
+    const latNum = latRaw === "" ? NaN : Number(latRaw);
+    const lngNum = lngRaw === "" ? NaN : Number(lngRaw);
+    const latitude = Number.isFinite(latNum) ? latNum : null;
+    const longitude = Number.isFinite(lngNum) ? lngNum : null;
 
     const payload = {
       name: form.name.trim(),
