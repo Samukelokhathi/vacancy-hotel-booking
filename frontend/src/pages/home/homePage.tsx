@@ -5,6 +5,9 @@ import type { AppDispatch, RootState } from "../../store/store";
 import { fetchHotels } from "../../store/hotelSlice";
 import HotelFiltersBar from "../../components/hotelFilters/hotelFilters";
 import HotelCard from "../../components/hotelCard/hotelCard";
+import VideoBackground from "../../components/videoBackround/videoBackground";
+import videoSrc from "../../../public/videos/istockphoto-2235048867-640_adpp_is.mp4";
+
 import {
   filterHotels,
   filtersFromParams,
@@ -40,6 +43,7 @@ export default function HomePage() {
   return (
     <div className={styles.container}>
       <section className={styles.hero}>
+        <VideoBackground src={videoSrc} />
         <h1 className={styles.title}>Find your next stay</h1>
         <p className={styles.subtitle}>
           Compare hotels across South Africa and book in a few clicks.

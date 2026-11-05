@@ -1,11 +1,76 @@
 .container {
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 0 24px;
+  --content-max: 1400px; /* NEW: widen or narrow the content here */
+  width: 100%;
+  max-width: none; /* CHANGED from 1200px */
+  margin: 0;
+  padding: 0; /* CHANGED: side padding now lives on each block below */
+  box-sizing: border-box;
 }
 
+/* NEW: filter bar and listing share one centred content width */
+.container > :not(.hero) {
+  width: 100%;
+  max-width: var(--content-max);
+  margin-left: auto;
+  margin-right: auto;
+  padding-left: 24px;
+  padding-right: 24px;
+  box-sizing: border-box;
+}
+
+/* CHANGED: hero is now the full-width video band */
 .hero {
-  padding: 56px 0 32px 0;
+  position: relative;
+  overflow: hidden;
+  width: 100vw;
+  margin-left: calc(50% - 50vw); /* breaks out of any centred parent */
+  min-height: 380px;
+  padding-top: 72px;
+  padding-bottom: 110px; /* room for the filter bar to overlap */
+  padding-left: max(24px, calc((100vw - var(--content-max)) / 2 + 24px));
+  padding-right: max(24px, calc((100vw - var(--content-max)) / 2 + 24px));
+  box-sizing: border-box;
+  background: #0a2a5e; /* shown until the video loads */
+}
+
+/* NEW: the video (first child of the hero) fills the band */
+.hero > :first-child {
+  position: absolute !important;
+  inset: 0 !important;
+  width: 100% !important;
+  height: 100% !important;
+  z-index: 0 !important;
+  pointer-events: none;
+}
+
+.hero > :first-child video,
+.hero > video:first-child {
+  width: 100% !important;
+  height: 100% !important;
+  object-fit: cover;
+}
+
+/* NEW: dark overlay so the white text stays readable */
+.hero::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  background: rgba(0, 0, 0, 0.4);
+  pointer-events: none;
+}
+
+/* NEW: title and subtitle sit above the video and overlay */
+.hero > :not(:first-child) {
+  position: relative;
+  z-index: 2;
+}
+
+/* NEW: filter bar overlaps the bottom of the hero */
+.container > :nth-child(2) {
+  position: relative;
+  z-index: 3;
+  margin-top: -64px;
 }
 
 .title {
@@ -20,13 +85,15 @@
   letter-spacing: -0.02em;
   line-height: 1.15;
   color: #ffffff;
+  text-shadow: 0 2px 12px rgba(0, 0, 0, 0.6);
 }
 
 .subtitle {
   margin: 0;
   font-size: 16px;
   font-weight: 400;
-  color: #8e8f96;
+  color: #e5e7eb;
+  text-shadow: 0 1px 8px rgba(0, 0, 0, 0.6);
 }
 
 .listing {
@@ -48,7 +115,7 @@
 .count {
   margin: 0 0 28px 0;
   font-size: 14px;
-  color: #8e8f96;
+  color: #8e8f96; /* REVERTED: no video behind it any more */
 }
 
 .clearButton {
@@ -63,7 +130,7 @@
 }
 
 .message {
-  color: #8e8f96;
+  color: #8e8f96; /* REVERTED */
   margin-top: 20px;
 }
 
@@ -105,8 +172,17 @@
 }
 
 @media (max-width: 640px) {
+  .container > :not(.hero) {
+    padding-left: 16px;
+    padding-right: 16px;
+  }
+
   .hero {
-    padding: 36px 0 24px 0;
+    min-height: 300px;
+    padding-top: 40px;
+    padding-bottom: 90px;
+    padding-left: 16px;
+    padding-right: 16px;
   }
 
   .title {
