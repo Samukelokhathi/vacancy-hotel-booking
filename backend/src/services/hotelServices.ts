@@ -2,6 +2,60 @@ import { query } from "../config/database.js";
 import { type Hotel, type HotelInput } from "../models/hotel.types.js";
 import * as hotelImageService from "./hotelImageService.js";
 
+async function geocodeAddress(
+  address: string,
+  city: string,
+): Promise<{ lat: number; lon: number } | null> {
+  const q = encodeURIComponent(`${address}, ${city}, South Africa`);
+  console.log(
+    `[Geocode] Attempting to geocode query: "${address}, ${city}, South Africa"`,
+  );
+
+  try {
+    const response = await fetch(
+      `https://nominatim.openstreetmap.org/search?q=${q}&format=json&limit=1&countrycodes=za`,
+      {
+        headers: {
+          "User-Agent": "VacancyHotelBooking/1.0 (hotel-booking-app)",
+          Accept: "application/json",
+        },
+      },
+    );
+
+    if (!response.ok) {
+      console.error("[Geocode] HTTP error status:", response.status);
+      return null;
+    }
+
+    const data = (await response.json()) as { lat: string; lon: string }[];
+    console.log("[Geocode] Nominatim raw response data:", data);
+
+    if (!data?.[0]) {
+      console.error(
+        "[Geocode] No results found for address:",
+        address,
+        "city:",
+        city,
+      );
+      return null;
+    }
+
+    const lat = Number(data[0].lat);
+    const lon = Number(data[0].lon);
+
+    if (!Number.isFinite(lat) || !Number.isFinite(lon)) {
+      console.error("[Geocode] Invalid non-finite lat/lon parsed:", data[0]);
+      return null;
+    }
+
+    console.log(`[Geocode] Successfully resolved -> Lat: ${lat}, Lon: ${lon}`);
+    return { lat, lon };
+  } catch (error) {
+    console.error("[Geocode] Fetch exception caught:", error);
+    return null;
+  }
+}
+
 const hotelColumns = `id, name, description, address, city, latitude, longitude,
   star_rating AS "starRating",
   price_per_night AS "pricePerNight",
@@ -25,13 +79,26 @@ export const createHotel = async (
     description,
     address,
     city,
-    latitude,
-    longitude,
     starRating,
     pricePerNight,
     facilities,
     policies,
   } = hotelData;
+
+  // Automatically geocode address and city if latitude/longitude are not provided
+  let latitude = hotelData.latitude ?? null;
+  let longitude = hotelData.longitude ?? null;
+
+  if (latitude == null || longitude == null) {
+    const geo = await geocodeAddress(address, city);
+    if (geo) {
+      latitude = geo.lat;
+      longitude = geo.lon;
+    } else {
+      latitude = null;
+      longitude = null;
+    }
+  }
 
   const { rows } = await query(
     `INSERT INTO hotels (name, description, address, city, latitude, longitude, "star_rating", "price_per_night", facilities, policies, "created_by")
@@ -85,13 +152,20 @@ export const updateHotelById = async (
     description,
     address,
     city,
-    latitude,
-    longitude,
     starRating,
     pricePerNight,
     facilities,
     policies,
   } = hotel;
+
+  // Re-geocode whenever the hotel details (address or city) are updated
+  let latitude: number | null = null;
+  let longitude: number | null = null;
+  const geo = await geocodeAddress(address, city);
+  if (geo) {
+    latitude = geo.lat;
+    longitude = geo.lon;
+  }
 
   const { rows } = await query(
     `UPDATE hotels
@@ -112,8 +186,8 @@ export const updateHotelById = async (
       description,
       address,
       city,
-      latitude ?? null,
-      longitude ?? null,
+      latitude,
+      longitude,
       starRating,
       pricePerNight,
       facilities ?? [],

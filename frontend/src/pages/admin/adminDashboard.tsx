@@ -253,6 +253,8 @@ export default function AdminDashboard() {
     setMessage("");
     setFormError("");
 
+    // CHANGED for map: send null lat/long so backend geocodes from address + city
+    // (Nominatim in hotelServices.createHotel / updateHotelById)
     const payload = {
       name: form.name.trim(),
       description: form.description.trim(),
@@ -266,7 +268,8 @@ export default function AdminDashboard() {
         .split(",")
         .map((item) => item.trim())
         .filter(Boolean),
-      policies: form.policies.trim(),
+      // ADDED: default policies so backend never gets an empty string
+      policies: form.policies.trim() || "Check-in 14:00.",
     };
 
     if (

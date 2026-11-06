@@ -6,7 +6,6 @@ import markerIcon2x from "leaflet/dist/images/marker-icon-2x.png";
 import markerShadow from "leaflet/dist/images/marker-shadow.png";
 import styles from "./hotelMap.module.css";
 
-// Leaflet's default pin image breaks with Vite, so it's set by hand
 const pin = L.icon({
   iconUrl: markerIcon,
   iconRetinaUrl: markerIcon2x,
@@ -18,17 +17,44 @@ const pin = L.icon({
 });
 
 interface HotelMapProps {
-  latitude: number | null;
-  longitude: number | null;
+  latitude: number | null | undefined;
+  longitude: number | null | undefined;
   name: string;
 }
 
 export default function HotelMap({ latitude, longitude, name }: HotelMapProps) {
-  if (latitude === null || longitude === null) {
-    return <p className={styles.empty}>Map location not available for this hotel.</p>;
+  // DEBUG: Check what values are being passed to the map component
+  console.log(
+    "[HotelMap Debug] Received props -> latitude:",
+    latitude,
+    "longitude:",
+    longitude,
+    "hotel name:",
+    name,
+  );
+
+  const lat = latitude == null ? NaN : Number(latitude);
+  const lng = longitude == null ? NaN : Number(longitude);
+
+  console.log(
+    "[HotelMap Debug] Parsed numbers -> lat:",
+    lat,
+    "lng:",
+    lng,
+    "Is finite:",
+    Number.isFinite(lat) && Number.isFinite(lng),
+  );
+
+  if (!Number.isFinite(lat) || !Number.isFinite(lng)) {
+    console.warn(
+      "[HotelMap Debug] Coordinates are invalid or null. Rendering fallback message.",
+    );
+    return (
+      <p className={styles.empty}>Map location not available for this hotel.</p>
+    );
   }
 
-  const position: [number, number] = [Number(latitude), Number(longitude)];
+  const position: [number, number] = [lat, lng];
 
   return (
     <MapContainer
