@@ -1,0 +1,137 @@
+.searchBar {
+  display: flex;
+  align-items: center;
+  width: min(850px, 62vw);
+  height: 66px;
+  padding: 0 8px 0 0;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: var(--surface);
+  box-shadow: var(--shadow-pill);
+}
+
+.segment {
+  flex: 1 1 0;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  height: 100%;
+  padding: 0 24px 0 32px;
+  border-radius: 999px;
+  cursor: pointer;
+  transition: background-color 0.15s;
+}
+
+.segment:hover {
+  background: #ebebeb;
+}
+
+.segment:focus-within {
+  background: var(--surface);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+}
+
+.segmentLabel {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--ink);
+}
+
+.segment input,
+.segment select {
+  display: block;
+  width: 100%;
+  height: 20px;
+  margin: 2px 0 0;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  font: inherit;
+  font-size: 14px;
+  line-height: 20px;
+  color: var(--ink-soft);
+  outline: none;
+  appearance: none;
+  cursor: pointer;
+  text-overflow: ellipsis;
+}
+
+.segment input {
+  cursor: text;
+}
+
+.segment input::placeholder {
+  color: var(--muted);
+}
+
+.divider {
+  flex-shrink: 0;
+  width: 1px;
+  height: 32px;
+  background: var(--line);
+}
+
+.searchButton {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  flex-shrink: 0;
+  width: 48px;
+  height: 48px;
+  border: 0;
+  border-radius: 999px;
+  background: var(--accent);
+  color: var(--accent-ink);
+  cursor: pointer;
+  transition: background-color 0.15s;
+}
+
+.searchButton:hover {
+  background: var(--accent-hover);
+}
+
+.searchButtonText {
+  display: none;
+  font: inherit;
+  font-size: 15px;
+  font-weight: 700;
+}
+
+@media (max-width: 950px) {
+  .searchBar {
+    width: 100%;
+  }
+}
+
+/* phones: the pill becomes a stacked card */
+@media (max-width: 640px) {
+  .searchBar {
+    flex-direction: column;
+    align-items: stretch;
+    height: auto;
+    padding: 6px;
+    border-radius: 24px;
+  }
+
+  .segment {
+    padding: 10px 18px;
+    border-radius: 16px;
+  }
+
+  .divider {
+    width: auto;
+    height: 1px;
+    margin: 0 18px;
+  }
+
+  .searchButton {
+    width: 100%;
+    margin-top: 6px;
+  }
+
+  .searchButtonText {
+    display: inline;
+  }
+}

@@ -1,0 +1,59 @@
+/* heart on top of a hotel photo */
+.overlayButton {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  display: grid;
+  place-items: center;
+  padding: 4px;
+  border: 0;
+  background: none;
+  color: #fff;
+  cursor: pointer;
+}
+
+.overlayButton svg {
+  fill: rgba(0, 0, 0, 0.5);
+  stroke: #fff;
+  transition:
+    transform 0.15s,
+    fill 0.15s;
+}
+
+.overlayButton:hover svg {
+  transform: scale(1.08);
+}
+
+.overlayButton.saved svg {
+  fill: var(--accent);
+}
+
+/* heart + "Save" text, used on the hotel page */
+.textButton {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 10px;
+  border: 0;
+  border-radius: 8px;
+  background: none;
+  font: inherit;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--ink);
+  cursor: pointer;
+}
+
+.textButton span {
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+.textButton:hover {
+  background: var(--surface-alt);
+}
+
+.textButton.saved svg {
+  fill: var(--accent);
+  stroke: var(--accent-text);
+}
