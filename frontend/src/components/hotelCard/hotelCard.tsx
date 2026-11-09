@@ -18,8 +18,9 @@ export default function HotelCard({ hotel }: HotelCardProps) {
 
   return (
     <article className={styles.card}>
-      <Link to={`/hotels/${hotel.id}`} className={styles.cardLink}>
-        <div className={styles.media}>
+      {/* CHANGED: heart lives inside .media so it sits above the image, not under the Link */}
+      <div className={styles.media}>
+        <Link to={`/hotels/${hotel.id}`} className={styles.mediaLink}>
           {coverImageUrl && !imageFailed ? (
             <img
               src={coverImageUrl}
@@ -33,8 +34,16 @@ export default function HotelCard({ hotel }: HotelCardProps) {
             </div>
           )}
           {isTopRated && <span className={styles.badge}>Top rated</span>}
-        </div>
+        </Link>
 
+        <FavoriteButton
+          hotelId={hotel.id}
+          hotelName={hotel.name}
+          variant="overlay"
+        />
+      </div>
+
+      <Link to={`/hotels/${hotel.id}`} className={styles.cardLink}>
         <div className={styles.details}>
           <h3 className={styles.hotelName}>{hotel.name}</h3>
           <p className={styles.location}>Hotel in {hotel.city}</p>
@@ -53,12 +62,6 @@ export default function HotelCard({ hotel }: HotelCardProps) {
           </p>
         </div>
       </Link>
-
-      <FavoriteButton
-        hotelId={hotel.id}
-        hotelName={hotel.name}
-        variant="overlay"
-      />
     </article>
   );
 }

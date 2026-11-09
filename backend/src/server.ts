@@ -8,6 +8,7 @@ import roomRoutes from "./routes/roomRoutes.js";
 import hotelImageRoutes from "./routes/hotelImageRoutes.js";
 import bookingRoutes from "./routes/bookingRoutes.js";
 import paymentRoutes from "./routes/paymentRoutes.js";
+import favoriteRoutes from "./routes/favoriteRoutes.js";
 
 import cors from "cors";
 
@@ -35,7 +36,10 @@ const startServer = async () => {
   );
 
   app.use((req, res, next) => {
-    if (req.path.startsWith("/api/hotel-images") || req.path.startsWith("/hotel-images")) {
+    if (
+      req.path.startsWith("/api/hotel-images") ||
+      req.path.startsWith("/hotel-images")
+    ) {
       res.setHeader("Cross-Origin-Resource-Policy", "cross-origin");
     }
     next();
@@ -51,6 +55,7 @@ const startServer = async () => {
   app.use("/api/hotel-images", hotelImageRoutes);
   app.use("/bookings", bookingRoutes);
   app.use("/payments", paymentRoutes);
+  app.use("/favorites", favoriteRoutes);
 
   app.listen(PORT, () => {
     console.log(`Server is running on http://localhost:${PORT}`);

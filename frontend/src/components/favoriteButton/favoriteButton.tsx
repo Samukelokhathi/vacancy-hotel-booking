@@ -28,7 +28,11 @@ export default function FavoriteButton({
     state.favorites.favoriteHotelIds.includes(hotelId),
   );
 
-  const handleClick = () => {
+  // CHANGED: stopPropagation so the card Link does not open when clicking the heart
+  const handleClick = (event: React.MouseEvent) => {
+    event.preventDefault();
+    event.stopPropagation();
+
     if (!isAuthenticated) {
       navigate("/login");
       return;

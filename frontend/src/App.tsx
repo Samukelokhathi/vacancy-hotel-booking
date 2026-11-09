@@ -1,8 +1,10 @@
 import { useEffect } from "react";
 import { Navigate, Routes, Route } from "react-router-dom";
-import { useDispatch } from "react-redux";
-import type { AppDispatch } from "./store/store";
+import { useDispatch, useSelector } from "react-redux";
+import type { AppDispatch, RootState } from "./store/store";
 import { getLoggedInUser } from "./store/loginSlice";
+// ADDED: load heart state after login / page refresh
+import { fetchFavoriteIds } from "./store/favoriteSlice";
 import RegisterPage from "./pages/register/registerPage";
 import Login from "./pages/login/login";
 import HomePage from "./pages/home/homePage";
@@ -16,10 +18,21 @@ import ProfilePage from "./pages/profile/profilePage";
 
 export default function App() {
   const dispatch = useDispatch<AppDispatch>();
+  // ADDED: know when the user is logged in so we can load favourite ids
+  const isAuthenticated = useSelector(
+    (state: RootState) => state.login.isAuthenticated,
+  );
 
   useEffect(() => {
     dispatch(getLoggedInUser());
   }, [dispatch]);
+
+  // ADDED: after auth is restored (or login), fill favoriteHotelIds for heart icons
+  useEffect(() => {
+    if (isAuthenticated) {
+      dispatch(fetchFavoriteIds());
+    }
+  }, [dispatch, isAuthenticated]);
 
   return (
     <Routes>
