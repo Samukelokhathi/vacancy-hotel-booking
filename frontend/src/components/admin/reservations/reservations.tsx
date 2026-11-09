@@ -1,4 +1,3 @@
-// src/components/admin/ReservationsTable.tsx
 import type { BookingDetails } from "../../../models/hotel.types";
 import { formatDate } from "../../../utils/format";
 import styles from "./reservations.module.css";
@@ -6,17 +5,19 @@ import styles from "./reservations.module.css";
 interface ReservationsTableProps {
   reservations: BookingDetails[];
   onUpdateStatus: (id: number, status: "approved" | "cancelled") => void;
+  onDeleteBooking?: (id: number) => void;
 }
 
 export default function ReservationsTable({
   reservations,
   onUpdateStatus,
+  onDeleteBooking,
 }: ReservationsTableProps) {
   return (
     <section className={styles.card}>
       <div className={styles.cardHeader}>
         <h2>Reservations</h2>
-        <p>Approve or cancel incoming reservations</p>
+        <p>Approve, cancel or delete reservations</p>
       </div>
       <div className={styles.tableResponsive}>
         <table className={styles.table}>
@@ -70,6 +71,15 @@ export default function ReservationsTable({
                     >
                       Cancel
                     </button>
+                    {onDeleteBooking && (
+                      <button
+                        type="button"
+                        className={styles.deleteBtn}
+                        onClick={() => onDeleteBooking(res.id)}
+                      >
+                        Delete
+                      </button>
+                    )}
                   </div>
                 </td>
               </tr>

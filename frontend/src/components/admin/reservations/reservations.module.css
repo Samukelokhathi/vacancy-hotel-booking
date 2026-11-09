@@ -76,6 +76,21 @@
   text-transform: capitalize;
   white-space: nowrap;
 }
+.deleteBtn {
+  padding: 8px 12px;
+  border: 1px solid #fecaca;
+  border-radius: 8px;
+  background: #fef2f2;
+  color: #b91c1c;
+  font: inherit;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.deleteBtn:hover {
+  background: #fee2e2;
+}
 
 .pending {
   background: #fff1dc;

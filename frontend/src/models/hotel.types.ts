@@ -6,9 +6,9 @@ export interface User {
   surname: string;
   email: string;
   cellphone: string | number;
-  password: string;
+  password?: string;
   role: UserRole;
-  createdat: string;
+  createdat?: string;
 }
 
 export interface Hotel {

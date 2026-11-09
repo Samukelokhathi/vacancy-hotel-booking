@@ -99,6 +99,186 @@
   min-height: 50vh;
   color: var(--muted);
 }
+/* ===== ADDED: admin powers + users ===== */
+
+.powers {
+  margin-bottom: 24px;
+  padding: 16px 20px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: var(--surface-alt, #f7f7f7);
+}
+
+.powersTitle {
+  margin: 0 0 8px;
+  font-size: 13px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--muted);
+}
+
+.powersList {
+  margin: 0;
+  padding-left: 18px;
+  color: var(--ink);
+  font-size: 14px;
+  line-height: 1.6;
+}
+
+.stats {
+  /* if you already have .stats, keep grid; 5 stats may wrap */
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+}
+
+.usersPanel {
+  margin-top: 32px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.usersHeader {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 16px 20px;
+  border-bottom: 1px solid var(--line);
+}
+
+.usersHeader h2 {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 600;
+}
+
+.usersMeta {
+  margin: 0;
+  font-size: 13px;
+  color: var(--muted);
+}
+
+.emptyUsers {
+  margin: 0;
+  padding: 24px 20px;
+  color: var(--muted);
+}
+
+.usersList {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.userRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 14px 20px;
+  border-bottom: 1px solid var(--line);
+}
+
+.userRow:last-child {
+  border-bottom: 0;
+}
+
+.userInfo {
+  min-width: 0;
+}
+
+.userName {
+  margin: 0;
+  font-size: 15px;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.youBadge {
+  padding: 2px 8px;
+  border-radius: 999px;
+  background: var(--ink);
+  color: #fff;
+  font-size: 11px;
+  font-weight: 600;
+}
+
+.userEmail {
+  margin: 2px 0 0;
+  font-size: 13px;
+  color: var(--muted);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.userRole {
+  margin: 2px 0 0;
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--muted);
+}
+
+.userActions {
+  display: flex;
+  flex-shrink: 0;
+  gap: 8px;
+}
+
+.makeAdminBtn,
+.deleteUserBtn {
+  padding: 8px 12px;
+  border-radius: 8px;
+  font: inherit;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.makeAdminBtn {
+  border: 1px solid var(--line);
+  background: #fff;
+  color: var(--ink);
+}
+
+.makeAdminBtn:hover {
+  background: var(--surface-alt, #f3f3f3);
+}
+
+.deleteUserBtn {
+  border: 1px solid #fecaca;
+  background: #fef2f2;
+  color: #b91c1c;
+}
+
+.deleteUserBtn:hover:not(:disabled) {
+  background: #fee2e2;
+}
+
+.deleteUserBtn:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+@media (max-width: 640px) {
+  .userRow {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .userActions {
+    width: 100%;
+  }
+
+  .makeAdminBtn,
+  .deleteUserBtn {
+    flex: 1;
+  }
+}
 
 @media (max-width: 760px) {
   .stats {

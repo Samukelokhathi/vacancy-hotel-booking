@@ -13,6 +13,7 @@ import type {
   BookingDetails,
   Hotel,
   HotelImage,
+  User,
 } from "../../models/hotel.types";
 import styles from "./adminDashboard.module.css";
 
@@ -48,13 +49,10 @@ async function uploadHotelImages(hotelId: number, files: File[]) {
   if (files.length === 0) return;
 
   const formData = new FormData();
-
   formData.append("hotelId", String(hotelId));
-
   files.forEach((file) => {
     formData.append("images", file);
   });
-
   await api.post("/hotel-images", formData);
 }
 
@@ -70,6 +68,7 @@ export default function AdminDashboard() {
   ) || { hotels: [] };
 
   const [reservations, setReservations] = useState<BookingDetails[]>([]);
+  const [users, setUsers] = useState<User[]>([]);
   const [form, setForm] = useState<HotelFormState>(initialForm);
   const [isSaving, setIsSaving] = useState(false);
   const [message, setMessage] = useState("");
@@ -86,6 +85,10 @@ export default function AdminDashboard() {
         .get<BookingDetails[]>("/bookings")
         .then((response) => setReservations(response.data))
         .catch((error) => console.error("Failed to fetch bookings:", error));
+      api
+        .get<User[]>("/auth/users")
+        .then((response) => setUsers(response.data))
+        .catch((error) => console.error("Failed to fetch users:", error));
     }
   }, [dispatch, isAuthenticated, user]);
 
@@ -94,7 +97,6 @@ export default function AdminDashboard() {
       const response = await api.get<HotelImage[]>("/hotel-images", {
         params: { hotelId },
       });
-
       setExistingImages(response.data);
     } catch (error) {
       console.error("Failed to load hotel images:", error);
@@ -137,7 +139,6 @@ export default function AdminDashboard() {
 
   const handleOpenEditModal = async (hotel: Hotel) => {
     setEditingHotelId(hotel.id);
-
     setForm({
       name: hotel.name,
       description: hotel.description,
@@ -153,13 +154,11 @@ export default function AdminDashboard() {
       roomQuantity: "10",
       roomCapacity: "2",
     });
-
     setPendingFiles([]);
     setExistingImages([]);
     setFormError("");
     setMessage("");
     setIsModalOpen(true);
-
     await loadHotelImages(hotel.id);
   };
 
@@ -169,18 +168,80 @@ export default function AdminDashboard() {
   ) => {
     try {
       await api.patch(`/bookings/${id}/status`, { status });
-
-      setReservations((prev) =>
-        prev.map((res) => (res.id === id ? { ...res, status } : res)),
+      setReservations((previousReservations) =>
+        previousReservations.map((reservation) =>
+          reservation.id === id ? { ...reservation, status } : reservation,
+        ),
       );
     } catch (error) {
       console.error("Failed to update booking:", error);
     }
   };
 
+  const handleDeleteBooking = async (id: number) => {
+    if (!window.confirm("Delete this reservation permanently?")) return;
+    try {
+      await api.delete(`/bookings/${id}`);
+      setReservations((previousReservations) =>
+        previousReservations.filter((reservation) => reservation.id !== id),
+      );
+    } catch (error) {
+      console.error("Failed to delete booking:", error);
+      alert(getErrorMessage(error, "Could not delete reservation."));
+    }
+  };
+
+  const handleMakeAdmin = async (targetUser: User) => {
+    if (targetUser.role === "admin") return;
+    if (
+      !window.confirm(`Make ${targetUser.name} ${targetUser.surname} an admin?`)
+    ) {
+      return;
+    }
+    try {
+      await api.put(`/auth/users/${targetUser.id}`, {
+        name: targetUser.name,
+        surname: targetUser.surname,
+        email: targetUser.email,
+        cellphone: targetUser.cellphone,
+        role: "admin",
+      });
+      setUsers((previousUsers) =>
+        previousUsers.map((listedUser) =>
+          listedUser.id === targetUser.id
+            ? { ...listedUser, role: "admin" as const }
+            : listedUser,
+        ),
+      );
+    } catch (error) {
+      alert(getErrorMessage(error, "Could not update user role."));
+    }
+  };
+
+  const handleDeleteUser = async (targetUser: User) => {
+    if (targetUser.id === user?.id) {
+      alert("You cannot delete your own account from here.");
+      return;
+    }
+    if (
+      !window.confirm(
+        `Delete user ${targetUser.name} ${targetUser.surname} (${targetUser.email})?`,
+      )
+    ) {
+      return;
+    }
+    try {
+      await api.delete(`/auth/users/${targetUser.id}`);
+      setUsers((previousUsers) =>
+        previousUsers.filter((listedUser) => listedUser.id !== targetUser.id),
+      );
+    } catch (error) {
+      alert(getErrorMessage(error, "Could not delete user."));
+    }
+  };
+
   const handleDeleteHotel = async (id: number) => {
     if (!window.confirm("Delete this hotel?")) return;
-
     try {
       await api.delete(`/hotels/${id}`);
       await dispatch(fetchHotels()).unwrap();
@@ -191,35 +252,31 @@ export default function AdminDashboard() {
 
   const handleFilesSelected = (files: FileList | null) => {
     if (!files || files.length === 0) return;
-
     const selectedFiles = Array.from(files);
-
     if (pendingFiles.length + selectedFiles.length > 12) {
       setFormError("You can upload a maximum of 12 images.");
       return;
     }
-
     if (selectedFiles.some((file) => file.size > 8 * 1024 * 1024)) {
       setFormError("Each image must be smaller than 8MB.");
       return;
     }
-
     setFormError("");
-    setPendingFiles((prev) => [...prev, ...selectedFiles]);
+    setPendingFiles((previousFiles) => [...previousFiles, ...selectedFiles]);
   };
 
   const handleRemovePendingFile = (index: number) => {
     setPendingFiles((currentFiles) =>
-      currentFiles.filter((_, fileIndex) => fileIndex !== index),
+      currentFiles.filter((_file, fileIndex) => fileIndex !== index),
     );
   };
 
   const handleDeleteImage = async (imageId: number) => {
     try {
       await api.delete(`/hotel-images/${imageId}`);
-
-      setExistingImages((prev) => prev.filter((img) => img.id !== imageId));
-
+      setExistingImages((previousImages) =>
+        previousImages.filter((image) => image.id !== imageId),
+      );
       await dispatch(fetchHotels()).unwrap();
     } catch (error) {
       setFormError(getErrorMessage(error, "Failed to delete image."));
@@ -229,14 +286,12 @@ export default function AdminDashboard() {
   const handleSetCover = async (imageId: number) => {
     try {
       await api.patch(`/hotel-images/${imageId}/cover`);
-
-      setExistingImages((prev) =>
-        prev.map((img) => ({
-          ...img,
-          isCover: img.id === imageId,
+      setExistingImages((previousImages) =>
+        previousImages.map((image) => ({
+          ...image,
+          isCover: image.id === imageId,
         })),
       );
-
       await dispatch(fetchHotels()).unwrap();
     } catch (error) {
       setFormError(getErrorMessage(error, "Failed to set cover image."));
@@ -245,12 +300,9 @@ export default function AdminDashboard() {
 
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-
     setMessage("");
     setFormError("");
 
-    // CHANGED for map: send null lat/long so backend geocodes from address + city
-    // (Nominatim in hotelServices.createHotel / updateHotelById)
     const payload = {
       name: form.name.trim(),
       description: form.description.trim(),
@@ -262,9 +314,8 @@ export default function AdminDashboard() {
       pricePerNight: Number(form.pricePerNight),
       facilities: form.facilities
         .split(",")
-        .map((item) => item.trim())
+        .map((facility) => facility.trim())
         .filter(Boolean),
-      // ADDED: default policies so backend never gets an empty string
       policies: form.policies.trim() || "Check-in 14:00.",
     };
 
@@ -299,7 +350,6 @@ export default function AdminDashboard() {
         setFormError("Please enter the initial room type.");
         return;
       }
-
       if (
         !Number.isInteger(Number(form.roomQuantity)) ||
         Number(form.roomQuantity) <= 0
@@ -307,7 +357,6 @@ export default function AdminDashboard() {
         setFormError("Please enter a valid room quantity.");
         return;
       }
-
       if (
         !Number.isInteger(Number(form.roomCapacity)) ||
         Number(form.roomCapacity) <= 0
@@ -322,17 +371,13 @@ export default function AdminDashboard() {
     try {
       if (editingHotelId) {
         await api.put(`/hotels/${editingHotelId}`, payload);
-
         await uploadHotelImages(editingHotelId, pendingFiles);
-
         await loadHotelImages(editingHotelId);
-
         setPendingFiles([]);
-
         setMessage("Hotel updated successfully.");
       } else {
-        const hotelRes = await api.post("/hotels", payload);
-        const hotelId = Number(hotelRes.data?.id);
+        const hotelResponse = await api.post("/hotels", payload);
+        const hotelId = Number(hotelResponse.data?.id);
 
         if (!hotelId || !Number.isFinite(hotelId)) {
           throw new Error("Hotel was created but no hotel ID was returned.");
@@ -347,7 +392,6 @@ export default function AdminDashboard() {
         });
 
         await uploadHotelImages(hotelId, pendingFiles);
-
         setMessage("Hotel and images added successfully.");
       }
 
@@ -381,6 +425,7 @@ export default function AdminDashboard() {
     { label: "Pending reservations", value: pendingCount },
     { label: "Paid, awaiting approval", value: awaitingCount },
     { label: "Confirmed stays", value: confirmedCount },
+    { label: "Users", value: users.length },
   ];
 
   return (
@@ -396,7 +441,6 @@ export default function AdminDashboard() {
             <span aria-hidden="true">+</span> Add hotel
           </button>
         </div>
-
         <div className={styles.stats}>
           {stats.map((stat) => (
             <div key={stat.label} className={styles.stat}>
@@ -411,6 +455,7 @@ export default function AdminDashboard() {
             <ReservationsTable
               reservations={reservations}
               onUpdateStatus={handleUpdateStatus}
+              onDeleteBooking={handleDeleteBooking}
             />
           </div>
 
@@ -422,6 +467,53 @@ export default function AdminDashboard() {
             />
           </div>
         </div>
+
+        <section className={styles.usersPanel}>
+          <div className={styles.usersHeader}>
+            <h2>Users</h2>
+            <p className={styles.usersMeta}>{users.length} accounts</p>
+          </div>
+
+          {users.length === 0 ? (
+            <p className={styles.emptyUsers}>No users found.</p>
+          ) : (
+            <ul className={styles.usersList}>
+              {users.map((listedUser) => (
+                <li key={listedUser.id} className={styles.userRow}>
+                  <div className={styles.userInfo}>
+                    <p className={styles.userName}>
+                      {listedUser.name} {listedUser.surname}
+                      {listedUser.id === user?.id && (
+                        <span className={styles.youBadge}>You</span>
+                      )}
+                    </p>
+                    <p className={styles.userEmail}>{listedUser.email}</p>
+                    <p className={styles.userRole}>{listedUser.role}</p>
+                  </div>
+                  <div className={styles.userActions}>
+                    {listedUser.role !== "admin" && (
+                      <button
+                        type="button"
+                        className={styles.makeAdminBtn}
+                        onClick={() => handleMakeAdmin(listedUser)}
+                      >
+                        Make admin
+                      </button>
+                    )}
+                    <button
+                      type="button"
+                      className={styles.deleteUserBtn}
+                      disabled={listedUser.id === user?.id}
+                      onClick={() => handleDeleteUser(listedUser)}
+                    >
+                      Delete
+                    </button>
+                  </div>
+                </li>
+              ))}
+            </ul>
+          )}
+        </section>
       </div>
 
       {isModalOpen && (
