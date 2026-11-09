@@ -40,10 +40,7 @@ export const filtersToParams = (filters: HotelFilters): URLSearchParams => {
 };
 
 // keeps only the hotels that match every filter
-export const filterHotels = (
-  hotels: Hotel[],
-  filters: HotelFilters,
-): Hotel[] =>
+export const filterHotels = (hotels: Hotel[], filters: HotelFilters): Hotel[] =>
   hotels.filter((hotel) => {
     const matchesCity = hotel.city
       .toLowerCase()

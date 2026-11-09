@@ -1,87 +1,42 @@
-import { Link, NavLink, useNavigate } from "react-router-dom";
-import { useDispatch, useSelector } from "react-redux";
-import type { AppDispatch, RootState } from "../../store/store";
-import { logout } from "../../store/loginSlice";
+import { Link } from "react-router-dom";
+import { useSelector } from "react-redux";
+import type { RootState } from "../../store/store";
+import SearchBar from "../searchBar/searchBar";
+import UserMenu from "../userMenu/userMenu";
+import { BuildingIcon } from "../icons/icons";
 import styles from "./navbar.module.css";
 
 export default function Navbar() {
-  const dispatch = useDispatch<AppDispatch>();
-  const navigate = useNavigate();
-  const { user, isAuthenticated } = useSelector(
-    (state: RootState) => state.login,
+  const isAdmin = useSelector(
+    (state: RootState) => state.login.user?.role === "admin",
   );
-  const isAdmin = user?.role === "admin";
-
-  const handleLogout = () => {
-    dispatch(logout());
-    navigate("/login", { replace: true });
-  };
-
-  const linkClass = ({ isActive }: { isActive: boolean }) =>
-    isActive ? `${styles.link} ${styles.active}` : styles.link;
 
   return (
     <header className={styles.navbar}>
-      <Link to="/home" className={styles.brand}>
-        <span className={styles.logoIcon}>
-          <svg
-            width="20"
-            height="20"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="#1b1305"
-            strokeWidth="2"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-          >
-            <rect x="5" y="3" width="14" height="18" rx="2" />
-            <path d="M9 7h2M13 7h2M9 11h2M13 11h2M9 15h2M13 15h2" />
-          </svg>
-        </span>
-        <span className={styles.brandName}>Vacancy Hotels</span>
-      </Link>
+      <div className={styles.inner}>
+        <Link
+          to="/home"
+          className={styles.brand}
+          aria-label="Vacancy Hotels home"
+        >
+          <span className={styles.logo}>
+            <BuildingIcon size={18} />
+          </span>
+          <span className={styles.brandName}>vacancy</span>
+        </Link>
 
-      <nav className={styles.links}>
-        <NavLink to="/home" className={linkClass}>
-          Hotels
-        </NavLink>
+        <div className={styles.searchArea}>
+          <SearchBar />
+        </div>
 
-        {isAuthenticated && (
-          <NavLink to="/profile" className={linkClass}>
-            Profile
-          </NavLink>
-        )}
-
-        {isAdmin && (
-          <NavLink to="/admin" className={linkClass}>
-            Admin Dashboard
-          </NavLink>
-        )}
-      </nav>
-
-      <div className={styles.actions}>
-        {isAuthenticated ? (
-          <>
-            <span className={styles.greeting}>Hi, {user?.name}</span>
-            {isAdmin && <span className={styles.badge}>Admin</span>}
-            <button
-              type="button"
-              className={styles.darkButton}
-              onClick={handleLogout}
-            >
-              Log out
-            </button>
-          </>
-        ) : (
-          <>
-            <Link to="/login" className={styles.darkButton}>
-              Login
+        <div className={styles.actions}>
+          {isAdmin && (
+            <Link to="/admin" className={styles.adminLink}>
+              Admin dashboard
             </Link>
-            <Link to="/register" className={styles.signupButton}>
-              Sign up
-            </Link>
-          </>
-        )}
+          )}
+          <UserMenu />
+        </div>
       </div>
     </header>
   );

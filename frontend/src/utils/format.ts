@@ -19,3 +19,10 @@ export const countNights = (checkIn: string, checkOut: string): number => {
 };
 
 export const todayString = (): string => new Date().toISOString().slice(0, 10);
+
+// pluralise(1, "night") -> "1 night"; pluralise(3, "facility", "facilities") -> "3 facilities"
+export const pluralise = (
+  count: number,
+  singularWord: string,
+  pluralWord = `${singularWord}s`,
+): string => `${count} ${count === 1 ? singularWord : pluralWord}`;

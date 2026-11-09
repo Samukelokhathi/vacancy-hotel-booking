@@ -72,7 +72,8 @@ export interface BookingDetails extends Booking {
   guestEmail: string;
   hotelName: string;
   roomType: string;
-  hotelId: number;
+  // not returned by GET /bookings/my yet: add h.id AS "hotelId" to detailsSelect in bookingService.ts
+  hotelId?: number;
   totalPrice: number;
 }
 

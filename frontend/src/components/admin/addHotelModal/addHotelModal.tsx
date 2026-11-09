@@ -58,11 +58,19 @@ export default function AddHotelModal({
 }: AddHotelModalProps) {
   return (
     <div className={styles.modalOverlay} onClick={onClose}>
-      <div className={styles.modalContent} onClick={(e) => e.stopPropagation()}>
+      <div
+        className={styles.modalContent}
+        onClick={(event) => event.stopPropagation()}
+      >
         <div className={styles.modalHeader}>
-          <h2>{isEditMode ? "Edit Hotel Listing" : "Add Hotel Listing"}</h2>
+          <h2>{isEditMode ? "Edit hotel" : "Add a hotel"}</h2>
 
-          <button type="button" className={styles.closeModal} onClick={onClose}>
+          <button
+            type="button"
+            className={styles.closeModal}
+            onClick={onClose}
+            aria-label="Close"
+          >
             &times;
           </button>
         </div>
@@ -70,7 +78,7 @@ export default function AddHotelModal({
         <form onSubmit={onSubmit} className={styles.formGrid}>
           <div className={styles.fullWidth}>
             <Input
-              label="HOTEL NAME"
+              label="Hotel name"
               name="name"
               value={form.name}
               onChange={onChange}
@@ -80,7 +88,7 @@ export default function AddHotelModal({
 
           <div className={styles.halfWidth}>
             <Input
-              label="CITY"
+              label="City"
               name="city"
               value={form.city}
               onChange={onChange}
@@ -90,7 +98,7 @@ export default function AddHotelModal({
 
           <div className={styles.halfWidth}>
             <Input
-              label="STREET ADDRESS"
+              label="Street address"
               name="address"
               value={form.address}
               onChange={onChange}
@@ -100,7 +108,7 @@ export default function AddHotelModal({
 
           <div className={styles.halfWidth}>
             <div className={styles.selectGroup}>
-              <label className={styles.selectLabel}>STARS</label>
+              <label className={styles.selectLabel}>Stars</label>
 
               <select
                 name="starRating"
@@ -119,7 +127,7 @@ export default function AddHotelModal({
 
           <div className={styles.halfWidth}>
             <Input
-              label="PRICE / NIGHT (R)"
+              label="Price per night (R)"
               type="number"
               name="pricePerNight"
               value={form.pricePerNight}
@@ -133,7 +141,7 @@ export default function AddHotelModal({
             <>
               <div className={styles.halfWidth}>
                 <Input
-                  label="INITIAL ROOM TYPE"
+                  label="First room type"
                   name="roomType"
                   value={form.roomType}
                   onChange={onChange}
@@ -143,7 +151,7 @@ export default function AddHotelModal({
 
               <div className={styles.halfWidth}>
                 <Input
-                  label="ROOMS SUPPLY ALLOCATION"
+                  label="Number of rooms"
                   type="number"
                   name="roomQuantity"
                   value={form.roomQuantity}
@@ -155,7 +163,7 @@ export default function AddHotelModal({
 
               <div className={styles.halfWidth}>
                 <Input
-                  label="ROOM CAPACITY"
+                  label="Guests per room"
                   type="number"
                   name="roomCapacity"
                   value={form.roomCapacity}
@@ -169,7 +177,7 @@ export default function AddHotelModal({
 
           <div className={styles.fullWidth}>
             <div className={styles.selectGroup}>
-              <label className={styles.selectLabel}>HOTEL PHOTOS</label>
+              <label className={styles.selectLabel}>Hotel photos</label>
 
               <input
                 type="file"
@@ -257,7 +265,7 @@ export default function AddHotelModal({
 
           <div className={styles.fullWidth}>
             <Input
-              label="FACILITIES (COMMA-SEPARATED)"
+              label="Facilities (comma-separated)"
               name="facilities"
               value={form.facilities}
               onChange={onChange}
@@ -266,7 +274,7 @@ export default function AddHotelModal({
 
           <div className={styles.fullWidth}>
             <Input
-              label="POLICIES"
+              label="Policies"
               name="policies"
               value={form.policies}
               onChange={onChange}
@@ -275,7 +283,7 @@ export default function AddHotelModal({
 
           <div className={styles.fullWidth}>
             <div className={styles.selectGroup}>
-              <label className={styles.selectLabel}>DESCRIPTION SUMMARY</label>
+              <label className={styles.selectLabel}>Description</label>
 
               <textarea
                 rows={3}
@@ -301,8 +309,8 @@ export default function AddHotelModal({
               {isSaving
                 ? "Saving..."
                 : isEditMode
-                  ? "Save Changes"
-                  : "Create Hotel Listing"}
+                  ? "Save changes"
+                  : "Create listing"}
             </Button>
           </div>
         </form>

@@ -1,5 +1,6 @@
 import type { Hotel } from "../../../models/hotel.types";
 import { resolveImageUrl } from "../../../utils/imageUrl";
+import { formatPrice } from "../../../utils/format";
 import styles from "./manageHotels.module.css";
 
 interface ManageHotelsProps {
@@ -18,7 +19,8 @@ export default function ManageHotels({
       <div className={styles.panelHeader}>
         <h2>Manage Hotels</h2>
         <p className={styles.sub}>
-          {hotelsList?.length || 0} listings available
+          {hotelsList?.length || 0}{" "}
+          {hotelsList?.length === 1 ? "listing" : "listings"}
         </p>
       </div>
       <div className={styles.hotelsList}>
@@ -45,13 +47,19 @@ export default function ManageHotels({
                   <div className={styles.thumbFallback}>No photo</div>
                 )}
                 <div className={styles.hotelInfo}>
-                  <h3>{hotel.name}</h3>
+                  <h3>
+                    <a
+                      href={`/hotels/${hotel.id}`}
+                      target="_blank"
+                      rel="noreferrer"
+                    >
+                      {hotel.name}
+                    </a>
+                  </h3>
                   <div className={styles.metaRow}>
                     <span>{hotel.city}</span>
-                    <span className={styles.stars}>
-                      {"★".repeat(hotel.starRating || 3)}
-                    </span>
-                    <span>R {hotel.pricePerNight}</span>
+                    <span className={styles.stars}>★ {hotel.starRating}</span>
+                    <span>{formatPrice(hotel.pricePerNight)} / night</span>
                   </div>
                 </div>
               </div>

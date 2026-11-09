@@ -20,7 +20,7 @@ export default function PaymentVerifyPage() {
 
   if (!reference) {
     return (
-      <main className={styles.page}>
+      <div className={styles.page}>
         <section className={styles.card}>
           <div className={styles.errorIcon}>!</div>
           <h1>Missing payment reference</h1>
@@ -31,13 +31,13 @@ export default function PaymentVerifyPage() {
             View my bookings
           </Link>
         </section>
-      </main>
+      </div>
     );
   }
 
   if (verified) {
     return (
-      <main className={styles.page}>
+      <div className={styles.page}>
         <section className={styles.card}>
           <div className={styles.successIcon}>✓</div>
           <p className={styles.eyebrow}>PAYMENT CONFIRMED</p>
@@ -65,13 +65,13 @@ export default function PaymentVerifyPage() {
             View my bookings
           </Link>
         </section>
-      </main>
+      </div>
     );
   }
 
   if (error) {
     return (
-      <main className={styles.page}>
+      <div className={styles.page}>
         <section className={styles.card}>
           <div className={styles.errorIcon}>!</div>
           <p className={styles.eyebrow}>PAYMENT STATUS</p>
@@ -82,12 +82,12 @@ export default function PaymentVerifyPage() {
             Back to my bookings
           </Link>
         </section>
-      </main>
+      </div>
     );
   }
 
   return (
-    <main className={styles.page}>
+    <div className={styles.page}>
       <section className={styles.card}>
         <div className={styles.loader} />
         <p className={styles.eyebrow}>PLEASE WAIT</p>
@@ -96,6 +96,6 @@ export default function PaymentVerifyPage() {
           We're checking your transaction. Please don't close this page.
         </p>
       </section>
-    </main>
+    </div>
   );
 }

@@ -8,7 +8,6 @@ type ButtonProps = {
   width?: string;
   onClick?: () => void;
   className?: string;
-  style?: React.CSSProperties;
   disabled?: boolean;
 };
 
@@ -19,14 +18,12 @@ const Button: React.FC<ButtonProps> = ({
   // width = "fit-content",
   onClick,
   className = "",
-  style,
   disabled,
 }) => {
   return (
     <button
       type={type}
       className={`${buttonStyle.button} ${buttonStyle[variant]} ${className || ""}`}
-      style={style}
       onClick={onClick}
       disabled={disabled}
     >

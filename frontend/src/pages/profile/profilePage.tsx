@@ -1,23 +1,31 @@
-import React, { useState, useEffect } from "react";
-import { useSelector } from "react-redux";
-import type { RootState } from "../../store/store";
+import React, { useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import type { AppDispatch, RootState } from "../../store/store";
 import { api } from "../../api/axios";
-import type { BookingDetails, Hotel } from "../../models/hotel.types";
+import { getLoggedInUser } from "../../store/loginSlice";
 
 import { Input } from "../../components/inputs/input";
 import Button from "../../components/button/button";
-import MyBookings from "./myBookings/myBookins";
+import BookingList from "../../components/bookingList/bookingList";
 import SavedHotels from "./savedHotels/savedHotels";
-import Notifications from "./notifications/notification";
+import Notifications from "./notifications/notifications";
+import { ShieldIcon } from "../../components/icons/icons";
 
 import styles from "./profilePage.module.css";
 
-type TabType = "bookings" | "favorites" | "notifications";
+type ProfileTab = "bookings" | "favorites" | "notifications";
+
+const PROFILE_TABS: [ProfileTab, string][] = [
+  ["bookings", "Bookings"],
+  ["favorites", "Favourites"],
+  ["notifications", "Notifications"],
+];
 
 export default function ProfilePage() {
+  const dispatch = useDispatch<AppDispatch>();
   const { user } = useSelector((state: RootState) => state.login);
 
-  const [activeTab, setActiveTab] = useState<TabType>("bookings");
+  const [activeTab, setActiveTab] = useState<ProfileTab>("bookings");
   const [name, setName] = useState(user?.name || "");
   const [surname, setSurname] = useState(user?.surname || "");
   const [cellphone, setCellphone] = useState(
@@ -25,45 +33,14 @@ export default function ProfilePage() {
   );
   const [saveMessage, setSaveMessage] = useState("");
   const [saveError, setSaveError] = useState("");
+  const [isSaving, setIsSaving] = useState(false);
 
-  const [bookings, setBookings] = useState<BookingDetails[]>([]);
-  const [favorites, setFavorites] = useState<Hotel[]>([]);
-
-  // Removed setNotifications here to resolve the unused variable warning
-  const [notifications] = useState<string[]>([
-    "Your booking at Azure Bay Resort has been confirmed.",
-    "Special Promotion: Get 15% off bookings in Cape Town this weekend!",
-  ]);
-
-  useEffect(() => {
-    if (user?.id) {
-      fetchUserBookings();
-      fetchUserFavorites();
-    }
-  }, [user]);
-
-  const fetchUserBookings = async () => {
-    try {
-      const response = await api.get("/bookings/my");
-      setBookings(response.data);
-    } catch (err) {
-      console.error("Error loading user bookings ledger:", err);
-    }
-  };
-
-  const fetchUserFavorites = async () => {
-    try {
-      const response = await api.get("/favorites");
-      setFavorites(response.data);
-    } catch (err) {
-      console.error("Error loading favorites registry:", err);
-    }
-  };
-
-  const handleUpdateInformation = async (e: React.FormEvent) => {
-    e.preventDefault();
+  // PUT /auth/users/:id, then reload the user so the navbar shows the new name
+  const handleUpdateInformation = async (event: React.FormEvent) => {
+    event.preventDefault();
     setSaveMessage("");
     setSaveError("");
+    setIsSaving(true);
     try {
       await api.put(`/auth/users/${user?.id}`, {
         email: user?.email,
@@ -72,118 +49,115 @@ export default function ProfilePage() {
         surname: surname.trim(),
         cellphone: Number(cellphone) || 0,
       });
-      setSaveMessage("Personal information saved successfully.");
+      dispatch(getLoggedInUser());
+      setSaveMessage("Your details have been saved.");
       setTimeout(() => setSaveMessage(""), 3000);
-    } catch (err) {
-      setSaveError("Failed to update personal credentials.");
+    } catch {
+      setSaveError("We couldn't save your details. Please try again.");
+    } finally {
+      setIsSaving(false);
     }
   };
 
-  const handleCancelBooking = async (id: number) => {
-    if (
-      !window.confirm(
-        "Are you sure you want to cancel this booking stay reservation?",
-      )
-    )
-      return;
-    try {
-      await api.patch(`/bookings/${id}/cancel`);
-      setBookings((prev) =>
-        prev.map((b) =>
-          b.id === id ? { ...b, status: "cancelled" as const } : b,
-        ),
-      );
-    } catch (err) {
-      console.error("Cancellation pipeline failure:", err);
-    }
-  };
+  const initials = `${name.charAt(0)}${surname.charAt(0)}`.toUpperCase() || "U";
+  const memberSince = user?.createdat
+    ? new Date(user.createdat).toLocaleDateString("en-ZA", {
+        month: "long",
+        year: "numeric",
+      })
+    : null;
 
   return (
-    <div className={styles.pageWrapper}>
-      <div className={styles.gridContainer}>
-        <aside className={styles.leftCardPanel}>
-          <div className={styles.avatarRow}>
-            <div className={styles.avatarBadge}>
-              {name.charAt(0).toUpperCase() || "U"}
-              {surname.charAt(0).toUpperCase() || ""}
-            </div>
-            <div className={styles.avatarMeta}>
-              <h2>
-                {name} {surname}
-              </h2>
-              <p>{user?.email || "user@example.com"}</p>
-            </div>
+    <div className={styles.page}>
+      <h1 className={styles.pageTitle}>Profile</h1>
+
+      <div className={styles.columns}>
+        <aside className={styles.sideColumn}>
+          <div className={styles.identityCard}>
+            <div className={styles.avatar}>{initials}</div>
+            <h2 className={styles.fullName}>
+              {name} {surname}
+            </h2>
+            <p className={styles.role}>
+              {user?.role === "admin" ? "Admin" : "Guest"}
+            </p>
+            {memberSince && (
+              <p className={styles.memberSince}>Member since {memberSince}</p>
+            )}
           </div>
 
-          <form onSubmit={handleUpdateInformation} className={styles.infoForm}>
+          <div className={styles.emailCard}>
+            <h3>
+              <ShieldIcon size={18} strokeWidth={1.8} /> Email address
+            </h3>
+            <p>{user?.email}</p>
+          </div>
+
+          <form
+            onSubmit={handleUpdateInformation}
+            className={styles.detailsForm}
+          >
             <h3>Personal information</h3>
 
             <Input
-              label="FIRST NAME"
+              id="profile-name"
+              label="First name"
               value={name}
-              onChange={(e) => setName(e.target.value)}
+              onChange={(event) => setName(event.target.value)}
               required
             />
             <Input
-              label="SURNAME"
+              id="profile-surname"
+              label="Surname"
               value={surname}
-              onChange={(e) => setSurname(e.target.value)}
+              onChange={(event) => setSurname(event.target.value)}
               required
             />
             <Input
-              label="PHONE"
+              id="profile-phone"
+              label="Phone"
               type="tel"
               value={cellphone}
-              onChange={(e) => setCellphone(e.target.value)}
-              placeholder="+27 82 555 0142"
+              onChange={(event) => setCellphone(event.target.value)}
               required
             />
 
-            {saveMessage && <p className={styles.successText}>{saveMessage}</p>}
-            {saveError && <p className={styles.errorText}>{saveError}</p>}
+            {saveMessage && (
+              <p className={styles.successMessage} role="status">
+                {saveMessage}
+              </p>
+            )}
+            {saveError && (
+              <p className={styles.errorMessage} role="alert">
+                {saveError}
+              </p>
+            )}
 
-            <Button type="submit" variant="primary" className={styles.saveBtn}>
-              Save
+            <Button type="submit" variant="secondary" disabled={isSaving}>
+              {isSaving ? "Saving..." : "Save"}
             </Button>
           </form>
         </aside>
 
-        <section className={styles.rightContentArea}>
-          <nav className={styles.tabNavigationRow}>
-            <button
-              className={`${styles.tabBtn} ${activeTab === "bookings" ? styles.tabActive : ""}`}
-              onClick={() => setActiveTab("bookings")}
-            >
-              My Bookings
-            </button>
-            <button
-              className={`${styles.tabBtn} ${activeTab === "favorites" ? styles.tabActive : ""}`}
-              onClick={() => setActiveTab("favorites")}
-            >
-              Saved Hotels
-            </button>
-            <button
-              className={`${styles.tabBtn} ${activeTab === "notifications" ? styles.tabActive : ""}`}
-              onClick={() => setActiveTab("notifications")}
-            >
-              Notifications
-            </button>
+        <section className={styles.mainColumn}>
+          <nav className={styles.tabs} role="tablist">
+            {PROFILE_TABS.map(([tabKey, tabLabel]) => (
+              <button
+                key={tabKey}
+                type="button"
+                role="tab"
+                aria-selected={activeTab === tabKey}
+                className={activeTab === tabKey ? styles.activeTab : ""}
+                onClick={() => setActiveTab(tabKey)}
+              >
+                {tabLabel}
+              </button>
+            ))}
           </nav>
 
-          <div className={styles.tabPanelBody}>
-            {activeTab === "bookings" && (
-              <MyBookings
-                bookings={bookings}
-                onCancelBooking={handleCancelBooking}
-              />
-            )}
-
-            {activeTab === "favorites" && <SavedHotels favorites={favorites} />}
-
-            {activeTab === "notifications" && (
-              <Notifications notifications={notifications} />
-            )}
-          </div>
+          {activeTab === "bookings" && <BookingList />}
+          {activeTab === "favorites" && <SavedHotels />}
+          {activeTab === "notifications" && <Notifications />}
         </section>
       </div>
     </div>

@@ -1,31 +1,65 @@
-import type { Hotel } from "../../../models/hotel.types";
-import styles from "../profilePage.module.css";
+import { useEffect } from "react";
+import { Link } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
+import type { AppDispatch, RootState } from "../../../store/store";
+import { fetchFavoriteHotels } from "../../../store/favoriteSlice";
+import HotelCard from "../../../components/hotelCard/hotelCard";
+import { HeartIcon } from "../../../components/icons/icons";
+import styles from "./savedHotels.module.css";
 
-interface SavedHotelsProps {
-  favorites: Hotel[];
-}
+// The user's favourite hotels (GET /favorites)
+export default function SavedHotels() {
+  const dispatch = useDispatch<AppDispatch>();
+  const { favoriteHotels, favoriteHotelIds, isLoading, error } = useSelector(
+    (state: RootState) => state.favorites,
+  );
 
-export default function SavedHotels({ favorites }: SavedHotelsProps) {
+  useEffect(() => {
+    dispatch(fetchFavoriteHotels());
+  }, [dispatch]);
+
+  // hide a hotel straight away when its heart is clicked off
+  const savedHotels = favoriteHotels.filter((hotel) =>
+    favoriteHotelIds.includes(hotel.id),
+  );
+
+  if (error) {
+    return (
+      <p className={styles.errorMessage} role="alert">
+        {error}
+      </p>
+    );
+  }
+
+  if (isLoading && savedHotels.length === 0) {
+    return <p className={styles.loadingText}>Loading favourites…</p>;
+  }
+
+  if (savedHotels.length === 0) {
+    return (
+      <div className={styles.emptyState}>
+        <span className={styles.emptyIcon}>
+          <HeartIcon size={26} strokeWidth={1.8} />
+        </span>
+        <h3>No favourites yet</h3>
+        <p>Tap the heart on a hotel to save it here.</p>
+        <Link to="/home" className={styles.emptyButton}>
+          Find a hotel
+        </Link>
+      </div>
+    );
+  }
+
   return (
-    <div className={styles.favoritesFlexContainer}>
-      <h3 className={styles.subTitleHeading}>Saved Hotels</h3>
-      <div className={styles.favoritesGrid}>
-        {favorites.map((hotel) => (
-          <div key={hotel.id} className={styles.favCardRow}>
-            <img src={hotel.coverImage || "https://unsplash.com"} alt="" />
-            <div>
-              <h4>{hotel.name}</h4>
-              <p>
-                {hotel.city} • R {hotel.pricePerNight} / night
-              </p>
-            </div>
-          </div>
+    <div>
+      <p className={styles.savedCount}>
+        {savedHotels.length} saved{" "}
+        {savedHotels.length === 1 ? "hotel" : "hotels"}
+      </p>
+      <div className={styles.hotelGrid}>
+        {savedHotels.map((hotel) => (
+          <HotelCard key={hotel.id} hotel={hotel} />
         ))}
-        {favorites.length === 0 && (
-          <p className={styles.emptyStateFallback}>
-            No hotels pinned to your favorites collections yet.
-          </p>
-        )}
       </div>
     </div>
   );

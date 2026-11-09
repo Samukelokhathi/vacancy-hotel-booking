@@ -1,96 +1,125 @@
 .card {
-  display: flex;
-  flex-direction: column;
-  height: 100%;
-  background-color: #1a1b1e;
-  border: 1px solid #2c2d31;
-  border-radius: 18px;
+  position: relative;
+  min-width: 0;
+}
+
+.cardLink {
+  display: block;
+  color: inherit;
+  text-decoration: none;
+}
+
+.media {
+  position: relative;
+  aspect-ratio: 1 / 0.95;
+  border-radius: var(--radius);
   overflow: hidden;
-  transition: transform 0.2s;
+  background: var(--surface-alt);
 }
 
-.card:hover {
-  transform: translateY(-4px);
-}
-
-.image {
+.media img {
   display: block;
   width: 100%;
-  aspect-ratio: 16 / 10;
+  height: 100%;
   object-fit: cover;
-  flex-shrink: 0;
+  transition: transform 0.35s ease;
+}
+
+.cardLink:hover .media img {
+  transform: scale(1.04);
 }
 
 .noImage {
-  width: 100%;
-  aspect-ratio: 16 / 10;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background-color: #232428;
-  color: #9b9ca3;
-  flex-shrink: 0;
+  display: grid;
+  place-items: center;
+  height: 100%;
+  color: #b0b0b0;
 }
 
-.body {
-  display: flex;
-  flex-direction: column;
-  flex: 1;
-  padding: 24px;
-}
-
-.name {
-  margin: 0 0 8px 0;
-  font-family: "Space Grotesk", "DM Sans", sans-serif;
-  font-size: 20px;
+.badge {
+  position: absolute;
+  top: 12px;
+  left: 12px;
+  padding: 6px 10px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.95);
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.15);
+  font-size: 12px;
   font-weight: 700;
-  color: #ffffff;
+  color: var(--ink);
 }
 
-.cityRow {
+.details {
+  padding-top: 10px;
+  font-size: 13px;
+  line-height: 1.4;
+}
+
+.hotelName {
   margin: 0;
-  font-size: 17px;
-  color: #9b9ca3;
-}
-
-.dot {
-  margin: 0 8px;
-}
-
-.footer {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-top: auto;
-  padding-top: 22px;
-  border-top: 1px solid #2c2d31;
-}
-
-.price {
-  margin: 0;
-  font-family: "Space Grotesk", "DM Sans", sans-serif;
-  font-size: 24px;
-  font-weight: 700;
-  color: #ffffff;
-}
-
-.perNight {
-  font-family: "DM Sans", sans-serif;
   font-size: 14px;
-  font-weight: 400;
-  color: #9b9ca3;
+  font-weight: 600;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
-.button {
-  background-color: #f5a93b;
-  color: #1b1305;
-  padding: 11px 18px;
-  border-radius: 10px;
-  text-decoration: none;
-  font-weight: 500;
-  font-size: 15px;
+.location {
+  margin: 0;
+  color: var(--muted);
 }
 
-.button:hover {
-  background-color: #fbbf4a;
+.priceLine {
+  margin: 2px 0 0;
+  color: var(--muted);
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.priceLine strong {
+  color: var(--ink);
+  font-weight: 600;
+}
+
+.rating {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  color: var(--ink);
+}
+
+/* ---------- loading ---------- */
+.shimmer {
+  background: linear-gradient(90deg, #f0f0f0 25%, #e6e6e6 50%, #f0f0f0 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.4s infinite ease-in-out;
+}
+
+.skeletonLine {
+  height: 12px;
+  margin-top: 8px;
+  border-radius: 6px;
+  width: 80%;
+}
+
+.skeletonLineShort {
+  width: 50%;
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .media img,
+  .shimmer {
+    transition: none;
+    animation: none;
+  }
 }

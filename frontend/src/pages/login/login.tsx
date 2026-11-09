@@ -5,12 +5,10 @@ import { useDispatch, useSelector } from "react-redux";
 
 import { Input } from "../../components/inputs/input";
 import Button from "../../components/button/button";
-import VideoBackground from "../../components/videoBackround/videoBackground";
-import styles from "../login/login.module.css";
+import styles from "./login.module.css";
 
 import type { RootState, AppDispatch } from "../../store/store";
 import { login, logout } from "../../store/loginSlice";
-import videoSrc from "../../../public/videos/A hotel entrance video showing the exterior entrance of a hotel, with the entrance and surrounding facade as the main focus..mp4";
 
 type Mode = "client" | "admin";
 
@@ -18,14 +16,13 @@ function Login() {
   const dispatch = useDispatch<AppDispatch>();
   const navigate = useNavigate();
   const { error, isLoading } = useSelector((state: RootState) => state.login);
-  0;
   const [form, setForm] = useState({ email: "", password: "" });
   const [mode, setMode] = useState<Mode>("client");
   const [formError, setFormError] = useState("");
 
   // one handler for both inputs, it uses the input's `name`
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setForm({ ...form, [e.target.name]: e.target.value });
+  const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setForm({ ...form, [event.target.name]: event.target.value });
   };
 
   const changeMode = (newMode: Mode) => {
@@ -38,8 +35,8 @@ function Login() {
     navigate(role === "admin" ? "/admin" : "/home", { replace: true });
   };
 
-  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
+  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
     setFormError("");
 
     try {
@@ -78,103 +75,114 @@ function Login() {
 
   return (
     <div className={styles.page}>
-      {/* the file lives in public/videos, so the address starts with /videos */}
-      <VideoBackground src={videoSrc} />
+      <section className={styles.card}>
+        <h1 className={styles.cardHead}>Log in</h1>
 
-      <div className={styles.container}>
-        <NavLink to="/home" className={styles.logo}>
-          Vacancy Hotels
-        </NavLink>
-
-        <div className={styles.welcomeText}>
+        <div className={styles.body}>
           <h2 className={styles.title}>
-            {mode === "admin" ? "Admin sign in" : "Welcome back"}
+            {mode === "admin" ? "Admin sign in" : "Welcome back to Vacancy"}
           </h2>
           <p className={styles.subtitle}>
             {mode === "admin"
               ? "Manage hotels, rooms and reservations."
               : "Sign in to book your next stay."}
           </p>
-        </div>
 
-        {/* Guest / Admin switch */}
-        <div className={styles.toggle}>
-          <button
-            type="button"
-            className={`${styles.toggleButton} ${
-              mode === "client" ? styles.toggleActive : ""
-            }`}
-            onClick={() => changeMode("client")}
+          {/* Guest / Admin switch */}
+          <div
+            className={styles.toggle}
+            role="tablist"
+            aria-label="Account type"
           >
-            Guest
-          </button>
-          <button
-            type="button"
-            className={`${styles.toggleButton} ${
-              mode === "admin" ? styles.toggleActive : ""
-            }`}
-            onClick={() => changeMode("admin")}
-          >
-            Admin
-          </button>
-        </div>
+            <button
+              type="button"
+              role="tab"
+              aria-selected={mode === "client"}
+              className={`${styles.toggleButton} ${
+                mode === "client" ? styles.toggleActive : ""
+              }`}
+              onClick={() => changeMode("client")}
+            >
+              Guest
+            </button>
+            <button
+              type="button"
+              role="tab"
+              aria-selected={mode === "admin"}
+              className={`${styles.toggleButton} ${
+                mode === "admin" ? styles.toggleActive : ""
+              }`}
+              onClick={() => changeMode("admin")}
+            >
+              Admin
+            </button>
+          </div>
 
-        <form className={styles.card} onSubmit={handleSubmit}>
-          <Input
-            id="email"
-            name="email"
-            label="Email Address"
-            type="email"
-            value={form.email}
-            onChange={handleChange}
-            required
-          />
-          <Input
-            id="password"
-            name="password"
-            label="Password"
-            type="password"
-            value={form.password}
-            onChange={handleChange}
-            required
-          />
+          <form className={styles.form} onSubmit={handleSubmit}>
+            <Input
+              id="email"
+              name="email"
+              label="Email address"
+              type="email"
+              value={form.email}
+              onChange={handleChange}
+              required
+            />
+            <Input
+              id="password"
+              name="password"
+              label="Password"
+              type="password"
+              value={form.password}
+              onChange={handleChange}
+              required
+            />
 
-          {message && <p className={styles.error}>{message}</p>}
-
-          <Button type="submit" disabled={isLoading}>
-            {isLoading ? "Signing in..." : "Sign in"}
-          </Button>
-
-          {/* Google is for guests only */}
-          {mode === "client" && (
-            <>
-              <div className={styles.divider}>
-                <span>or</span>
-              </div>
-
-              <div className={styles.googleWrap}>
-                {/* <GoogleLogin
-                  onSuccess={handleGoogle}
-                  onError={() =>
-                    setFormError("Google sign-in failed. Please try again.")
-                  }
-                  theme="filled_black"
-                  shape="pill"
-                  text="continue_with"
-                  width="300"
-                /> */}
-              </div>
-
-              <p className={styles.registerText}>
-                New here?{" "}
-                <NavLink to="/register" className={styles.registerLink}>
-                  Create an account
-                </NavLink>
+            {message && (
+              <p className={styles.error} role="alert">
+                {message}
               </p>
-            </>
-          )}
-        </form>
-      </div>
+            )}
+
+            <Button
+              type="submit"
+              disabled={isLoading}
+              className={styles.submit}
+            >
+              {isLoading ? "Signing in..." : "Continue"}
+            </Button>
+
+            {/* Google is for guests only */}
+            {mode === "client" && (
+              <>
+                <div className={styles.googleWrap}>
+                  {/* <GoogleLogin
+                    onSuccess={handleGoogle}
+                    onError={() =>
+                      setFormError("Google sign-in failed. Please try again.")
+                    }
+                    theme="outline"
+                    shape="pill"
+                    text="continue_with"
+                    width="300"
+                  /> */}
+                </div>
+
+                <div className={styles.divider}>
+                  <span>or</span>
+                </div>
+
+                <p className={styles.switchText}>
+                  New here?{" "}
+                  <NavLink to="/register" className={styles.switchLink}>
+                    Create an account
+                  </NavLink>
+                </p>
+              </>
+            )}
+          </form>
+        </div>
+      </section>
     </div>
   );
 }

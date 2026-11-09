@@ -3,34 +3,27 @@
   position: relative;
   /* keeps the map's own layers below the sticky navbar */
   z-index: 0;
-  height: 280px;
   width: 100%;
-  border-radius: 12px;
+  height: clamp(320px, 40vw, 480px);
+  border-radius: var(--radius);
   overflow: hidden;
-}
-
-/* turns the light map tiles dark, to match the page */
-.map :global(.leaflet-tile-pane) {
-  filter: invert(1) hue-rotate(180deg) brightness(0.9) contrast(0.9);
 }
 
 /* the small credit text in the corner */
 .map :global(.leaflet-control-attribution) {
-  color: #9b9ca3;
-  background-color: rgba(26, 27, 30, 0.85);
+  background-color: rgba(255, 255, 255, 0.85);
+  color: var(--muted);
 }
 
 .map :global(.leaflet-control-attribution a) {
-  color: #f5a93b;
+  color: var(--ink);
 }
 
-.empty {
+.unavailable {
   margin: 0;
-  color: #9b9ca3;
-}
-
-@media (max-width: 600px) {
-  .map {
-    height: 220px;
-  }
+  padding: 32px;
+  border-radius: var(--radius);
+  background: var(--surface-alt);
+  color: var(--muted);
+  text-align: center;
 }

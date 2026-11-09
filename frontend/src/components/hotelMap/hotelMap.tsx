@@ -6,7 +6,7 @@ import markerIcon2x from "leaflet/dist/images/marker-icon-2x.png";
 import markerShadow from "leaflet/dist/images/marker-shadow.png";
 import styles from "./hotelMap.module.css";
 
-const pin = L.icon({
+const hotelMarkerIcon = L.icon({
   iconUrl: markerIcon,
   iconRetinaUrl: markerIcon2x,
   shadowUrl: markerShadow,
@@ -22,43 +22,24 @@ interface HotelMapProps {
   name: string;
 }
 
+// Shows the hotel's saved coordinates (hotels.latitude / hotels.longitude)
 export default function HotelMap({ latitude, longitude, name }: HotelMapProps) {
-  // DEBUG: Check what values are being passed to the map component
-  console.log(
-    "[HotelMap Debug] Received props -> latitude:",
-    latitude,
-    "longitude:",
-    longitude,
-    "hotel name:",
-    name,
-  );
+  const latitudeValue = latitude == null ? NaN : Number(latitude);
+  const longitudeValue = longitude == null ? NaN : Number(longitude);
 
-  const lat = latitude == null ? NaN : Number(latitude);
-  const lng = longitude == null ? NaN : Number(longitude);
-
-  console.log(
-    "[HotelMap Debug] Parsed numbers -> lat:",
-    lat,
-    "lng:",
-    lng,
-    "Is finite:",
-    Number.isFinite(lat) && Number.isFinite(lng),
-  );
-
-  if (!Number.isFinite(lat) || !Number.isFinite(lng)) {
-    console.warn(
-      "[HotelMap Debug] Coordinates are invalid or null. Rendering fallback message.",
-    );
+  if (!Number.isFinite(latitudeValue) || !Number.isFinite(longitudeValue)) {
     return (
-      <p className={styles.empty}>Map location not available for this hotel.</p>
+      <p className={styles.unavailable}>
+        Map location not available for this hotel.
+      </p>
     );
   }
 
-  const position: [number, number] = [lat, lng];
+  const markerPosition: [number, number] = [latitudeValue, longitudeValue];
 
   return (
     <MapContainer
-      center={position}
+      center={markerPosition}
       zoom={14}
       scrollWheelZoom={false}
       className={styles.map}
@@ -67,7 +48,7 @@ export default function HotelMap({ latitude, longitude, name }: HotelMapProps) {
         attribution="&copy; OpenStreetMap contributors"
         url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
       />
-      <Marker position={position} icon={pin}>
+      <Marker position={markerPosition} icon={hotelMarkerIcon}>
         <Popup>{name}</Popup>
       </Marker>
     </MapContainer>

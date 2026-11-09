@@ -82,18 +82,12 @@ export default function AdminDashboard() {
   useEffect(() => {
     if (isAuthenticated && user?.role === "admin") {
       dispatch(fetchHotels());
-      fetchBookings();
+      api
+        .get<BookingDetails[]>("/bookings")
+        .then((response) => setReservations(response.data))
+        .catch((error) => console.error("Failed to fetch bookings:", error));
     }
   }, [dispatch, isAuthenticated, user]);
-
-  const fetchBookings = async () => {
-    try {
-      const response = await api.get("/bookings");
-      setReservations(response.data);
-    } catch (error) {
-      console.error("Failed to fetch bookings:", error);
-    }
-  };
 
   const loadHotelImages = async (hotelId: number) => {
     try {
@@ -215,7 +209,9 @@ export default function AdminDashboard() {
   };
 
   const handleRemovePendingFile = (index: number) => {
-    setPendingFiles((prev) => prev.filter((_, i) => i !== index));
+    setPendingFiles((currentFiles) =>
+      currentFiles.filter((_, fileIndex) => fileIndex !== index),
+    );
   };
 
   const handleDeleteImage = async (imageId: number) => {
@@ -370,15 +366,44 @@ export default function AdminDashboard() {
     }
   };
 
+  const pendingCount = reservations.filter(
+    (reservation) => reservation.status === "pending",
+  ).length;
+  const awaitingCount = reservations.filter(
+    (reservation) => reservation.status === "pending" && reservation.paid,
+  ).length;
+  const confirmedCount = reservations.filter(
+    (reservation) => reservation.status === "approved",
+  ).length;
+
+  const stats = [
+    { label: "Hotels listed", value: hotelsList.length },
+    { label: "Pending reservations", value: pendingCount },
+    { label: "Paid, awaiting approval", value: awaitingCount },
+    { label: "Confirmed stays", value: confirmedCount },
+  ];
+
   return (
     <div className={styles.wrapper}>
-      <main className={styles.main}>
+      <div className={styles.main}>
         <div className={styles.topContainer}>
-          <h1>Admin Dashboard</h1>
+          <div>
+            <h1>Admin dashboard</h1>
+            <p className={styles.welcome}>Welcome back, {user?.name}.</p>
+          </div>
 
           <button className={styles.launchBtn} onClick={handleOpenAddModal}>
-            Add hotel
+            <span aria-hidden="true">+</span> Add hotel
           </button>
+        </div>
+
+        <div className={styles.stats}>
+          {stats.map((stat) => (
+            <div key={stat.label} className={styles.stat}>
+              <p className={styles.statValue}>{stat.value}</p>
+              <p className={styles.statLabel}>{stat.label}</p>
+            </div>
+          ))}
         </div>
 
         <div className={styles.dashboardSplitGrid}>
@@ -397,7 +422,7 @@ export default function AdminDashboard() {
             />
           </div>
         </div>
-      </main>
+      </div>
 
       {isModalOpen && (
         <AddHotelModal

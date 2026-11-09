@@ -22,26 +22,25 @@ export default function App() {
   }, [dispatch]);
 
   return (
-    <>
-      <Routes>
-        <Route path="/" element={<Navigate to="/home" replace />} />
-        <Route path="/register" element={<RegisterPage />} />
+    <Routes>
+      <Route path="/" element={<Navigate to="/home" replace />} />
+
+      {/* every page shares the light header + footer */}
+      <Route element={<Layout />}>
+        <Route path="/home" element={<HomePage />} />
+        <Route path="/hotels/:id" element={<HotelDetailsPage />} />
         <Route path="/login" element={<Login />} />
+        <Route path="/register" element={<RegisterPage />} />
+        <Route path="/payment/verify" element={<PaymentVerifyPage />} />
 
-        <Route element={<Layout />}>
-          <Route path="/home" element={<HomePage />} />
-          <Route path="/hotels/:id" element={<HotelDetailsPage />} />
-          <Route path="/payment/verify" element={<PaymentVerifyPage />} />
-
-          <Route element={<ProtectedRoute />}>
-            <Route path="/bookings" element={<MyBookingsPage />} />
-            <Route path="/profile" element={<ProfilePage />} />
-            <Route path="/admin" element={<AdminDashboard />} />
-          </Route>
+        <Route element={<ProtectedRoute />}>
+          <Route path="/bookings" element={<MyBookingsPage />} />
+          <Route path="/profile" element={<ProfilePage />} />
+          <Route path="/admin" element={<AdminDashboard />} />
         </Route>
+      </Route>
 
-        <Route path="*" element={<Navigate to="/home" replace />} />
-      </Routes>
-    </>
+      <Route path="*" element={<Navigate to="/home" replace />} />
+    </Routes>
   );
 }

@@ -20,3 +20,48 @@ body {
 .error-text {
   color: #f87171;
 }
+
+/* ---------- light "explore" theme (home + hotel details) ---------- */
+body.theme-light {
+  background-color: #ffffff;
+  color: #222222;
+}
+
+.explore-theme {
+  --ink: #222222;
+  --ink-soft: #3f3f3f;
+  --muted: #6a6a6a;
+  --line: #dddddd;
+  --line-soft: #ebebeb;
+  --surface: #ffffff;
+  --surface-alt: #f7f7f7;
+  --accent: #f5a93b;
+  --accent-hover: #e8961f;
+  --accent-ink: #1b1305;
+  --accent-text: #b45f06;
+  --danger: #c13515;
+  --radius: 12px;
+  --shadow-card: 0 6px 16px rgba(0, 0, 0, 0.12);
+  --shadow-pill: 0 3px 12px rgba(0, 0, 0, 0.1);
+  --page-pad: clamp(16px, 5vw, 80px);
+
+  color: var(--ink);
+  background: var(--surface);
+  font-family:
+    "DM Sans",
+    system-ui,
+    -apple-system,
+    sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+.explore-theme *,
+.explore-theme *::before,
+.explore-theme *::after {
+  box-sizing: border-box;
+}
+
+.explore-theme :focus-visible {
+  outline: 2px solid var(--ink);
+  outline-offset: 2px;
+}

@@ -12,49 +12,36 @@ export default function Footer() {
   return (
     <footer className={styles.footer}>
       <div className={styles.inner}>
-        <div>
-          <span className={styles.logo}>Vacancy Hotels</span>
-          <p className={styles.text}>
-            Compare hotels across South Africa and book in a few clicks.
-          </p>
+        <div className={styles.columns}>
+          <nav className={styles.column} aria-label="Explore">
+            <h3>Explore</h3>
+            <Link to="/home">All hotels</Link>
+            <Link to="/home?stars=5">Five-star stays</Link>
+            <Link to="/home?stars=4">Four stars and up</Link>
+            <Link to="/home?maxPrice=1500">Stays up to R 1 500</Link>
+          </nav>
+
+          <nav className={styles.column} aria-label="Account">
+            <h3>Account</h3>
+            {isAuthenticated ? (
+              <>
+                <Link to="/profile">Profile</Link>
+                <Link to="/bookings">My bookings</Link>
+              </>
+            ) : (
+              <>
+                <Link to="/login">Log in</Link>
+                <Link to="/register">Sign up</Link>
+              </>
+            )}
+            {isAdmin && <Link to="/admin">Admin dashboard</Link>}
+          </nav>
         </div>
 
-        <div className={styles.column}>
-          <h4 className={styles.heading}>Explore</h4>
-          <Link to="/home" className={styles.link}>
-            Hotels
-          </Link>
-        </div>
-
-        {/* the links change with the visitor, like the navbar */}
-        <div className={styles.column}>
-          <h4 className={styles.heading}>Account</h4>
-          {!isAuthenticated && (
-            <>
-              <Link to="/login" className={styles.link}>
-                Log in
-              </Link>
-              <Link to="/register" className={styles.link}>
-                Sign up
-              </Link>
-            </>
-          )}
-          {isAuthenticated && !isAdmin && (
-            <Link to="/bookings" className={styles.link}>
-              My bookings
-            </Link>
-          )}
-          {isAdmin && (
-            <Link to="/admin" className={styles.link}>
-              Admin Dashboard
-            </Link>
-          )}
-        </div>
+        <p className={styles.copyright}>
+          &copy; {new Date().getFullYear()} Vacancy Hotels
+        </p>
       </div>
-
-      <p className={styles.copy}>
-        &copy; {new Date().getFullYear()} Vacancy Hotels. All rights reserved.
-      </p>
     </footer>
   );
 }

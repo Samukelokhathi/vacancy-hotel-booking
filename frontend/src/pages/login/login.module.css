@@ -1,186 +1,111 @@
-/* ---------- the page ---------- */
+/* Login page */
 
-/* the whole page: centres the form on screen.
-   position: relative lets the video fill the page behind the form */
 .page {
-  position: relative;
+  display: flex;
+  justify-content: center;
+  padding: 48px var(--page-pad) 72px;
+  background: var(--surface-alt);
+  min-height: calc(100vh - 81px);
+}
+
+.card {
+  width: 100%;
+  max-width: 568px;
+  align-self: flex-start;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: var(--surface);
+  box-shadow: 0 8px 28px rgba(0, 0, 0, 0.08);
   overflow: hidden;
-  min-height: 100vh;
+}
+
+.cardHead {
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 24px 16px;
-  box-sizing: border-box;
-  background-color: #0b0c0e;
+  min-height: 64px;
+  border-bottom: 1px solid var(--line-soft);
+  font-size: 16px;
+  font-weight: 700;
 }
 
-/* keeps the form from getting too wide.
-   z-index: 1 keeps it above the video */
-.container {
-  position: relative;
-  z-index: 1;
-  width: 100%;
-  max-width: 460px;
-}
-
-/* the "Vacancy Hotels" link above the form */
-.logo {
-  display: block;
-  text-align: center;
-  margin-bottom: 24px;
-  font-size: 24px;
-  font-weight: bold;
-  color: #ffffff;
-  text-decoration: none;
-}
-
-/* ---------- heading ---------- */
-
-.welcomeText {
-  text-align: center;
-  margin-bottom: 20px;
+.body {
+  padding: 28px 24px 32px;
 }
 
 .title {
-  margin: 0 0 8px 0;
-  font-size: 30px;
-  color: #ffffff;
+  margin: 0 0 6px;
+  font-size: 22px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
 }
 
 .subtitle {
-  margin: 0;
-  font-size: 16px;
-  color: #9b9ca3;
+  margin: 0 0 24px;
+  color: var(--muted);
+  font-size: 15px;
 }
 
-/* ---------- Guest / Admin switch (sits above the card) ---------- */
-
+/* Guest / Admin switch */
 .toggle {
-  display: flex;
-  gap: 4px;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  margin-bottom: 24px;
   padding: 4px;
-  margin-bottom: 16px;
-  background-color: rgba(26, 27, 30, 0.88);
-  border: 1px solid #2c2d31;
-  border-radius: 12px;
+  border-radius: 999px;
+  background: var(--surface-alt);
+  border: 1px solid var(--line-soft);
 }
 
 .toggleButton {
-  flex: 1;
   padding: 10px;
-  font-size: 15px;
-  font-weight: bold;
-  color: #9b9ca3;
-  background-color: transparent;
-  border: none;
-  border-radius: 9px;
+  border: 0;
+  border-radius: 999px;
+  background: none;
+  font: inherit;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--muted);
   cursor: pointer;
 }
 
 .toggleButton:hover {
-  color: #ffffff;
+  color: var(--ink);
 }
 
-/* must stay below .toggleButton, so it wins */
 .toggleActive {
-  color: #1b1305;
-  background-color: #f5a93b;
+  background: var(--surface);
+  color: var(--ink);
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.12);
 }
 
-.toggleActive:hover {
-  color: #1b1305;
-}
-
-/* ---------- the form box ---------- */
-
-/* slightly see-through, so the video shows around the edges */
-.card {
+.form {
   display: flex;
   flex-direction: column;
-  gap: 18px;
-  padding: 32px;
-  background-color: rgba(26, 27, 30, 0.88);
-  border: 1px solid #2c2d31;
-  border-radius: 18px;
+  gap: 16px;
 }
 
-/* labels above the inputs */
-.card label {
-  display: block;
-  margin-bottom: 6px;
-  font-size: 14px;
-  color: #9b9ca3;
-}
-
-/* input boxes */
-.card input {
+.submit {
   width: 100%;
-  box-sizing: border-box;
-  padding: 12px 14px;
-  font-size: 16px;
-  color: #ffffff;
-  background-color: #111214;
-  border: 1px solid #2c2d31;
-  border-radius: 10px;
+  margin-top: 4px;
 }
 
-.card input::placeholder {
-  color: #6b6c73;
-}
-
-/* amber border when you click inside an input */
-.card input:focus {
-  outline: none;
-  border-color: #f5a93b;
-}
-
-/* stops the browser's white autofill colour (Chrome) */
-.card input:-webkit-autofill {
-  -webkit-box-shadow: 0 0 0 1000px #111214 inset;
-  -webkit-text-fill-color: #ffffff;
-}
-
-/* the Sign in button */
-.card button {
-  width: 100%;
-  padding: 13px;
-  font-size: 16px;
-  font-weight: bold;
-  color: #1b1305;
-  background-color: #f5a93b;
-  border: none;
-  border-radius: 10px;
-  cursor: pointer;
-}
-
-.card button:hover {
-  background-color: #fbbf4a;
-}
-
-.card button:disabled {
-  opacity: 0.6;
-  cursor: not-allowed;
-}
-
-/* the error message */
 .error {
   margin: 0;
   padding: 10px 14px;
-  font-size: 14px;
-  color: #f87171;
-  background-color: #2a1416;
   border-radius: 8px;
+  background: #fff1ee;
+  color: var(--danger);
+  font-size: 14px;
 }
 
-/* ---------- Google part ---------- */
-
-/* the line with "or" in the middle */
 .divider {
   display: flex;
   align-items: center;
-  gap: 12px;
-  font-size: 14px;
-  color: #6b6c73;
+  gap: 16px;
+  margin: 8px 0;
+  font-size: 12px;
+  color: var(--muted);
 }
 
 .divider::before,
@@ -188,41 +113,40 @@
   content: "";
   flex: 1;
   height: 1px;
-  background-color: #2c2d31;
+  background: var(--line);
 }
 
-/* centres the Google button */
+.switchText {
+  margin: 0;
+  text-align: center;
+  font-size: 15px;
+  color: var(--muted);
+}
+
+.switchLink {
+  color: var(--ink);
+  font-weight: 600;
+  text-decoration: underline;
+}
+
 .googleWrap {
   display: flex;
   justify-content: center;
 }
 
-/* ---------- bottom text ---------- */
-
-.registerText {
-  margin: 0;
-  text-align: center;
-  color: #9b9ca3;
+.googleWrap:empty {
+  display: none;
 }
 
-.registerLink {
-  color: #f5a93b;
-  font-weight: bold;
-  text-decoration: none;
-}
-
-.registerLink:hover {
-  text-decoration: underline;
-}
-
-/* ---------- phone ---------- */
-
-@media (max-width: 520px) {
-  .card {
-    padding: 24px 16px;
+@media (max-width: 640px) {
+  .page {
+    padding: 0;
+    background: var(--surface);
   }
 
-  .title {
-    font-size: 26px;
+  .card {
+    border: 0;
+    border-radius: 0;
+    box-shadow: none;
   }
 }

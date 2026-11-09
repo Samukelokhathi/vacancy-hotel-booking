@@ -1,196 +1,182 @@
-.container {
-  --content-max: 1400px; /* NEW: widen or narrow the content here */
-  width: 100%;
-  max-width: none; /* CHANGED from 1200px */
-  margin: 0;
-  padding: 0; /* CHANGED: side padding now lives on each block below */
-  box-sizing: border-box;
+.page {
+  max-width: 1880px;
+  margin: 0 auto;
+  padding: 16px var(--page-pad) 56px;
 }
 
-/* NEW: filter bar and listing share one centred content width */
-.container > :not(.hero) {
-  width: 100%;
-  max-width: var(--content-max);
-  margin-left: auto;
-  margin-right: auto;
-  padding-left: 24px;
-  padding-right: 24px;
-  box-sizing: border-box;
-}
-
-/* CHANGED: hero is now the full-width video band */
-.hero {
-  position: relative;
-  overflow: hidden;
-  width: 100vw;
-  margin-left: calc(50% - 50vw); /* breaks out of any centred parent */
-  min-height: 380px;
-  padding-top: 72px;
-  padding-bottom: 110px; /* room for the filter bar to overlap */
-  padding-left: max(24px, calc((100vw - var(--content-max)) / 2 + 24px));
-  padding-right: max(24px, calc((100vw - var(--content-max)) / 2 + 24px));
-  box-sizing: border-box;
-  background: #0a2a5e; /* shown until the video loads */
-}
-
-/* NEW: the video (first child of the hero) fills the band */
-.hero > :first-child {
-  position: absolute !important;
-  inset: 0 !important;
-  width: 100% !important;
-  height: 100% !important;
-  z-index: 0 !important;
-  pointer-events: none;
-}
-
-.hero > :first-child video,
-.hero > video:first-child {
-  width: 100% !important;
-  height: 100% !important;
-  object-fit: cover;
-}
-
-/* NEW: dark overlay so the white text stays readable */
-.hero::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  z-index: 1;
-  background: rgba(0, 0, 0, 0.4);
-  pointer-events: none;
-}
-
-/* NEW: title and subtitle sit above the video and overlay */
-.hero > :not(:first-child) {
-  position: relative;
-  z-index: 2;
-}
-
-/* NEW: filter bar overlaps the bottom of the hero */
-.container > :nth-child(2) {
-  position: relative;
-  z-index: 3;
-  margin-top: -64px;
-}
-
-.title {
-  margin: 0 0 12px 0;
-  font-family:
-    Inter,
-    system-ui,
-    -apple-system,
-    sans-serif;
-  font-size: 48px;
-  font-weight: 700;
-  letter-spacing: -0.02em;
-  line-height: 1.15;
-  color: #ffffff;
-  text-shadow: 0 2px 12px rgba(0, 0, 0, 0.6);
-}
-
-.subtitle {
-  margin: 0;
-  font-size: 16px;
-  font-weight: 400;
-  color: #e5e7eb;
-  text-shadow: 0 1px 8px rgba(0, 0, 0, 0.6);
-}
-
-.listing {
-  margin-top: 48px;
-}
-
-.sectionTitle {
-  margin: 0 0 6px 0;
-  font-family:
-    Inter,
-    system-ui,
-    -apple-system,
-    sans-serif;
-  font-size: 20px;
-  font-weight: 600;
-  color: #ffffff;
-}
-
-.count {
-  margin: 0 0 28px 0;
+.error {
+  margin: 16px 0;
+  padding: 12px 16px;
+  border-radius: var(--radius);
+  background: #fff1ee;
+  color: var(--danger);
   font-size: 14px;
-  color: #8e8f96; /* REVERTED: no video behind it any more */
 }
 
-.clearButton {
-  margin-left: 14px;
-  padding: 0;
+/* ---------- filtered results ---------- */
+.resultsHeader {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 16px 0 24px;
+}
+
+.resultsTitle {
+  margin: 0;
+  font-size: 26px;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+}
+
+.resultsSubtitle {
+  margin: 4px 0 0;
+  color: var(--muted);
+  font-size: 14px;
+}
+
+.resultsGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 40px 20px;
+}
+
+.outlineButton {
+  flex-shrink: 0;
+  padding: 10px 16px;
+  border: 1px solid var(--ink);
+  border-radius: 8px;
+  background: var(--surface);
   font: inherit;
-  color: #f5a93b;
-  background: none;
-  border: none;
-  text-decoration: underline;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--ink);
   cursor: pointer;
 }
 
-.message {
-  color: #8e8f96; /* REVERTED */
-  margin-top: 20px;
+.outlineButton:hover {
+  background: var(--surface-alt);
 }
 
-.errorMessage {
-  color: #f87171;
-  margin-bottom: 20px;
+.darkButton {
+  padding: 13px 22px;
+  border: 0;
+  border-radius: 8px;
+  background: var(--ink);
+  color: #fff;
+  font: inherit;
+  font-weight: 600;
+  cursor: pointer;
 }
 
-.grid {
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
+.emptyState {
+  max-width: 420px;
+  margin: 48px auto;
+  text-align: center;
+}
+
+.emptyState h2 {
+  margin: 0 0 8px;
+  font-size: 22px;
+}
+
+.emptyState p {
+  margin: 0 0 20px;
+  color: var(--muted);
+}
+
+/* ---------- inspiration ---------- */
+.cityLinksSection {
+  margin-top: 40px;
+  padding-top: 40px;
+  border-top: 1px solid var(--line);
+}
+
+.cityLinksTitle {
+  margin: 0 0 12px;
+  font-size: 22px;
+  font-weight: 600;
+}
+
+.tabs {
+  display: flex;
   gap: 24px;
-  width: 100%;
-  align-items: stretch;
+  border-bottom: 1px solid var(--line);
+  overflow-x: auto;
+  scrollbar-width: none;
 }
 
-.skeleton {
-  width: 100%;
-  aspect-ratio: 1.45 / 1;
-  background: linear-gradient(90deg, #18181c 25%, #25252b 50%, #18181c 75%);
-  background-size: 200% 100%;
-  animation: loadingShimmer 1.6s infinite ease-in-out;
-  border-radius: 12px;
+.tabs button {
+  padding: 12px 0;
+  border: 0;
+  border-bottom: 2px solid transparent;
+  margin-bottom: -1px;
+  background: none;
+  font: inherit;
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--muted);
+  white-space: nowrap;
+  cursor: pointer;
 }
 
-@keyframes loadingShimmer {
-  0% {
-    background-position: 200% 0;
-  }
-  100% {
-    background-position: -200% 0;
-  }
+.tabs button:hover {
+  color: var(--ink);
 }
 
-@media (max-width: 1024px) {
-  .grid {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
+.tabs .activeTab {
+  color: var(--ink);
+  font-weight: 600;
+  border-bottom-color: var(--ink);
+}
+
+.cityLinksGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  gap: 24px 16px;
+  margin: 0;
+  padding: 28px 0 0;
+  list-style: none;
+}
+
+.cityLinksGrid a {
+  display: flex;
+  flex-direction: column;
+  color: var(--ink);
+  text-decoration: none;
+  font-size: 14px;
+}
+
+.cityLinksGrid a span {
+  font-weight: 600;
+}
+
+.cityLinksGrid a small {
+  font-size: 14px;
+  color: var(--muted);
+}
+
+.cityLinksGrid a:hover span {
+  text-decoration: underline;
+}
+
+.cityLinksEmpty {
+  padding-top: 24px;
+  color: var(--muted);
 }
 
 @media (max-width: 640px) {
-  .container > :not(.hero) {
-    padding-left: 16px;
-    padding-right: 16px;
+  .resultsHeader {
+    flex-direction: column;
+    align-items: flex-start;
   }
 
-  .hero {
-    min-height: 300px;
-    padding-top: 40px;
-    padding-bottom: 90px;
-    padding-left: 16px;
-    padding-right: 16px;
-  }
-
-  .title {
-    font-size: 32px;
-  }
-
-  .grid {
+  .resultsGrid {
     grid-template-columns: 1fr;
-    gap: 16px;
+    gap: 32px;
+  }
+
+  .cityLinksGrid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }

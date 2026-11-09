@@ -5,7 +5,6 @@ type InputProps = {
   id?: string;
   value?: string | number | boolean | null;
   onChange?: React.ChangeEventHandler<HTMLInputElement>;
-  style?: React.CSSProperties;
   label?: string;
   error?: string;
   name?: string;
@@ -20,11 +19,11 @@ export const Input: React.FC<InputProps> = ({
   id,
   value,
   onChange,
-  style,
   label,
   error,
   name,
   min,
+  placeholder,
   type = "text",
   className = "",
   required,
@@ -34,17 +33,19 @@ export const Input: React.FC<InputProps> = ({
 
   return (
     <div className={inputStyle["input-label-container"]}>
-      <label className={inputStyle["input-label"]}>{label}</label>
+      <label htmlFor={id} className={inputStyle["input-label"]}>
+        {label}
+      </label>
       <input
         name={name}
         id={id}
-        style={style}
         type={type}
         value={normalizedValue}
         onChange={onChange}
         className={`${inputStyle.input} ${className}`.trim()}
         required={required}
         min={min}
+        placeholder={placeholder}
       />
       {error && <span className={inputStyle["input-error"]}>{error}</span>}
     </div>

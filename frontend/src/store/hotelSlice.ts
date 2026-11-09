@@ -78,11 +78,14 @@ const hotelSlice = createSlice({
         state.isLoading = true;
         state.error = null;
       })
-      .addMatcher(isRejected(fetchHotels, fetchHotelDetails), (state, action) => {
-        state.isLoading = false;
-        state.error =
-          (action.payload as string | undefined) ?? "Something went wrong";
-      });
+      .addMatcher(
+        isRejected(fetchHotels, fetchHotelDetails),
+        (state, action) => {
+          state.isLoading = false;
+          state.error =
+            (action.payload as string | undefined) ?? "Something went wrong";
+        },
+      );
   },
 });
 

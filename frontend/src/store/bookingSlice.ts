@@ -79,7 +79,7 @@ const bookingSlice = createSlice({
       .addCase(cancelBooking.fulfilled, (state, action) => {
         state.isLoading = false;
         const booking = state.myBookings.find(
-          (b) => b.id === action.payload.id,
+          (booking) => booking.id === action.payload.id,
         );
         if (booking) booking.status = action.payload.status;
       })

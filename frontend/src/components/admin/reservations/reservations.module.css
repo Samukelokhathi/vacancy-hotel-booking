@@ -1,70 +1,150 @@
-/* src/components/admin/reservationsTable.module.css */
 .card {
-  background-color: #141517;
-  border: 1px solid #22242a;
-  border-radius: 12px;
   padding: 24px;
-  margin-bottom: 32px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: var(--surface);
 }
+
 .cardHeader h2 {
+  margin: 0 0 4px;
   font-size: 20px;
   font-weight: 600;
-  margin: 0 0 6px 0;
 }
+
 .cardHeader p {
-  color: #8e8f96;
-  font-size: 14px;
   margin: 0;
+  color: var(--muted);
+  font-size: 14px;
 }
+
 .tableResponsive {
   width: 100%;
+  margin-top: 16px;
   overflow-x: auto;
-  margin-top: 20px;
 }
+
 .table {
   width: 100%;
+  min-width: 640px;
   border-collapse: collapse;
   text-align: left;
 }
+
 .table th {
+  padding: 12px;
+  border-bottom: 1px solid var(--line);
   font-size: 12px;
-  color: #6b7280;
-  padding: 16px;
-  font-weight: 600;
-  border-bottom: 1px solid #22242a;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--muted);
 }
+
 .table td {
-  padding: 16px;
-  border-bottom: 1px solid #22242a;
+  padding: 14px 12px;
+  border-bottom: 1px solid var(--line-soft);
   font-size: 14px;
+  vertical-align: middle;
 }
+
+.table tbody tr:hover {
+  background: var(--surface-alt);
+}
+
 .bold {
+  display: block;
   font-weight: 600;
 }
+
+.subtle {
+  display: block;
+  margin-top: 2px;
+  font-size: 13px;
+  color: var(--muted);
+}
+
+.nowrap {
+  white-space: nowrap;
+}
+
 .badge {
-  padding: 6px 14px;
-  border-radius: 20px;
-  font-size: 12px;
-  font-weight: 600;
   display: inline-block;
+  padding: 5px 10px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 700;
   text-transform: capitalize;
+  white-space: nowrap;
 }
-.pending { background-color: rgba(245, 169, 59, 0.12); color: #f5a93b; }
-.approved { background-color: rgba(16, 185, 129, 0.12); color: #10b981; }
-.cancelled { background-color: rgba(239, 68, 68, 0.12); color: #ef4444; opacity: 0.6; }
+
+.pending {
+  background: #fff1dc;
+  color: #8a4b00;
+}
+
+.approved {
+  background: #e5f6ec;
+  color: #0b6b3a;
+}
+
+.cancelled {
+  background: #f2f2f2;
+  color: var(--muted);
+}
+
 .actionGroup {
   display: flex;
-  gap: 8px;
   justify-content: flex-end;
+  gap: 8px;
 }
-.approveBtn, .cancelBtn {
-  border: none;
-  padding: 8px 16px;
-  border-radius: 6px;
-  font-weight: 600;
+
+.approveBtn,
+.cancelBtn {
+  padding: 8px 14px;
+  border-radius: 8px;
+  font: inherit;
   font-size: 13px;
+  font-weight: 600;
   cursor: pointer;
 }
-.approveBtn { background-color: #f5a93b; color: #1b1305; }
-.cancelBtn { background-color: #ef4444; color: #ffffff; }
-.approveBtn:disabled, .cancelBtn:disabled { opacity: 0.25; cursor: not-allowed; }
+
+.approveBtn {
+  border: 0;
+  background: var(--ink);
+  color: #fff;
+}
+
+.cancelBtn {
+  border: 1px solid var(--line);
+  background: var(--surface);
+  color: var(--danger);
+}
+
+.approveBtn:hover:not(:disabled) {
+  background: #000;
+}
+
+.cancelBtn:hover:not(:disabled) {
+  border-color: var(--danger);
+}
+
+.approveBtn:disabled,
+.cancelBtn:disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+}
+
+.empty {
+  padding: 32px 12px !important;
+  text-align: center;
+  color: var(--muted);
+}
+
+.srOnly {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
