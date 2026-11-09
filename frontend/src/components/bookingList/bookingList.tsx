@@ -94,7 +94,7 @@ export default function BookingList() {
             <h3>No bookings yet</h3>
             <p>When you book a hotel, it will show up here.</p>
             <Link to="/home" className={styles.emptyButton}>
-              Find a hotel
+              Find a hotel 
             </Link>
           </div>
         </div>
