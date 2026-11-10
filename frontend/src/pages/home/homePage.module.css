@@ -13,7 +13,6 @@
   font-size: 14px;
 }
 
-/* ---------- filtered results ---------- */
 .resultsHeader {
   display: flex;
   align-items: flex-end;
@@ -85,7 +84,6 @@
   color: var(--muted);
 }
 
-/* ---------- inspiration ---------- */
 .cityLinksSection {
   margin-top: 40px;
   padding-top: 40px;

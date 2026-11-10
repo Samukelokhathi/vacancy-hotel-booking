@@ -2,7 +2,7 @@ import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
 import { emptyFilters, type HotelFilters } from "../utils/hotelFilters";
 
 // The one search shared by every page. The home page copies its address
-// (?city=…&maxPrice=…&stars=…) in here, and the search bar reads from here.
+
 interface SearchState {
   filters: HotelFilters;
 }
