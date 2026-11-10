@@ -1,4 +1,4 @@
-import type { FormEvent } from "react";
+import { Fragment, type FormEvent } from "react";
 import { Input } from "../../inputs/input";
 import Button from "../../button/button";
 import type { HotelImage } from "../../../models/hotel.types";
@@ -19,6 +19,13 @@ interface HotelFormState {
   roomCapacity: string;
 }
 
+interface ExtraRoomState {
+  roomType: string;
+  roomQuantity: string;
+  roomCapacity: string;
+  pricePerNight: string;
+}
+
 interface AddHotelModalProps {
   form: HotelFormState;
   isSaving: boolean;
@@ -27,6 +34,7 @@ interface AddHotelModalProps {
   isEditMode: boolean;
   existingImages: HotelImage[];
   pendingFiles: File[];
+  extraRooms: ExtraRoomState[];
   onChange: (
     event: React.ChangeEvent<
       HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
@@ -34,6 +42,13 @@ interface AddHotelModalProps {
   ) => void;
   onFilesSelected: (files: FileList | null) => void;
   onRemovePendingFile: (index: number) => void;
+  onAddExtraRoom: () => void;
+  onChangeExtraRoom: (
+    index: number,
+    field: keyof ExtraRoomState,
+    value: string,
+  ) => void;
+  onRemoveExtraRoom: (index: number) => void;
   onDeleteImage: (imageId: number) => void;
   onSetCover: (imageId: number) => void;
   onSubmit: (event: FormEvent<HTMLFormElement>) => void;
@@ -48,9 +63,13 @@ export default function AddHotelModal({
   isEditMode,
   existingImages,
   pendingFiles,
+  extraRooms,
   onChange,
   onFilesSelected,
   onRemovePendingFile,
+  onAddExtraRoom,
+  onChangeExtraRoom,
+  onRemoveExtraRoom,
   onDeleteImage,
   onSetCover,
   onSubmit,
@@ -174,6 +193,84 @@ export default function AddHotelModal({
               </div>
             </>
           )}
+
+          {extraRooms.map((extraRoom, index) => (
+            <Fragment key={index}>
+              <div className={styles.halfWidth}>
+                <Input
+                  label={`Extra room type ${index + 1}`}
+                  name={`extraRoomType-${index}`}
+                  value={extraRoom.roomType}
+                  onChange={(event) =>
+                    onChangeExtraRoom(index, "roomType", event.target.value)
+                  }
+                  placeholder="e.g. Family Room"
+                  required
+                />
+              </div>
+              <div className={styles.halfWidth}>
+                <Input
+                  label="Number of rooms"
+                  type="number"
+                  name={`extraRoomQuantity-${index}`}
+                  value={extraRoom.roomQuantity}
+                  onChange={(event) =>
+                    onChangeExtraRoom(index, "roomQuantity", event.target.value)
+                  }
+                  min={1}
+                  required
+                />
+              </div>
+              <div className={styles.halfWidth}>
+                <Input
+                  label="Guests per room"
+                  type="number"
+                  name={`extraRoomCapacity-${index}`}
+                  value={extraRoom.roomCapacity}
+                  onChange={(event) =>
+                    onChangeExtraRoom(index, "roomCapacity", event.target.value)
+                  }
+                  min={1}
+                  required
+                />
+              </div>
+              <div className={styles.halfWidth}>
+                <Input
+                  label="Price per night (R), blank = hotel price"
+                  type="number"
+                  name={`extraRoomPrice-${index}`}
+                  value={extraRoom.pricePerNight}
+                  onChange={(event) =>
+                    onChangeExtraRoom(
+                      index,
+                      "pricePerNight",
+                      event.target.value,
+                    )
+                  }
+                  min={1}
+                />
+              </div>
+              <div className={styles.fullWidth}>
+                <button
+                  type="button"
+                  className={styles.deleteImgBtn}
+                  onClick={() => onRemoveExtraRoom(index)}
+                >
+                  Remove room type
+                </button>
+              </div>
+            </Fragment>
+          ))}
+
+          <div className={styles.fullWidth}>
+            <button
+              type="button"
+              className={styles.coverBtn}
+              onClick={onAddExtraRoom}
+            >
+              + Add another room type
+            </button>
+          </div>
 
           <div className={styles.fullWidth}>
             <div className={styles.selectGroup}>

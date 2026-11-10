@@ -31,6 +31,13 @@ interface HotelFormState {
   roomCapacity: string;
 }
 
+interface ExtraRoomState {
+  roomType: string;
+  roomQuantity: string;
+  roomCapacity: string;
+  pricePerNight: string;
+}
+
 const initialForm: HotelFormState = {
   name: "",
   description: "",
@@ -43,6 +50,13 @@ const initialForm: HotelFormState = {
   roomType: "Standard Room",
   roomQuantity: "10",
   roomCapacity: "2",
+};
+
+const emptyExtraRoom: ExtraRoomState = {
+  roomType: "",
+  roomQuantity: "5",
+  roomCapacity: "2",
+  pricePerNight: "",
 };
 
 async function uploadHotelImages(hotelId: number, files: File[]) {
@@ -77,6 +91,7 @@ export default function AdminDashboard() {
   const [editingHotelId, setEditingHotelId] = useState<number | null>(null);
   const [existingImages, setExistingImages] = useState<HotelImage[]>([]);
   const [pendingFiles, setPendingFiles] = useState<File[]>([]);
+  const [extraRooms, setExtraRooms] = useState<ExtraRoomState[]>([]);
 
   useEffect(() => {
     if (isAuthenticated && user?.role === "admin") {
@@ -132,6 +147,7 @@ export default function AdminDashboard() {
     setForm(initialForm);
     setExistingImages([]);
     setPendingFiles([]);
+    setExtraRooms([]);
     setFormError("");
     setMessage("");
     setIsModalOpen(true);
@@ -155,6 +171,7 @@ export default function AdminDashboard() {
       roomCapacity: "2",
     });
     setPendingFiles([]);
+    setExtraRooms([]);
     setExistingImages([]);
     setFormError("");
     setMessage("");
@@ -271,6 +288,28 @@ export default function AdminDashboard() {
     );
   };
 
+  const handleAddExtraRoom = () => {
+    setExtraRooms((previousRooms) => [...previousRooms, { ...emptyExtraRoom }]);
+  };
+
+  const handleChangeExtraRoom = (
+    index: number,
+    field: keyof ExtraRoomState,
+    value: string,
+  ) => {
+    setExtraRooms((previousRooms) =>
+      previousRooms.map((extraRoom, roomIndex) =>
+        roomIndex === index ? { ...extraRoom, [field]: value } : extraRoom,
+      ),
+    );
+  };
+
+  const handleRemoveExtraRoom = (index: number) => {
+    setExtraRooms((previousRooms) =>
+      previousRooms.filter((_extraRoom, roomIndex) => roomIndex !== index),
+    );
+  };
+
   const handleDeleteImage = async (imageId: number) => {
     try {
       await api.delete(`/hotel-images/${imageId}`);
@@ -366,14 +405,54 @@ export default function AdminDashboard() {
       }
     }
 
+    for (const extraRoom of extraRooms) {
+      const quantity = Number(extraRoom.roomQuantity);
+      const capacity = Number(extraRoom.roomCapacity);
+      const roomPrice =
+        extraRoom.pricePerNight.trim() === ""
+          ? payload.pricePerNight
+          : Number(extraRoom.pricePerNight);
+      if (
+        !extraRoom.roomType.trim() ||
+        !Number.isInteger(quantity) ||
+        quantity <= 0 ||
+        !Number.isInteger(capacity) ||
+        capacity <= 0 ||
+        !Number.isFinite(roomPrice) ||
+        roomPrice <= 0
+      ) {
+        setFormError(
+          "Please complete every extra room type (name, rooms, guests, price).",
+        );
+        return;
+      }
+    }
+
+    const createExtraRooms = async (hotelId: number) => {
+      for (const extraRoom of extraRooms) {
+        await api.post("/rooms", {
+          hotelId,
+          roomType: extraRoom.roomType.trim(),
+          capacity: Number(extraRoom.roomCapacity),
+          pricePerNight:
+            extraRoom.pricePerNight.trim() === ""
+              ? payload.pricePerNight
+              : Number(extraRoom.pricePerNight),
+          quantity: Number(extraRoom.roomQuantity),
+        });
+      }
+    };
+
     setIsSaving(true);
 
     try {
       if (editingHotelId) {
         await api.put(`/hotels/${editingHotelId}`, payload);
+        await createExtraRooms(editingHotelId);
         await uploadHotelImages(editingHotelId, pendingFiles);
         await loadHotelImages(editingHotelId);
         setPendingFiles([]);
+        setExtraRooms([]);
         setMessage("Hotel updated successfully.");
       } else {
         const hotelResponse = await api.post("/hotels", payload);
@@ -391,6 +470,7 @@ export default function AdminDashboard() {
           quantity: Number(form.roomQuantity),
         });
 
+        await createExtraRooms(hotelId);
         await uploadHotelImages(hotelId, pendingFiles);
         setMessage("Hotel and images added successfully.");
       }
@@ -401,6 +481,7 @@ export default function AdminDashboard() {
         setIsModalOpen(false);
         setMessage("");
         setPendingFiles([]);
+        setExtraRooms([]);
         setExistingImages([]);
       }, 1000);
     } catch (error) {
@@ -525,9 +606,13 @@ export default function AdminDashboard() {
           isEditMode={!!editingHotelId}
           existingImages={existingImages}
           pendingFiles={pendingFiles}
+          extraRooms={extraRooms}
           onChange={handleChange}
           onFilesSelected={handleFilesSelected}
           onRemovePendingFile={handleRemovePendingFile}
+          onAddExtraRoom={handleAddExtraRoom}
+          onChangeExtraRoom={handleChangeExtraRoom}
+          onRemoveExtraRoom={handleRemoveExtraRoom}
           onDeleteImage={handleDeleteImage}
           onSetCover={handleSetCover}
           onSubmit={handleSubmit}
